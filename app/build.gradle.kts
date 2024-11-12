@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.coil)
+    implementation(libs.coil.compose)
     implementation(libs.coil.httpok)
 
     implementation(libs.retrofit)
