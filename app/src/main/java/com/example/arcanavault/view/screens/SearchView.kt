@@ -6,6 +6,6 @@ import androidx.compose.ui.Modifier
 import com.example.arcanavault.controller.api.ApiClient
 
 @Composable
-fun FavouritesView(apiClient: ApiClient, modifier: Modifier = Modifier) {
-    Text("Favorite Screen", modifier = modifier)
+fun SearchView(apiClient: ApiClient, modifier: Modifier = Modifier) {
+    Text("Search Screen", modifier = modifier)
 }
