@@ -23,4 +23,20 @@ class Spell(
     @SerialName("school") val school: EntityReference? = null,
     @SerialName("classes") val classes: List<EntityReference> = emptyList(),
     @SerialName("subclasses") val subclasses: List<EntityReference> = emptyList()
-) : IEntity
+) : IEntity {
+
+    companion object {
+        /**
+         * Generates filter options based on the specified fields in the Spell class.
+         *
+         * @param spells List of Spell objects to generate filter options from.
+         * @return A map of filter categories to a list of unique options for each category.
+         */
+        fun generateFilterOptions(spells: List<Spell>): Map<String, List<String>> {
+            return mapOf(
+                "Level" to spells.map { it.level.toString() }.distinct().sorted()
+            )
+        }
+    }
+
+}
