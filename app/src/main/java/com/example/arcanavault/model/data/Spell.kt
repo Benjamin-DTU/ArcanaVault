@@ -34,9 +34,15 @@ class Spell(
          */
         fun generateFilterOptions(spells: List<Spell>): Map<String, List<String>> {
             return mapOf(
-                "Level" to spells.map { it.level.toString() }.distinct().sorted()
+                "Classes" to spells.flatMap { it.classes.map { _class -> _class.name } }.distinct().sorted(),
+                "Level" to spells.map { it.level.toString() }.distinct().sorted(),
+                "Casting Time" to spells.map { it.castingTime.toString()}.distinct().sorted(),
+                "School" to spells.mapNotNull { it.school?.name }.distinct().sorted(),
+                "Damage Type" to spells.map { it.damage?.damageType?.name.toString()}.distinct().sorted(),
+                "Components" to spells.flatMap { it.components }.distinct().sorted(),
+                "Concentration" to spells.map { it.concentration.toString()}.distinct().sorted(),
+                "Ritual" to spells.map { it.ritual.toString()}.distinct().sorted(),
             )
         }
     }
-
 }

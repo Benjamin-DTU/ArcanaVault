@@ -1,7 +1,8 @@
 package com.example.arcanavault.controller.api
 
-import com.example.arcanavault.model.data.IEntity
 import com.example.arcanavault.model.data.Spell
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -27,8 +28,11 @@ class ApiClient {
 
     private val apiService: ApiService = retrofit.create(ApiService::class.java)
 
-    suspend fun getAllSpells(): List<Spell> {
-        return apiService.getAllSpells().results
+    suspend fun getAllSpells(): List<Spell> = coroutineScope {
+        val spellsList = apiService.getAllSpells().results
+        spellsList.map { minimalSpell ->
+            async { getSpellByIndex(minimalSpell.index) }
+        }.map { it.await() }
     }
 
     suspend fun getAllSpellsCount(): Int {

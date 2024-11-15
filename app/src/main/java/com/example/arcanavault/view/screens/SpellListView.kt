@@ -67,6 +67,13 @@ suspend fun fetchFilteredEntities(
         selectedFilters.all { (category, options) ->
             when (category) {
                 "Level" -> options.contains(spell.level.toString())
+                "School" -> options.contains(spell.school?.name.toString())
+                "Classes" -> spell.classes.any { it.name in options }
+                "Casting Time" -> options.contains(spell.castingTime)
+                "Damage Type" -> options.contains(spell.damage?.damageType?.name.toString())
+                "Components" -> options.any { it in spell.components }
+                "Concentration" -> options.contains(spell.concentration.toString())
+                "Ritual" -> options.contains(spell.ritual.toString())
                 else -> true
             }
         }
