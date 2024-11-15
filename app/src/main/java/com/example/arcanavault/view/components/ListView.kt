@@ -6,11 +6,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.arcanavault.model.data.IEntity
+import com.example.arcanavault.model.data.IItem
 
 @Composable
 fun ListView(
-    entities: List<IEntity>,
+    entities: List<IItem>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -19,7 +19,7 @@ fun ListView(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(entities) { entity ->
-            EntityView(
+            ListItemView(
                 imageUrl = entity.url,
                 name = entity.name,
                 description = "Level ${entity.level}",

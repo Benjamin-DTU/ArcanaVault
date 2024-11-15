@@ -20,10 +20,10 @@ class Spell(
     @SerialName("casting_time") val castingTime: String = "",
     @SerialName("attack_type") val attackType: String? = null,
     @SerialName("damage") val damage: Damage? = null,
-    @SerialName("school") val school: EntityReference? = null,
-    @SerialName("classes") val classes: List<EntityReference> = emptyList(),
-    @SerialName("subclasses") val subclasses: List<EntityReference> = emptyList()
-) : IEntity {
+    @SerialName("school") val school: ItemReference? = null,
+    @SerialName("classes") val classes: List<ItemReference> = emptyList(),
+    @SerialName("subclasses") val subclasses: List<ItemReference> = emptyList()
+) : IItem {
 
     companion object {
         /**

@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 
 @Composable
-fun EntityView(
+fun ListItemView(
     imageUrl: String,
     name: String,
     description: String,

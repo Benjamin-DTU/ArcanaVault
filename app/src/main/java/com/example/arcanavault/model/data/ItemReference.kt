@@ -3,7 +3,7 @@ package com.example.arcanavault.model.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EntityReference(
+data class ItemReference(
     val index: String = "",
     val name: String = "",
     val url: String = ""

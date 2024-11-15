@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.arcanavault.controller.api.ApiClient
-import com.example.arcanavault.model.data.IEntity
+import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.view.components.FilterView
 import com.example.arcanavault.view.components.ListView
@@ -21,7 +21,7 @@ fun SpellListView(
 ) {
     var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
-    var entities by remember { mutableStateOf<List<IEntity>>(emptyList()) }
+    var entities by remember { mutableStateOf<List<IItem>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
 
     // Fetch spells from API and generate filter options
@@ -59,7 +59,7 @@ fun SpellListView(
 suspend fun fetchFilteredEntities(
     selectedFilters: Map<String, List<String>>,
     apiClient: ApiClient
-): List<IEntity> {
+): List<IItem> {
     val allSpells = apiClient.getAllSpells()
 
     // Basic filter logic based on selectedFilters
