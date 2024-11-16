@@ -7,15 +7,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.arcanavault.controller.api.ApiClient
+import com.example.arcanavault.view.components.FetchingDataView
 import com.example.arcanavault.view.components.Hotbar
 import com.example.arcanavault.view.screens.FavouritesView
 import com.example.arcanavault.view.screens.SearchView
 import com.example.arcanavault.view.screens.SpellListView
-
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val apiClient = ApiClient()
@@ -25,7 +25,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
+                var isLoading by remember { mutableStateOf(true) }
                 val selectedScreen = remember { mutableStateOf("home") }
+                val coroutineScope = rememberCoroutineScope()
+
+                LaunchedEffect(Unit) {
+                    coroutineScope.launch {
+                        // Fetch spells
+                        apiClient.getAllSpells()
+                        isLoading = false
+                    }
+                }
 
                 Scaffold(
                     bottomBar = {
@@ -33,10 +43,14 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { paddingValues ->
                     Surface(modifier = Modifier.padding(paddingValues)) {
-                        when (selectedScreen.value) {
-                            "home" -> SpellListView(apiClient = apiClient)
-                            "search" -> SearchView(apiClient = apiClient)
-                            "favorite" -> FavouritesView(apiClient = apiClient)
+                        if (isLoading) {
+                            FetchingDataView()
+                        } else {
+                            when (selectedScreen.value) {
+                                "home" -> SpellListView(apiClient = apiClient)
+                                "search" -> SearchView(apiClient = apiClient)
+                                "favorite" -> FavouritesView(apiClient = apiClient)
+                            }
                         }
                     }
                 }
