@@ -34,6 +34,6 @@ fun FetchingDataView(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Fetching data$dots", fontSize = 20.sp)
+        Text(text = "Fetching data$dots", fontSize = 36.sp)
     }
 }
