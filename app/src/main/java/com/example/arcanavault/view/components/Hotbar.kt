@@ -8,30 +8,43 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 
 @Composable
 fun Hotbar(
-    selectedScreen: MutableState<String>,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(modifier = modifier) {
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
-            selected = selectedScreen.value == "home",
-            onClick = { selectedScreen.value = "home" }
+            selected = navController.currentBackStackEntry?.destination?.route == "home",
+            onClick = {
+                navController.navigate("home") {
+                    popUpTo("home") { inclusive = true } // Avoid multiple back stack entries for "home"
+                }
+            }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
             label = { Text("Search") },
-            selected = selectedScreen.value == "search",
-            onClick = { selectedScreen.value = "search" }
+            selected = navController.currentBackStackEntry?.destination?.route == "search",
+            onClick = {
+                navController.navigate("search") {
+                    popUpTo("home") { inclusive = false } // Navigate to "search" and keep "home" in the stack
+                }
+            }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorite") },
             label = { Text("Favorite") },
-            selected = selectedScreen.value == "favorite",
-            onClick = { selectedScreen.value = "favorite" }
+            selected = navController.currentBackStackEntry?.destination?.route == "favorite",
+            onClick = {
+                navController.navigate("favorites") {
+                    popUpTo("home") { inclusive = false } // Navigate to "favorite" and keep "home" in the stack
+                }
+            }
         )
     }
 }

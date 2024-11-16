@@ -9,6 +9,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.view.components.FetchingDataView
 import com.example.arcanavault.view.components.Hotbar
@@ -28,6 +31,7 @@ class MainActivity : ComponentActivity() {
                 var isLoading by remember { mutableStateOf(true) }
                 val selectedScreen = remember { mutableStateOf("home") }
                 val coroutineScope = rememberCoroutineScope()
+                val navController = rememberNavController()
 
                 LaunchedEffect(Unit) {
                     coroutineScope.launch {
@@ -39,17 +43,27 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     bottomBar = {
-                        Hotbar(selectedScreen = selectedScreen)
+                        Hotbar(navController = navController)
                     }
                 ) { paddingValues ->
                     Surface(modifier = Modifier.padding(paddingValues)) {
                         if (isLoading) {
                             FetchingDataView()
                         } else {
-                            when (selectedScreen.value) {
-                                "home" -> SpellListView(apiClient = apiClient)
-                                "search" -> SearchView(apiClient = apiClient)
-                                "favorite" -> FavouritesView(apiClient = apiClient)
+                            // Navigation logic is managed entirely by NavHost
+                            NavHost(
+                                navController = navController,
+                                startDestination = "home"
+                            ) {
+                                composable("home") {
+                                    SpellListView(apiClient = apiClient, navController = navController)
+                                }
+                                composable("search") {
+                                    SearchView(apiClient = apiClient, navController = navController)
+                                }
+                                composable("favorites") {
+                                    FavouritesView(apiClient = apiClient, navController = navController)
+                                }
                             }
                         }
                     }

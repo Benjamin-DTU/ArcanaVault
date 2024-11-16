@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SpellListView(
     apiClient: ApiClient,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
