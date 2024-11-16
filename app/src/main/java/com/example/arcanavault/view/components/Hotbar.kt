@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.arcanavault.Routes
 
 @Composable
 fun Hotbar(
@@ -19,30 +20,30 @@ fun Hotbar(
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
-            selected = navController.currentBackStackEntry?.destination?.route == "home",
+            selected = navController.currentBackStackEntry?.destination?.route == Routes.home,
             onClick = {
-                navController.navigate("home") {
-                    popUpTo("home") { inclusive = true } // Avoid multiple back stack entries for "home"
+                navController.navigate(Routes.home) {
+                    popUpTo(Routes.home) { inclusive = true } // Avoid multiple back stack entries for "home"
                 }
             }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
             label = { Text("Search") },
-            selected = navController.currentBackStackEntry?.destination?.route == "search",
+            selected = navController.currentBackStackEntry?.destination?.route == Routes.search,
             onClick = {
-                navController.navigate("search") {
-                    popUpTo("home") { inclusive = false } // Navigate to "search" and keep "home" in the stack
+                navController.navigate(Routes.search) {
+                    popUpTo(Routes.home) { inclusive = false } // Navigate to "search" and keep "home" in the stack
                 }
             }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorite") },
             label = { Text("Favorite") },
-            selected = navController.currentBackStackEntry?.destination?.route == "favorite",
+            selected = navController.currentBackStackEntry?.destination?.route == Routes.favorites,
             onClick = {
-                navController.navigate("favorites") {
-                    popUpTo("home") { inclusive = false } // Navigate to "favorite" and keep "home" in the stack
+                navController.navigate(Routes.favorites) {
+                    popUpTo(Routes.home) { inclusive = false } // Navigate to "favorite" and keep "home" in the stack
                 }
             }
         )

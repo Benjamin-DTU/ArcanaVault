@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
@@ -18,7 +18,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SpellListView(
     apiClient: ApiClient,
-    navController: NavController,
+    appState: AppState,
+    onSpellSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
@@ -31,6 +32,7 @@ fun SpellListView(
         val spells = apiClient.getAllSpells()
         filters = Spell.generateFilterOptions(spells)
         items = spells
+        appState.listOfSpells = spells
     }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -54,7 +56,12 @@ fun SpellListView(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Display filtered content based on selected filters
-        ListView(items = items)
+        ListView(
+            items = items,
+            onItemClick = { selectedSpell ->
+                onSpellSelected(selectedSpell)
+            }
+        )
     }
 }
 
