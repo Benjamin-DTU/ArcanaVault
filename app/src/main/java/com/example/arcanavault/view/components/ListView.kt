@@ -10,7 +10,7 @@ import com.example.arcanavault.model.data.IItem
 
 @Composable
 fun ListView(
-    entities: List<IItem>,
+    items: List<IItem>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -18,11 +18,13 @@ fun ListView(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(entities) { entity ->
+        items(items) { item ->
             ListItemView(
-                imageUrl = entity.url,
-                name = entity.name,
-                description = "Level ${entity.level}",
+                imageUrl = item.url,
+                name = item.name,
+                description = "Level ${item.level}",
+                isFavorite = item.isFavorite,
+                onFavoriteClick = { /* TODO: Implement favorite click action */ },
                 modifier = Modifier.fillMaxWidth()
             )
         }

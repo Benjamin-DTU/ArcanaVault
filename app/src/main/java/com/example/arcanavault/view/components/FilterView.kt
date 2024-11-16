@@ -1,5 +1,6 @@
 package com.example.arcanavault.view.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -27,24 +29,23 @@ fun FilterView(
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     Column(modifier = modifier) {
-        // Filter icon button to open or close the dialog
+        // Filter icon button
         IconButton(onClick = {
-            // If in a sub-menu (filter category), go back to main menu instead of closing
             if (showFilterDialog && selectedCategory != null) {
-                selectedCategory = null
+                selectedCategory = null // Go back to main menu
             } else {
                 showFilterDialog = !showFilterDialog
             }
         }) {
             Icon(
-                if (showFilterDialog && selectedCategory != null) Icons.AutoMirrored.Filled.ArrowBack
+                imageVector = if (showFilterDialog && selectedCategory != null) Icons.AutoMirrored.Filled.ArrowBack
                 else if (showFilterDialog) Icons.Filled.Close
                 else Icons.Filled.FilterList,
-                contentDescription = if (showFilterDialog && selectedCategory != null) "Back" else "Close Filter"
+                contentDescription = "Filter Menu"
             )
         }
 
-        // Main dialog that stays open until the close button is pressed
+        // Dialog for filters
         if (showFilterDialog) {
             Box(
                 modifier = Modifier
@@ -52,12 +53,12 @@ fun FilterView(
                     .background(Color.Black.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
             ) {
-                // If a category is selected, show the options for that category
                 if (selectedCategory != null) {
-                    // Secondary view for the selected category
+                    // Subfilter view
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
+                            .fillMaxHeight(0.8f)
                             .background(MaterialTheme.colorScheme.surface)
                             .padding(16.dp)
                             .verticalScroll(rememberScrollState())
@@ -66,7 +67,7 @@ fun FilterView(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Display each option as a selectable item
+                        // Display options for the selected category
                         val options = filterOptions[selectedCategory] ?: emptyList()
                         options.forEach { option ->
                             val isSelected = selectedFilters[selectedCategory]?.contains(option) == true
@@ -85,7 +86,7 @@ fun FilterView(
                         }
                     }
                 } else {
-                    // Main view with filter categories
+                    // Main filter categories view
                     Column(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
@@ -99,22 +100,33 @@ fun FilterView(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("Select Filters", style = MaterialTheme.typography.titleMedium)
+                            Text("Filters", style = MaterialTheme.typography.titleMedium)
 
-                            TextButton(onClick = onClearAllFilters) {
+                            TextButton(
+                                onClick = onClearAllFilters,
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = Color(0xFF8B0000)
+                                )
+                            ) {
                                 Text("Clear All")
                             }
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Display each filter category as a button
+                        // Display categories
                         filterOptions.keys.forEach { category ->
-                            Button(
+                            OutlinedButton(
                                 onClick = { selectedCategory = category },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
+                                    .padding(vertical = 4.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = Color.White,
+                                    contentColor = Color.Black
+                                ),
+                                border = BorderStroke(1.dp, Color.Black),
+                                shape = RectangleShape
                             ) {
                                 Text(category)
                             }

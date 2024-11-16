@@ -21,14 +21,14 @@ fun SpellListView(
 ) {
     var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
-    var entities by remember { mutableStateOf<List<IItem>>(emptyList()) }
+    var items by remember { mutableStateOf<List<IItem>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
 
     // Fetch spells from API and generate filter options
     LaunchedEffect(Unit) {
         val spells = apiClient.getAllSpells()
         filters = Spell.generateFilterOptions(spells)
-        entities = spells
+        items = spells
     }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -38,13 +38,13 @@ fun SpellListView(
             onFilterChange = { category, options ->
                 selectedFilters = selectedFilters.toMutableMap().apply { this[category] = options }
                 coroutineScope.launch {
-                    entities = fetchFilteredEntities(selectedFilters, apiClient)
+                    items = fetchFilteredEntities(selectedFilters, apiClient)
                 }
             },
             onClearAllFilters = {
                 selectedFilters = emptyMap()
                 coroutineScope.launch {
-                    entities = apiClient.getAllSpells()
+                    items = apiClient.getAllSpells()
                 }
             }
         )
@@ -52,7 +52,7 @@ fun SpellListView(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Display filtered content based on selected filters
-        ListView(entities = entities)
+        ListView(items = items)
     }
 }
 

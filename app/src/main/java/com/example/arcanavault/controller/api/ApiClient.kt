@@ -10,6 +10,8 @@ import okhttp3.MediaType.Companion.toMediaType
 
 class ApiClient {
 
+    private var spells: List<Spell> = emptyList()
+
     companion object {
         const val BASE_URL = "https://www.dnd5eapi.co/api/"
         private const val CONTENT_TYPE = "application/json; charset=UTF-8"
@@ -29,11 +31,15 @@ class ApiClient {
     private val apiService: ApiService = retrofit.create(ApiService::class.java)
 
     suspend fun getAllSpells(): List<Spell> = coroutineScope {
-        val spellsList = apiService.getAllSpells().results
-        spellsList.map { minimalSpell ->
-            async { getSpellByIndex(minimalSpell.index) }
-        }.map { it.await() }
+        if (spells.isEmpty()) {
+            val minimalSpells = apiService.getAllSpells().results
+            spells = minimalSpells.map { minimalSpell ->
+                async { getSpellByIndex(minimalSpell.index) }
+            }.map { it.await() }
+        }
+        spells
     }
+
 
     suspend fun getAllSpellsCount(): Int {
         return apiService.getAllSpells().count;

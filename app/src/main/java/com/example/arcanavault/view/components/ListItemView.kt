@@ -3,6 +3,9 @@ package com.example.arcanavault.view.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +22,8 @@ fun ListItemView(
     imageUrl: String,
     name: String,
     description: String,
+    isFavorite: Boolean?,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -26,11 +31,11 @@ fun ListItemView(
             .fillMaxWidth()
             .padding(8.dp)
             .border(2.dp, Color.Black)
-            .background(Color.Gray)
+            .background(Color.White)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Display Image with border
+        // Display Image
         AsyncImage(
             model = imageUrl,
             contentDescription = "$name Image",
@@ -38,42 +43,37 @@ fun ListItemView(
             modifier = Modifier
                 .size(64.dp)
                 .border(2.dp, Color.Black)
-                .padding(4.dp)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // Column for name and description
+        // Name and Description
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.weight(1f)
         ) {
-            // Display Name
             Text(
                 text = name,
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier
-                    .fillMaxWidth()
+                color = Color.Black
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = description,
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+        }
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.width(16.dp))
 
-            // Display Description with border
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(2.dp, Color.Black)
-                    .padding(8.dp)
-            ) {
-                Text(
-                    text = description,
-                    fontSize = 16.sp,
-                    color = Color.Black
-                )
-            }
+        // Favorite Icon
+        IconButton(onClick = onFavoriteClick) {
+            Icon(
+                imageVector = if (isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
+                contentDescription = "Favorite",
+                tint = Color.Black
+            )
         }
     }
 }

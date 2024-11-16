@@ -9,6 +9,7 @@ class Spell(
     override val name: String,
     override val level: Int,
     override val url: String,
+    override val isFavorite: Boolean = false,
     @SerialName("desc") val desc: List<String> = emptyList(),
     @SerialName("higher_level") val higherLevel: List<String> = emptyList(),
     @SerialName("range") val range: String = "",
