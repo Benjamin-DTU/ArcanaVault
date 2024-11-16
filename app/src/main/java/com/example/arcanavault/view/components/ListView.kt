@@ -22,7 +22,8 @@ fun ListView(
             ListItemView(
                 imageUrl = item.url,
                 name = item.name,
-                description = "Level ${item.level}",
+                //Shorten the description to 120 characters
+                description = item.shortDescription.dropLast(item.shortDescription.length - 120)+"...",
                 isFavorite = item.isFavorite,
                 onFavoriteClick = { /* TODO: Implement favorite click action */ },
                 modifier = Modifier.fillMaxWidth()

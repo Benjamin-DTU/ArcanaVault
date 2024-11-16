@@ -1,5 +1,6 @@
 package com.example.arcanavault.model.data
 
+import android.accessibilityservice.GestureDescription
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,7 +11,8 @@ class Spell(
     override val level: Int,
     override val url: String,
     override val isFavorite: Boolean = false,
-    @SerialName("desc") val desc: List<String> = emptyList(),
+    @SerialName("desc") override val description: List<String> = emptyList(),
+    override val shortDescription: String = description.firstOrNull() ?: "",
     @SerialName("higher_level") val higherLevel: List<String> = emptyList(),
     @SerialName("range") val range: String = "",
     @SerialName("components") val components: List<String> = emptyList(),
