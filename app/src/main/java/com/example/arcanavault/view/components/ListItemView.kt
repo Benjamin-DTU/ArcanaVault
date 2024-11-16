@@ -43,13 +43,14 @@ fun ListItemView(
             modifier = Modifier
                 .size(64.dp)
                 .border(2.dp, Color.Black)
+                .align(Alignment.CenterVertically)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // Name and Description
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f) // Makes this column take the remaining space
         ) {
             Text(
                 text = name,
@@ -65,10 +66,13 @@ fun ListItemView(
             )
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(8.dp))
 
         // Favorite Icon
-        IconButton(onClick = onFavoriteClick) {
+        IconButton(
+            onClick = onFavoriteClick,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        ) {
             Icon(
                 imageVector = if (isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
                 contentDescription = "Favorite",
