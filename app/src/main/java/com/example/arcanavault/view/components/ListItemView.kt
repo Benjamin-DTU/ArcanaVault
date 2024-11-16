@@ -35,49 +35,59 @@ fun ListItemView(
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Display Image
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = "$name Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(64.dp)
-                .border(2.dp, Color.Black)
-                .align(Alignment.CenterVertically)
-        )
-
-        Spacer(modifier = Modifier.width(16.dp))
-
+        // Main column to organize title and content
         Column(
             modifier = Modifier
-                .weight(1f) // Makes this column take the remaining space
+                .fillMaxWidth()
+                .padding(start = 8.dp)
         ) {
+            // Title text, centered horizontally
             Text(
                 text = name,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = description,
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-        }
 
-        Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // Favorite Icon
-        IconButton(
-            onClick = onFavoriteClick,
-            modifier = Modifier.align(Alignment.CenterVertically)
-        ) {
-            Icon(
-                imageVector = if (isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
-                contentDescription = "Favorite",
-                tint = Color.Black
-            )
+            // Inner row for image, description, and icon
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Image
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "$name Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .border(2.dp, Color.Black)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Description text
+                Text(
+                    text = description,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.weight(1f) // Take remaining space
+                )
+
+                // Favorite Icon
+                IconButton(
+                    onClick = onFavoriteClick
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
+                        contentDescription = "Favorite",
+                        tint = Color.Black
+                    )
+                }
+            }
         }
     }
 }
