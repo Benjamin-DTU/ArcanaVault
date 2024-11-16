@@ -1,0 +1,5 @@
+package com.example.arcanavault.view.screens
+
+class FavoritesView {
+
+}
