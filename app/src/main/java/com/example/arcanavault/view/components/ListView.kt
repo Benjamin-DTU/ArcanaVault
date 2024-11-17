@@ -25,7 +25,13 @@ fun ListView(
                 imageUrl = item.url,
                 name = item.name,
                 //Shorten the description to 120 characters
-                description = item.shortDescription.dropLast(item.shortDescription.length - 120)+"...",
+
+
+                //description = item.shortDescription.dropLast(item.shortDescription.length - 120)+"...",
+
+            description = item.shortDescription?.let
+            { if (it.length > 120) it.substring(0, 120) + "..."
+            else it } ?: "No description available",
                 isFavorite = item.isFavorite,
                 onFavoriteClick = { /* TODO: Implement favorite click action */ },
                 modifier = Modifier.fillMaxWidth().clickable { onItemClick(item.index) }
