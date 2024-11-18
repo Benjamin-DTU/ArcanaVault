@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -26,7 +27,7 @@ fun ListItemView(
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Row( //Main card row
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
@@ -74,7 +75,10 @@ fun ListItemView(
                     text = description,
                     fontSize = 14.sp,
                     color = Color.Gray,
-                    modifier = Modifier.weight(1f) // Take remaining space
+                    //maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                        .heightIn(max = 120.dp)// Take remaining space
                 )
 
                 // Favorite Icon
