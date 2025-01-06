@@ -51,9 +51,11 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.coil)
+    implementation(libs.coil.compose)
     implementation(libs.coil.httpok)
 
     implementation(libs.retrofit)
@@ -67,4 +69,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    val nav_version = "2.8.4"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
 }

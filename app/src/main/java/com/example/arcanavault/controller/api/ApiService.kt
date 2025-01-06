@@ -1,6 +1,5 @@
 package com.example.arcanavault.controller.api
 
-import com.example.arcanavault.model.data.IEntity
 import com.example.arcanavault.model.data.ListResponse
 import com.example.arcanavault.model.data.Spell
 import retrofit2.http.GET

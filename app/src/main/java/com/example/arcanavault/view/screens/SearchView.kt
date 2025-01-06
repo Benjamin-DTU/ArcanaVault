@@ -7,9 +7,9 @@ import androidx.navigation.NavController
 import com.example.arcanavault.controller.api.ApiClient
 
 @Composable
-fun FavouritesView(
+fun SearchView(
     apiClient: ApiClient,
     navController: NavController,
     modifier: Modifier = Modifier) {
-    Text("Favorite Screen", modifier = modifier)
+    Text("Search Screen", modifier = modifier)
 }
