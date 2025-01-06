@@ -72,7 +72,10 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable("details/{selectedSpell}") { it ->
                                     val spell = appState.getSpellByIndex(it.arguments?.getString("selectedSpell"))
-                                    SpellDetailsView(spell = spell)
+                                    SpellDetailsView(
+                                        spell = spell,
+                                        onBackClick = { navController.popBackStack() }
+                                    )
                                 }
                                 composable(Routes.search) {
                                     SearchView(apiClient = apiClient, navController = navController)

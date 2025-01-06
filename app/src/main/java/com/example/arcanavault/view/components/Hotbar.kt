@@ -1,13 +1,11 @@
 package com.example.arcanavault.view.components
 
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.arcanavault.Routes
@@ -19,18 +17,6 @@ fun Hotbar(
 ) {
 
     NavigationBar(modifier = modifier) {
-
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.ArrowBackIosNew, contentDescription = "Back") },
-            label = { Text("Back") },
-            // For a back button, we typically don't need to show it as "selected" when it's active.
-            selected = false,
-            onClick = {
-                // Simply pop the back stack to go back
-                navController.popBackStack()
-            }
-        )
-
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
