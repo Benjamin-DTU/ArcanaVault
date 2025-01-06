@@ -2,6 +2,7 @@ package com.example.arcanavault.view.components
 
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
@@ -16,7 +17,20 @@ fun Hotbar(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+
     NavigationBar(modifier = modifier) {
+
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.ArrowBackIosNew, contentDescription = "Back") },
+            label = { Text("Back") },
+            // For a back button, we typically don't need to show it as "selected" when it's active.
+            selected = false,
+            onClick = {
+                // Simply pop the back stack to go back
+                navController.popBackStack()
+            }
+        )
+
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
@@ -26,6 +40,7 @@ fun Hotbar(
                     popUpTo(Routes.home) { inclusive = true } // Avoid multiple back stack entries for "home"
                 }
             }
+
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
