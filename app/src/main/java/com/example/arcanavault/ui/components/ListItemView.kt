@@ -1,4 +1,4 @@
-package com.example.arcanavault.view.components
+package com.example.arcanavault.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

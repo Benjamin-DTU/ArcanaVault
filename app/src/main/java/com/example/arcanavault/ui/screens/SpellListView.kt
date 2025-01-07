@@ -1,4 +1,4 @@
-package com.example.arcanavault.view.screens
+package com.example.arcanavault.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +11,8 @@ import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
-import com.example.arcanavault.view.components.FilterView
-import com.example.arcanavault.view.components.ListView
+import com.example.arcanavault.ui.components.FilterView
+import com.example.arcanavault.ui.components.ListView
 import kotlinx.coroutines.launch
 
 @Composable

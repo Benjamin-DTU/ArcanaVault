@@ -1,4 +1,4 @@
-package com.example.arcanavault.view.screens
+package com.example.arcanavault.ui.screens
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

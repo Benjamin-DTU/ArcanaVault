@@ -13,17 +13,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.arcanavault.controller.api.ApiClient
-import com.example.arcanavault.model.data.IItem
-import com.example.arcanavault.model.data.Spell
-import com.example.arcanavault.view.components.FetchingDataView
-import com.example.arcanavault.view.components.Hotbar
-import com.example.arcanavault.view.screens.FavouritesView
-import com.example.arcanavault.view.screens.SearchView
-import com.example.arcanavault.view.screens.SpellDetailsView
-import com.example.arcanavault.view.screens.SpellListView
+import com.example.arcanavault.ui.components.FetchingDataView
+import com.example.arcanavault.ui.components.Hotbar
+import com.example.arcanavault.ui.screens.FavouritesView
+import com.example.arcanavault.ui.screens.SearchView
+import com.example.arcanavault.ui.screens.SpellDetailsView
+import com.example.arcanavault.ui.screens.SpellListView
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class MainActivity : ComponentActivity() {
     private val apiClient = ApiClient()

@@ -1,12 +1,9 @@
-package com.example.arcanavault.view.screens
+package com.example.arcanavault.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,9 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.arcanavault.AppState
-import com.example.arcanavault.controller.api.ApiClient
-import com.example.arcanavault.model.data.IItem
-import com.example.arcanavault.view.components.ListView
+import com.example.arcanavault.ui.components.ListView
 
 @Composable
 fun FavouritesView(

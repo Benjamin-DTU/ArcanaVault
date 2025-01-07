@@ -1,4 +1,4 @@
-package com.example.arcanavault.view.components
+package com.example.arcanavault.ui.components
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
