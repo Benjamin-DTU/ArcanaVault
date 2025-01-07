@@ -3,6 +3,7 @@ package com.example.arcanavault
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,6 +21,8 @@ import com.example.arcanavault.ui.screens.SearchView
 import com.example.arcanavault.ui.screens.SpellDetailsView
 import com.example.arcanavault.ui.screens.SpellListView
 import kotlinx.coroutines.launch
+import com.example.arcanavault.ui.theme.ArcanaVaultTheme
+
 
 class MainActivity : ComponentActivity() {
     private val apiClient = ApiClient()
@@ -29,7 +32,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
+             val darkTheme = isSystemInDarkTheme()
+
+
+                ArcanaVaultTheme(darkTheme = darkTheme) {
                 var isLoading by remember { mutableStateOf(true) }
                 val selectedScreen = remember { mutableStateOf("home") }
                 val coroutineScope = rememberCoroutineScope()
@@ -37,7 +43,6 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) {
                     coroutineScope.launch {
-                        // Fetch spells
                         apiClient.getAllSpells()
                         isLoading = false
                     }
@@ -48,11 +53,13 @@ class MainActivity : ComponentActivity() {
                         Hotbar(navController = navController)
                     }
                 ) { paddingValues ->
-                    Surface(modifier = Modifier.padding(paddingValues)) {
+                    Surface(
+                        modifier = Modifier.padding(paddingValues),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
                         if (isLoading) {
                             FetchingDataView()
                         } else {
-                            // Navigation logic is managed entirely by NavHost
                             NavHost(
                                 navController = navController,
                                 startDestination = Routes.home
@@ -93,3 +100,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
