@@ -58,6 +58,7 @@ fun SpellListView(
         // Display filtered content based on selected filters
         ListView(
             items = items,
+            appState = appState,
             onItemClick = { selectedSpell ->
                 onSpellSelected(selectedSpell)
             }

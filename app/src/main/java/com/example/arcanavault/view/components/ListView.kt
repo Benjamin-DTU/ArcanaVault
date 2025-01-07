@@ -7,14 +7,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.arcanavault.AppState
 import com.example.arcanavault.model.data.IItem
 
 @Composable
 fun ListView(
     items: List<IItem>,
     onItemClick: (String) -> Unit,
+    appState: AppState,
     modifier: Modifier = Modifier
 ) {
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -26,7 +29,7 @@ fun ListView(
                 name = item.name,
                 description = item.shortDescription,
                 isFavorite = item.isFavorite,
-                onFavoriteClick = { /* TODO: Implement favorite click action */ },
+                onFavoriteClick = { appState.setSpellToFavorite(item) },
                 modifier = Modifier.fillMaxWidth().clickable { onItemClick(item.index) }
             )
         }

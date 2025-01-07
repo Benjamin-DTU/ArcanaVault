@@ -81,7 +81,13 @@ class MainActivity : ComponentActivity() {
                                     SearchView(apiClient = apiClient, navController = navController)
                                 }
                                 composable(Routes.favorites) {
-                                    FavouritesView(apiClient = apiClient, navController = navController)
+                                    FavouritesView(
+                                        appState = appState,
+                                        onSpellSelected = { selectedSpell ->
+                                            navController.navigate("details/${selectedSpell}")
+                                        },
+                                        onBackClick = { navController.popBackStack() }
+                                    )
                                 }
                             }
                         }

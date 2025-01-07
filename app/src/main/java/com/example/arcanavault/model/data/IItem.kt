@@ -5,7 +5,7 @@ interface IItem {
     val name: String
     val level: Int?
     val url: String
-    val isFavorite: Boolean?
+    var isFavorite: Boolean
     val description: List<String>
     val shortDescription: String
 }

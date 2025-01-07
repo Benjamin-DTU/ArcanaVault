@@ -23,7 +23,7 @@ fun ListItemView(
     imageUrl: String,
     name: String,
     description: String,
-    isFavorite: Boolean?,
+    isFavorite: Boolean,
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

@@ -1,5 +1,8 @@
 package com.example.arcanavault;
 
+import android.content.ClipData;
+
+import com.example.arcanavault.model.data.IItem;
 import com.example.arcanavault.model.data.Spell;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,10 @@ public class AppState {
 
     public void setListOfSpells(List<Spell> spells) {
         this.listOfSpells = spells;
+    }
+
+    public void setSpellToFavorite(IItem item) {
+        item.setFavorite(!item.isFavorite());
     }
 
     public Spell getSpellByIndex(String index) {

@@ -1,5 +1,8 @@
 package com.example.arcanavault.model.data
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,7 +12,8 @@ class Spell(
     override val name: String,
     override val level: Int,
     override val url: String,
-    override val isFavorite: Boolean = false,
+    //override var isFavorite: Boolean = false,
+    private var _isFavorite: Boolean = false,
     @SerialName("desc") override val description: List<String> = emptyList(),
     override val shortDescription: String = description.firstOrNull() ?: "",
     @SerialName("higher_level") val higherLevel: List<String> = emptyList(),
@@ -27,6 +31,7 @@ class Spell(
     @SerialName("classes") val classes: List<ItemReference> = emptyList(),
     @SerialName("subclasses") val subclasses: List<ItemReference> = emptyList()
 ) : IItem {
+    override var isFavorite: Boolean by mutableStateOf(_isFavorite);
 
     companion object {
         /**
