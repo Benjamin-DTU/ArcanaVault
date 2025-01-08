@@ -49,12 +49,12 @@ fun SpellListView(
                 .background(Color(0xFFF8E8EB)), // TODO: un-hardcode this color
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // TODO: fix text centering
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .weight(weight = 1f, fill = false),
+                    .weight(weight = 1f, fill = false)
+                    .offset(x=24.dp),
                 text = "Spells",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
