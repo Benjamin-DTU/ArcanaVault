@@ -1,13 +1,17 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import com.example.arcanavault.AppState
@@ -42,10 +46,19 @@ fun SpellListView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .background(Color(0xFFF8E8EB)), // TODO: un-hardcode this color
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Spell List")
+            // TODO: fix text centering
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .weight(weight = 1f, fill = false),
+                text = "Spells",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+            )
 
             // Button (icon) to show the FilterScreen
             IconButton(onClick = { showFilterScreen = true }) {
@@ -84,7 +97,7 @@ fun SpellListView(
             )
         } else {
             // Filter screen is hidden; show the (filtered) spell list
-            Spacer(modifier = Modifier.height(16.dp))
+            //Spacer(modifier = Modifier.height(16.dp))
 
             ListView(
                 items = items,
