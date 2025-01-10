@@ -1,7 +1,6 @@
 package com.example.arcanavault.controller.api
 
 import com.example.arcanavault.model.data.Spell
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 import retrofit2.Retrofit
@@ -13,7 +12,7 @@ class ApiClient {
     private var spells: List<Spell> = emptyList()
 
     companion object {
-        const val BASE_URL = "https://www.dnd5eapi.co/api/"
+        const val BASE_URL = "https://arcanavaultapi.azurewebsites.net/api/"
         private const val CONTENT_TYPE = "application/json; charset=UTF-8"
     }
 
@@ -32,20 +31,8 @@ class ApiClient {
 
     suspend fun getAllSpells(): List<Spell> = coroutineScope {
         if (spells.isEmpty()) {
-            val minimalSpells = apiService.getAllSpells().results
-            spells = minimalSpells.map { minimalSpell ->
-                async { getSpellByIndex(minimalSpell.index) }
-            }.map { it.await() }
+            spells = apiService.getAllSpells()
         }
         spells
-    }
-
-
-    suspend fun getAllSpellsCount(): Int {
-        return apiService.getAllSpells().count;
-    }
-
-    suspend fun getSpellByIndex(index: String): Spell {
-        return apiService.getSpellByIndex(index)
     }
 }

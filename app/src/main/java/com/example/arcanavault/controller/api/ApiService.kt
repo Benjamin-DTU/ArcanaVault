@@ -8,8 +8,5 @@ import retrofit2.http.Path
 interface ApiService {
 
     @GET("spells")
-    suspend fun getAllSpells(): ListResponse<Spell>
-
-    @GET("spells/{index}")
-    suspend fun getSpellByIndex(@Path("index") index: String): Spell
+    suspend fun getAllSpells(): List<Spell>
 }
