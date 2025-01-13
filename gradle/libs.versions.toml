@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.2"
+androidxNavigationCompose = "2.7.2"
 coilComposeVersion = "2.1.0"
 kotlin = "2.0.21"
 coreKtx = "1.15.0"
@@ -20,6 +21,7 @@ kotlinSerialization = "1.7.3"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-navigation-compose-v272 = { module = "androidx.navigation:navigation-compose", version.ref = "androidxNavigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

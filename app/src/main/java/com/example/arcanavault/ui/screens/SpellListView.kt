@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.filled.Fireplace
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,7 @@ import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
+import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.ui.components.ListView
 
 @Composable
@@ -44,32 +46,19 @@ fun SpellListView(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        // A simple header row with a Filter icon
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFF8E8EB)), // TODO: un-hardcode this color
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .weight(weight = 1f, fill = false)
-                    .offset(x=24.dp),
-                text = "Spells",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge,
+        Header(
+            title = "Spells",
+            buttons = listOf(
+                {
+                    IconButton(onClick = { showFilterScreen = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.FilterList,
+                            contentDescription = "Open Filter Screen"
+                        )
+                    }
+                }
             )
-
-            // Button (icon) to show the FilterScreen
-            IconButton(onClick = { showFilterScreen = true }) {
-                Icon(
-                    imageVector = Icons.Filled.FilterList,
-                    contentDescription = "Open Filter Screen"
-                )
-            }
-        }
+        )
 
         // Conditionally render either the FilterScreen OR the spell list
         if (showFilterScreen) {
