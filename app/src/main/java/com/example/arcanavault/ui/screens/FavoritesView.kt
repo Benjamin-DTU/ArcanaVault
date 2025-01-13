@@ -44,7 +44,6 @@ fun FavouritesView(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
         ListView(
             items = appState.listOfSpells.filter { it.isFavorite },
             appState = appState,
@@ -52,6 +51,18 @@ fun FavouritesView(
                 onSpellSelected(selectedSpell)
             }
         )
+
+    }
+    Column {
+    if (appState.listOfSpells.filter { it.isFavorite }.isEmpty()) {
+        Spacer (modifier = Modifier.height(48.dp))
+        Text(
+            text = "No favourites have been saved. " +
+                    "Click on the star icon to save a spell to your favourites.",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(8.dp)
+        )
+    }
     }
 }
 
