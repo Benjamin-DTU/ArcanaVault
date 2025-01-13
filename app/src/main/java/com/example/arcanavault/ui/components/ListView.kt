@@ -25,7 +25,7 @@ fun ListView(
     ) {
         items(items) { item ->
             ListItemView(
-                imageUrl = item.url,
+                imageUrl = item.imageUrl,
                 name = item.name,
                 description = item.shortDescription,
                 isFavorite = item.isFavorite,
