@@ -12,7 +12,7 @@ class Spell(
     override val name: String,
     override val level: Int,
     override val url: String,
-    //override var isFavorite: Boolean = false,
+    override val imageUrl: String,
     private var _isFavorite: Boolean = false,
     @SerialName("desc") override val description: List<String> = emptyList(),
     override val shortDescription: String = description.firstOrNull() ?: "",
