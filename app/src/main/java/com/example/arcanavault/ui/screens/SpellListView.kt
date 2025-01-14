@@ -115,7 +115,6 @@ fun SpellListView(
                     }
                 )
             }
-        )
         // Render SearchBar
         if (showSearchBar) {
             SearchBar(onSearch = { query ->
