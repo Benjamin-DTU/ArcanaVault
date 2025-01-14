@@ -1,28 +1,28 @@
 package com.example.arcanavault.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import SearchBar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.filled.Fireplace
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.ui.components.ListView
+import kotlinx.coroutines.launch
 
 @Composable
 fun SpellListView(
@@ -32,6 +32,7 @@ fun SpellListView(
     modifier: Modifier = Modifier
 ) {
     var showFilterScreen by remember { mutableStateOf(false) }
+    var showSearchBar by remember { mutableStateOf(false) }
     var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var items by remember { mutableStateOf<List<IItem>>(emptyList()) }
@@ -56,9 +57,31 @@ fun SpellListView(
                             contentDescription = "Open Filter Screen"
                         )
                     }
+                    IconButton(onClick = {showSearchBar = !showSearchBar}) {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = if (showSearchBar) "Close Search Field" else "Open Search Field"
+                            )
+                    }
                 }
             )
         )
+        // Render SearchBar
+        if (showSearchBar) {
+            SearchBar(onSearch = { query ->
+                coroutineScope.launch {
+                    items = if (query.isNotEmpty()) {
+                        // Filter items based on the search query
+                        apiClient.getAllSpells().filter { spell ->
+                            spell.name.contains(query, ignoreCase = true)
+                        }
+                    } else {
+                        // Reset to the full list if the query is empty
+                        apiClient.getAllSpells()
+                    }
+                }
+            })
+        }
 
         // Conditionally render either the FilterScreen OR the spell list
         if (showFilterScreen) {
