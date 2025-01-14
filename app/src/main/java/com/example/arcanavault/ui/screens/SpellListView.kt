@@ -3,7 +3,11 @@ package com.example.arcanavault.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
@@ -14,8 +18,8 @@ import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
+import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.ui.components.ListView
-import com.example.arcanavault.ui.components.SpellsAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,9 +47,18 @@ fun SpellListView(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            SpellsAppBar(
+            Header(
                 title = "Spells",
-                onFilterClick = { showFilterScreen = true },
+                buttons = listOf(
+                    {
+                        IconButton(onClick = { showFilterScreen = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.FilterList,
+                                contentDescription = "Open Filter Screen"
+                            )
+                        }
+                    }
+                ),
                 scrollBehavior = scrollBehavior
             )
         }
@@ -74,15 +87,6 @@ fun SpellListView(
                         selectedFilters = emptyMap()
                         coroutineScope.launch {
                             items = apiClient.getAllSpells()
-
-
-
-
-
-
-
-
-
                         }
                     },
                     onNavigateBack = {
@@ -92,8 +96,6 @@ fun SpellListView(
                 )
             } else {
                 // Filter screen is hidden; show the (filtered) spell list
-                //Spacer(modifier = Modifier.height(16.dp))
-
                 ListView(
                     items = items,
                     appState = appState,
