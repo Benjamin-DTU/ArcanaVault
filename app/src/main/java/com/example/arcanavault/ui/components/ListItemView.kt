@@ -110,7 +110,7 @@ fun ListItemView(
             Icon(
                 imageVector = if (isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
                 contentDescription = "Favorite",
-                tint = Color.Yellow,
+                tint = if (isFavorite == true) Color(0xFFFFBD05) else Color.Black,
                 modifier = Modifier
                     .size(35.dp)
             )
