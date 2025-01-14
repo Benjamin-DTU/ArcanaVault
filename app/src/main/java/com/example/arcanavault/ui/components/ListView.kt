@@ -20,14 +20,15 @@ fun ListView(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(2.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(items) { item ->
             ListItemView(
                 imageUrl = item.imageUrl,
+                school = item.school,
+                level = item.level,
                 name = item.name,
-                description = item.shortDescription,
                 isFavorite = item.isFavorite,
                 onFavoriteClick = { appState.setSpellToFavorite(item) },
                 modifier = Modifier.fillMaxWidth().clickable { onItemClick(item.index) }

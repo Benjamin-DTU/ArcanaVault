@@ -27,7 +27,8 @@ class Spell(
     @SerialName("casting_time") val castingTime: String = "",
     @SerialName("attack_type") val attackType: String? = null,
     @SerialName("damage") val damage: Damage? = null,
-    @SerialName("school") val school: ItemReference? = null,
+    //@SerialName("school") val school: ItemReference? = null,
+    override val school: ItemReference,
     @SerialName("classes") val classes: List<ItemReference> = emptyList(),
     @SerialName("subclasses") val subclasses: List<ItemReference> = emptyList()
 ) : IItem {
