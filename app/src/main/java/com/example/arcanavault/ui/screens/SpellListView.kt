@@ -1,18 +1,26 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
@@ -68,9 +76,29 @@ fun SpellListView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // Display selected filters as tags
+            if (selectedFilters.isNotEmpty()) {
+                SelectedFiltersRow(
+                    selectedFilters = selectedFilters,
+                    onRemoveFilter = { category, option ->
+                        val updatedFilters = selectedFilters.toMutableMap()
+                        val updatedOptions = updatedFilters[category]?.toMutableList()
+                        updatedOptions?.remove(option)
+                        if (updatedOptions.isNullOrEmpty()) {
+                            updatedFilters.remove(category)
+                        } else {
+                            updatedFilters[category] = updatedOptions
+                        }
+                        selectedFilters = updatedFilters
+                        coroutineScope.launch {
+                            items = fetchFilteredEntities(updatedFilters, apiClient)
+                        }
+                    }
+                )
+            }
+
             // Conditionally render either the FilterScreen OR the spell list
             if (showFilterScreen) {
-                // Filter screen is visible, hide the list
                 FilterScreen(
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
@@ -83,27 +111,19 @@ fun SpellListView(
                         }
                     },
                     onClearAllFilters = {
-                        // Reset all filters
                         selectedFilters = emptyMap()
                         coroutineScope.launch {
                             items = apiClient.getAllSpells()
                         }
                     },
-                    onNavigateBack = {
-                        // Hide filter screen, reveal list
-                        showFilterScreen = false
-                    }
+                    onNavigateBack = { showFilterScreen = false }
                 )
             } else {
-                // Filter screen is hidden; show the (filtered) spell list
                 ListView(
                     items = items,
                     appState = appState,
-                    onItemClick = { selectedSpell ->
-                        onSpellSelected(selectedSpell)
-                    }
+                    onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) }
                 )
-
             }
         }
     }
@@ -129,6 +149,61 @@ suspend fun fetchFilteredEntities(
                 "Concentration" -> options.contains(spell.concentration.toString())
                 "Ritual"        -> options.contains(spell.ritual.toString())
                 else            -> true
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectedFiltersRow(
+    selectedFilters: Map<String, List<String>>,
+    onRemoveFilter: (String, String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .horizontalScroll(rememberScrollState())
+    ) {
+        selectedFilters.forEach { (category, options) ->
+            options.forEach { option ->
+                FilterTag(
+                    category = category,
+                    option = option,
+                    onRemove = { onRemoveFilter(category, option) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun FilterTag(category: String, option: String, onRemove: () -> Unit) {
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(4.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = "$category: $option",
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier.size(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Remove Filter",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         }
     }
