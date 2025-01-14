@@ -17,7 +17,6 @@ import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.ui.components.FetchingDataView
 import com.example.arcanavault.ui.components.Hotbar
 import com.example.arcanavault.ui.screens.FavouritesView
-import com.example.arcanavault.ui.screens.SearchView
 import com.example.arcanavault.ui.screens.SpellDetailsView
 import com.example.arcanavault.ui.screens.SpellListView
 import kotlinx.coroutines.launch
@@ -77,9 +76,6 @@ class MainActivity : ComponentActivity() {
                                         spell = spell,
                                         onBackClick = { navController.popBackStack() }
                                     )
-                                }
-                                composable(Routes.search) {
-                                    SearchView(apiClient = apiClient, navController = navController)
                                 }
                                 composable(Routes.favorites) {
                                     FavouritesView(

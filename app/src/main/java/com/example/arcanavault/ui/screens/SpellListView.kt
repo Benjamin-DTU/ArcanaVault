@@ -2,33 +2,14 @@ package com.example.arcanavault.ui.screens
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
-import SearchBar
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -38,8 +19,8 @@ import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.Header
+import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.ListView
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +59,7 @@ fun SpellListView(
                                 contentDescription = "Open Filter Screen"
                             )
                         }
-                        IconButton(onClick = {showSearchBar = !showSearchBar}) {
+                        IconButton(onClick = { showSearchBar = !showSearchBar }) {
                             Icon(
                                 imageVector = Icons.Filled.Search,
                                 contentDescription = if (showSearchBar) "Close Search Field" else "Open Search Field"
@@ -110,27 +91,20 @@ fun SpellListView(
                         }
                         selectedFilters = updatedFilters
                         coroutineScope.launch {
-                            items = fetchFilteredEntities(updatedFilters, apiClient)
+                            items = fetchEntities("", updatedFilters, apiClient)
                         }
                     }
                 )
             }
-        // Render SearchBar
-        if (showSearchBar) {
-            SearchBar(onSearch = { query ->
-                coroutineScope.launch {
-                    items = if (query.isNotEmpty()) {
-                        // Filter items based on the search query
-                        apiClient.getAllSpells().filter { spell ->
-                            spell.name.contains(query, ignoreCase = true)
-                        }
-                    } else {
-                        // Reset to the full list if the query is empty
-                        apiClient.getAllSpells()
+
+            // Render SearchBar
+            if (showSearchBar) {
+                SearchBar(onSearch = { query ->
+                    coroutineScope.launch {
+                        items = fetchEntities(query, selectedFilters, apiClient)
                     }
-                }
-            })
-        }
+                })
+            }
 
             // Conditionally render either the FilterScreen OR the spell list
             if (showFilterScreen) {
@@ -142,13 +116,13 @@ fun SpellListView(
                             this[category] = options
                         }
                         coroutineScope.launch {
-                            items = fetchFilteredEntities(selectedFilters, apiClient)
+                            items = fetchEntities("", selectedFilters, apiClient)
                         }
                     },
                     onClearAllFilters = {
                         selectedFilters = emptyMap()
                         coroutineScope.launch {
-                            items = apiClient.getAllSpells()
+                            items = fetchEntities("", selectedFilters, apiClient)
                         }
                     },
                     onNavigateBack = { showFilterScreen = false }
@@ -164,28 +138,31 @@ fun SpellListView(
     }
 }
 
-// Helper function to filter spells by selected filters
-suspend fun fetchFilteredEntities(
+// Helper function to filter spells by selected filters and search query
+suspend fun fetchEntities(
+    query: String,
     selectedFilters: Map<String, List<String>>,
     apiClient: ApiClient
 ): List<IItem> {
     val allSpells = apiClient.getAllSpells()
 
-    // Basic filter logic based on selectedFilters
     return allSpells.filter { spell ->
-        selectedFilters.all { (category, options) ->
-            when (category) {
-                "Level"         -> options.contains(spell.level.toString())
-                "School"        -> options.contains(spell.school?.name.toString())
-                "Classes"       -> spell.classes.any { it.name in options }
-                "Casting Time"  -> options.contains(spell.castingTime)
-                "Damage Type"   -> options.contains(spell.damage?.damageType?.name.toString())
-                "Components"    -> options.any { it in spell.components }
-                "Concentration" -> options.contains(spell.concentration.toString())
-                "Ritual"        -> options.contains(spell.ritual.toString())
-                else            -> true
-            }
-        }
+        // Check if the spell matches the search query
+        (query.isEmpty() || spell.name.contains(query, ignoreCase = true)) &&
+                // Check if the spell matches the selected filters
+                selectedFilters.all { (category, options) ->
+                    when (category) {
+                        "Level"         -> options.contains(spell.level.toString())
+                        "School"        -> options.contains(spell.school?.name.toString())
+                        "Classes"       -> spell.classes.any { it.name in options }
+                        "Casting Time"  -> options.contains(spell.castingTime)
+                        "Damage Type"   -> options.contains(spell.damage?.damageType?.name.toString())
+                        "Components"    -> options.any { it in spell.components }
+                        "Concentration" -> options.contains(spell.concentration.toString())
+                        "Ritual"        -> options.contains(spell.ritual.toString())
+                        else            -> true
+                    }
+                }
     }
 }
 
