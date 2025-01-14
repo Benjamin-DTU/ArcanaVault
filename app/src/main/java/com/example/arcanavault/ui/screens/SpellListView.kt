@@ -115,7 +115,7 @@ fun SpellListView(
 
             // Render SearchBar
             if (showSearchBar) {
-                SearchBar (onSearch = { query ->
+                SearchBar(onSearch = { query ->
                     searchQuery = query
                     coroutineScope.launch {
                         items = fetchEntities(searchQuery, selectedFilters, apiClient)
