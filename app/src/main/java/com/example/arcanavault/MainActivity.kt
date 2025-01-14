@@ -34,10 +34,8 @@ class MainActivity : ComponentActivity() {
         setContent {
              val darkTheme = isSystemInDarkTheme()
 
-
                 ArcanaVaultTheme(darkTheme = darkTheme) {
                 var isLoading by remember { mutableStateOf(true) }
-                val selectedScreen = remember { mutableStateOf("home") }
                 val coroutineScope = rememberCoroutineScope()
                 val navController = rememberNavController()
 
