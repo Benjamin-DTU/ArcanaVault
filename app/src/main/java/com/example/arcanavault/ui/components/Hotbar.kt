@@ -29,16 +29,6 @@ fun Hotbar(
 
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
-            label = { Text("Search") },
-            selected = navController.currentBackStackEntry?.destination?.route == Routes.search,
-            onClick = {
-                navController.navigate(Routes.search) {
-                    popUpTo(Routes.home) { inclusive = false } // Navigate to "search" and keep "home" in the stack
-                }
-            }
-        )
-        NavigationBarItem(
             icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorite") },
             label = { Text("Favorite") },
             selected = navController.currentBackStackEntry?.destination?.route == Routes.favorites,
