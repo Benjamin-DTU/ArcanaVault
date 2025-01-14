@@ -35,6 +35,7 @@ fun SpellListView(
     var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var items by remember { mutableStateOf<List<IItem>>(emptyList()) }
+    var searchQuery by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
     // Fetch spells and filter options once
@@ -53,13 +54,28 @@ fun SpellListView(
                 title = "Spells",
                 buttons = listOf(
                     {
-                        IconButton(onClick = { showFilterScreen = true }) {
+                        IconButton(onClick = {
+                            // Ensure the filter screen closes if the search bar is open
+                            showSearchBar = false
+                            searchQuery = "" // Reset search query when closing search bar
+                            showFilterScreen = true
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.FilterList,
                                 contentDescription = "Open Filter Screen"
                             )
                         }
-                        IconButton(onClick = { showSearchBar = !showSearchBar }) {
+                        IconButton(onClick = {
+                            // Ensure the search bar closes if the filter screen is open
+                            showFilterScreen = false
+                            showSearchBar = !showSearchBar
+                            if (!showSearchBar) {
+                                searchQuery = "" // Reset search query when closing search bar
+                                coroutineScope.launch {
+                                    items = fetchEntities("", selectedFilters, apiClient)
+                                }
+                            }
+                        }) {
                             Icon(
                                 imageVector = Icons.Filled.Search,
                                 contentDescription = if (showSearchBar) "Close Search Field" else "Open Search Field"
@@ -99,9 +115,10 @@ fun SpellListView(
 
             // Render SearchBar
             if (showSearchBar) {
-                SearchBar(onSearch = { query ->
+                SearchBar (onSearch = { query ->
+                    searchQuery = query
                     coroutineScope.launch {
-                        items = fetchEntities(query, selectedFilters, apiClient)
+                        items = fetchEntities(searchQuery, selectedFilters, apiClient)
                     }
                 })
             }
@@ -116,13 +133,13 @@ fun SpellListView(
                             this[category] = options
                         }
                         coroutineScope.launch {
-                            items = fetchEntities("", selectedFilters, apiClient)
+                            items = fetchEntities(searchQuery, selectedFilters, apiClient)
                         }
                     },
                     onClearAllFilters = {
                         selectedFilters = emptyMap()
                         coroutineScope.launch {
-                            items = fetchEntities("", selectedFilters, apiClient)
+                            items = fetchEntities(searchQuery, selectedFilters, apiClient)
                         }
                     },
                     onNavigateBack = { showFilterScreen = false }
@@ -137,6 +154,7 @@ fun SpellListView(
         }
     }
 }
+
 
 // Helper function to filter spells by selected filters and search query
 suspend fun fetchEntities(
