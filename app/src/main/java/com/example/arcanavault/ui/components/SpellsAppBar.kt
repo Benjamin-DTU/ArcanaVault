@@ -14,7 +14,7 @@ fun SpellsAppBar(
     onFilterClick: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
-    TopAppBar(
+    CenterAlignedTopAppBar(
         title = { Text(text = title) },
         actions = {
             IconButton(onClick = onFilterClick) {
