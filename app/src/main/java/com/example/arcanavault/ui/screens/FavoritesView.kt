@@ -20,7 +20,7 @@ fun FavouritesView(
     onSpellSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = modifier.fillMaxSize()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
