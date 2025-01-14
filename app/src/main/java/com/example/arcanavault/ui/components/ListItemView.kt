@@ -11,10 +11,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -33,8 +39,8 @@ fun ListItemView(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 6.dp, vertical = 4.dp)
-            .border(1.dp, Color.LightGray, shape = MaterialTheme.shapes.medium)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .shadow(3.5.dp, spotColor = Color.Black)
             .background(Color.White)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -45,9 +51,10 @@ fun ListItemView(
             model = imageUrl,
             contentDescription = "$name Image",
             contentScale = ContentScale.Crop,
+            alignment = Alignment.Center,
             modifier = Modifier
-                .size(56.dp)
-                .border(1.dp, Color.Gray, shape = MaterialTheme.shapes.extraSmall)
+                .size(62.dp)
+                .clip(MaterialTheme.shapes.extraSmall)
         )
 
 
@@ -56,7 +63,7 @@ fun ListItemView(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 35.dp, vertical = 4.dp)
+                .padding(horizontal = 30.dp, vertical = 8.dp)
 
         ) {
             Text(
@@ -68,24 +75,32 @@ fun ListItemView(
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
-        Row(
-        ){
+            Spacer(modifier = Modifier.height(2.dp))
+            Row {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append("Level: ")
+                        }
+                        append(level?.toString() ?: "N/A")
+                    },
+                    fontSize = 13.sp,
+                    color = Color.Black
+                )
 
-            Text(
-                text = "Level: ${level ?: "N/A"}",
-                fontSize = 13.sp,
-                color = Color.Gray
-            )
+                Spacer(modifier = Modifier.width(8.dp))
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = "School: ${school.name}",
-                fontSize = 13.sp,
-                color = Color.Gray
-            )
-        }
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append("School: ")
+                        }
+                        append(school.name)
+                    },
+                    fontSize = 13.sp,
+                    color = Color.Black
+                )
+            }
         }
 
         // Favorite icon on the right
@@ -95,7 +110,9 @@ fun ListItemView(
             Icon(
                 imageVector = if (isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
                 contentDescription = "Favorite",
-                tint = Color.Black
+                tint = Color.Yellow,
+                modifier = Modifier
+                    .size(35.dp)
             )
         }
     }
