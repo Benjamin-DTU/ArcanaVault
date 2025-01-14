@@ -1,23 +1,19 @@
 package com.example.arcanavault.ui.screens
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
+import com.example.arcanavault.ui.components.FilterRow
 import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.ListView
@@ -94,7 +90,7 @@ fun SpellListView(
         ) {
             // Display selected filters as tags
             if (selectedFilters.isNotEmpty()) {
-                SelectedFiltersRow(
+                FilterRow(
                     selectedFilters = selectedFilters,
                     onRemoveFilter = { category, option ->
                         val updatedFilters = selectedFilters.toMutableMap()
@@ -166,7 +162,7 @@ suspend fun fetchEntities(
 
     return allSpells.filter { spell ->
         // Check if the spell matches the search query
-        (query.isEmpty() || spell.name.contains(query, ignoreCase = true)) &&
+        (query.isEmpty() || spell.name.startsWith(query, ignoreCase = true)) &&
                 // Check if the spell matches the selected filters
                 selectedFilters.all { (category, options) ->
                     when (category) {
@@ -184,57 +180,4 @@ suspend fun fetchEntities(
     }
 }
 
-@Composable
-fun SelectedFiltersRow(
-    selectedFilters: Map<String, List<String>>,
-    onRemoveFilter: (String, String) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .horizontalScroll(rememberScrollState())
-    ) {
-        selectedFilters.forEach { (category, options) ->
-            options.forEach { option ->
-                FilterTag(
-                    category = category,
-                    option = option,
-                    onRemove = { onRemoveFilter(category, option) }
-                )
-            }
-        }
-    }
-}
 
-@Composable
-fun FilterTag(category: String, option: String, onRemove: () -> Unit) {
-    Surface(
-        shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(4.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        ) {
-            Text(
-                text = "$category: $option",
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            IconButton(
-                onClick = onRemove,
-                modifier = Modifier.size(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Remove Filter",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        }
-    }
-}
