@@ -1,5 +1,6 @@
 package com.example.arcanavault.ui.screens
 
+import FilterRow
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -13,10 +14,10 @@ import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
-import com.example.arcanavault.ui.components.FilterRow
 import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.ListView
+import androidx.compose.animation.core.animateFloatAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +35,6 @@ fun SpellListView(
     var searchQuery by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    // Fetch spells and filter options once
     LaunchedEffect(Unit) {
         val spells = apiClient.getAllSpells()
         filters = Spell.generateFilterOptions(spells)
@@ -43,6 +43,10 @@ fun SpellListView(
     }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollFraction = animateFloatAsState(
+        targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f)
+    )
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -51,9 +55,8 @@ fun SpellListView(
                 buttons = listOf(
                     {
                         IconButton(onClick = {
-                            // Ensure the filter screen closes if the search bar is open
                             showSearchBar = false
-                            searchQuery = "" // Reset search query when closing search bar
+                            searchQuery = ""
                             showFilterScreen = true
                         }) {
                             Icon(
@@ -62,11 +65,10 @@ fun SpellListView(
                             )
                         }
                         IconButton(onClick = {
-                            // Ensure the search bar closes if the filter screen is open
                             showFilterScreen = false
                             showSearchBar = !showSearchBar
                             if (!showSearchBar) {
-                                searchQuery = "" // Reset search query when closing search bar
+                                searchQuery = ""
                                 coroutineScope.launch {
                                     items = fetchEntities("", selectedFilters, apiClient)
                                 }
@@ -88,7 +90,7 @@ fun SpellListView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display selected filters as tags
+            // Display selected filters as tags, disappearing with the Header
             if (selectedFilters.isNotEmpty()) {
                 FilterRow(
                     selectedFilters = selectedFilters,
@@ -105,8 +107,10 @@ fun SpellListView(
                         coroutineScope.launch {
                             items = fetchEntities("", updatedFilters, apiClient)
                         }
-                    }
+                    },
+                    scrollFraction = scrollFraction.value // Pass the animated scroll fraction here
                 )
+
             }
 
             // Render SearchBar
@@ -150,6 +154,7 @@ fun SpellListView(
         }
     }
 }
+
 
 
 // Helper function to filter spells by selected filters and search query
