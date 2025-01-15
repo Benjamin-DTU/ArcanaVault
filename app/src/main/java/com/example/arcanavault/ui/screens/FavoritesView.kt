@@ -44,11 +44,17 @@ fun FavouritesView(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
         ListView(
             items = appState.listOfSpells.filter { it.isFavorite },
-            appState = appState,
-            onItemClick = { selectedSpell ->
-                onSpellSelected(selectedSpell)
+            onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
+            onFavoriteClick = { spell -> appState.setSpellToFavorite(spell) },
+            titleProvider = { spell -> spell.name },
+            detailsProvider = { spell ->
+                listOf(
+                    "Level: ${spell.level}",
+                    "School: ${spell.index}"
+                )
             }
         )
 

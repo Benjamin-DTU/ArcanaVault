@@ -1,26 +1,22 @@
 package com.example.arcanavault.ui.screens
 
-import androidx.compose.foundation.horizontalScroll
+import FilterRow
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
-import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.ListView
+import androidx.compose.animation.core.animateFloatAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,19 +30,22 @@ fun SpellListView(
     var showSearchBar by remember { mutableStateOf(false) }
     var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
-    var items by remember { mutableStateOf<List<IItem>>(emptyList()) }
+    var spells by remember { mutableStateOf<List<Spell>>(emptyList()) }
     var searchQuery by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    // Fetch spells and filter options once
     LaunchedEffect(Unit) {
-        val spells = apiClient.getAllSpells()
-        filters = Spell.generateFilterOptions(spells)
-        items = spells
-        appState.listOfSpells = spells
+        val fetchedSpells = apiClient.getAllSpells()
+        filters = Spell.generateFilterOptions(fetchedSpells)
+        spells = fetchedSpells
+        appState.listOfSpells = fetchedSpells
     }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollFraction = animateFloatAsState(
+        targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f)
+    )
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -55,24 +54,22 @@ fun SpellListView(
                 buttons = listOf(
                     {
                         IconButton(onClick = {
-                            // Ensure the filter screen closes if the search bar is open
                             showSearchBar = false
-                            searchQuery = "" // Reset search query when closing search bar
-                            showFilterScreen = true
+                            searchQuery = ""
+                            showFilterScreen = !showFilterScreen // Toggle the filter screen
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.FilterList,
-                                contentDescription = "Open Filter Screen"
+                                contentDescription = if (showFilterScreen) "Close Filter Screen" else "Open Filter Screen"
                             )
                         }
                         IconButton(onClick = {
-                            // Ensure the search bar closes if the filter screen is open
                             showFilterScreen = false
                             showSearchBar = !showSearchBar
                             if (!showSearchBar) {
-                                searchQuery = "" // Reset search query when closing search bar
+                                searchQuery = ""
                                 coroutineScope.launch {
-                                    items = fetchEntities("", selectedFilters, apiClient)
+                                    spells = fetchSpells("", selectedFilters, apiClient)
                                 }
                             }
                         }) {
@@ -92,9 +89,8 @@ fun SpellListView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display selected filters as tags
             if (selectedFilters.isNotEmpty()) {
-                SelectedFiltersRow(
+                FilterRow(
                     selectedFilters = selectedFilters,
                     onRemoveFilter = { category, option ->
                         val updatedFilters = selectedFilters.toMutableMap()
@@ -107,25 +103,24 @@ fun SpellListView(
                         }
                         selectedFilters = updatedFilters
                         coroutineScope.launch {
-                            items = fetchEntities("", updatedFilters, apiClient)
+                            spells = fetchSpells(searchQuery, updatedFilters, apiClient)
                         }
-                    }
+                    },
+                    scrollFraction = scrollFraction.value
                 )
             }
 
-            // Render SearchBar
             if (showSearchBar) {
-                SearchBar (onSearch = { query ->
+                SearchBar(onSearch = { query ->
                     searchQuery = query
                     coroutineScope.launch {
-                        items = fetchEntities(searchQuery, selectedFilters, apiClient)
+                        spells = fetchSpells(searchQuery, selectedFilters, apiClient)
                     }
                 })
             }
 
-            // Conditionally render either the FilterScreen OR the spell list
             if (showFilterScreen) {
-                FilterScreen(
+                FilterView(
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
                     onFilterChange = { category, options ->
@@ -133,108 +128,58 @@ fun SpellListView(
                             this[category] = options
                         }
                         coroutineScope.launch {
-                            items = fetchEntities(searchQuery, selectedFilters, apiClient)
+                            spells = fetchSpells(searchQuery, selectedFilters, apiClient)
                         }
                     },
                     onClearAllFilters = {
                         selectedFilters = emptyMap()
                         coroutineScope.launch {
-                            items = fetchEntities(searchQuery, selectedFilters, apiClient)
+                            spells = fetchSpells(searchQuery, selectedFilters, apiClient)
                         }
                     },
-                    onNavigateBack = { showFilterScreen = false }
                 )
             } else {
                 ListView(
-                    items = items,
-                    appState = appState,
-                    onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) }
+                    items = spells,
+                    titleProvider = { spell -> spell.name },
+                    detailsProvider = { spell ->
+                        listOf(
+                            "Level: ${spell.level}",
+                            "School: ${spell.school.name}"
+                        )
+                    },
+                    onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
+                    onFavoriteClick = { spell -> appState.setSpellToFavorite(spell) }
                 )
             }
         }
     }
 }
 
-
 // Helper function to filter spells by selected filters and search query
-suspend fun fetchEntities(
+suspend fun fetchSpells(
     query: String,
     selectedFilters: Map<String, List<String>>,
     apiClient: ApiClient
-): List<IItem> {
+): List<Spell> {
     val allSpells = apiClient.getAllSpells()
 
     return allSpells.filter { spell ->
         // Check if the spell matches the search query
-        (query.isEmpty() || spell.name.contains(query, ignoreCase = true)) &&
+        (query.isEmpty() || spell.name.startsWith(query, ignoreCase = true)) &&
                 // Check if the spell matches the selected filters
                 selectedFilters.all { (category, options) ->
                     when (category) {
                         "Level"         -> options.contains(spell.level.toString())
-                        "School"        -> options.contains(spell.school?.name.toString())
+                        "School"        -> options.contains(spell.school.name)
                         "Classes"       -> spell.classes.any { it.name in options }
                         "Casting Time"  -> options.contains(spell.castingTime)
-                        "Damage Type"   -> options.contains(spell.damage?.damageType?.name.toString())
+                        "Damage Type"   -> options.contains(spell.damage?.damageType?.name ?: "Unknown")
                         "Components"    -> options.any { it in spell.components }
                         "Concentration" -> options.contains(spell.concentration.toString())
                         "Ritual"        -> options.contains(spell.ritual.toString())
                         else            -> true
                     }
                 }
-    }
-}
-
-@Composable
-fun SelectedFiltersRow(
-    selectedFilters: Map<String, List<String>>,
-    onRemoveFilter: (String, String) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .horizontalScroll(rememberScrollState())
-    ) {
-        selectedFilters.forEach { (category, options) ->
-            options.forEach { option ->
-                FilterTag(
-                    category = category,
-                    option = option,
-                    onRemove = { onRemoveFilter(category, option) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun FilterTag(category: String, option: String, onRemove: () -> Unit) {
-    Surface(
-        shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(4.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        ) {
-            Text(
-                text = "$category: $option",
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            IconButton(
-                onClick = onRemove,
-                modifier = Modifier.size(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Remove Filter",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        }
     }
 }

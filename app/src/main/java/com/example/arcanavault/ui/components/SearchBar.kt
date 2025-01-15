@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.google.android.material.search.SearchBar
 
 @Composable
 fun SearchBar(
@@ -36,7 +35,10 @@ fun SearchBar(
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Clear Text",
-                    modifier = Modifier.clickable { userInput = "" }
+                    modifier = Modifier.clickable {
+                        userInput = "" // Clear the text
+                        onSearch("") // Reset the search query
+                    }
                 )
             }
         },

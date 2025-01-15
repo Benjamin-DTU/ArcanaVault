@@ -14,8 +14,8 @@ class Spell(
     override val url: String,
     override val imageUrl: String,
     private var _isFavorite: Boolean = false,
-    @SerialName("desc") override val description: List<String> = emptyList(),
-    override val shortDescription: String = description.firstOrNull() ?: "",
+    @SerialName("desc") val description: List<String> = emptyList(),
+    val shortDescription: String = description.firstOrNull() ?: "",
     @SerialName("higher_level") val higherLevel: List<String> = emptyList(),
     @SerialName("range") val range: String = "",
     @SerialName("components") val components: List<String> = emptyList(),
@@ -27,8 +27,7 @@ class Spell(
     @SerialName("casting_time") val castingTime: String = "",
     @SerialName("attack_type") val attackType: String? = null,
     @SerialName("damage") val damage: Damage? = null,
-    //@SerialName("school") val school: ItemReference? = null,
-    override val school: ItemReference,
+    val school: ItemReference,
     @SerialName("classes") val classes: List<ItemReference> = emptyList(),
     @SerialName("subclasses") val subclasses: List<ItemReference> = emptyList()
 ) : IItem {

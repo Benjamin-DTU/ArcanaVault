@@ -6,7 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,12 +17,11 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterScreen(
+fun FilterView(
     filterOptions: Map<String, List<String>>,
     selectedFilters: Map<String, List<String>>,
     onFilterChange: (String, List<String>) -> Unit,
     onClearAllFilters: () -> Unit,
-    onNavigateBack: () -> Unit
 ) {
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     val scrollState = rememberScrollState()
@@ -44,22 +42,13 @@ fun FilterScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            if (selectedCategory != null) {
-                                selectedCategory = null
-                            } else {
-                                onNavigateBack()
-                            }
+                    if (selectedCategory != null) {
+                        IconButton(onClick = { selectedCategory = null }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = if (selectedCategory != null)
-                                Icons.AutoMirrored.Filled.ArrowBack
-                            else
-                                Icons.Filled.Close,
-                            contentDescription = "Back or Close"
-                        )
                     }
                 },
                 actions = {
@@ -85,7 +74,6 @@ fun FilterScreen(
                 .padding(16.dp)
         ) {
             if (selectedCategory == null) {
-                // Show main categories
                 filterOptions.keys.forEach { category ->
                     OutlinedButton(
                         onClick = { selectedCategory = category },
@@ -103,7 +91,6 @@ fun FilterScreen(
                     }
                 }
             } else {
-                // Show options within the selected category
                 val options = filterOptions[selectedCategory] ?: emptyList()
                 options.forEach { option ->
                     val isSelected = selectedFilters[selectedCategory]?.contains(option) == true
@@ -124,6 +111,7 @@ fun FilterScreen(
         }
     }
 }
+
 
 @Composable
 fun FilterOption(

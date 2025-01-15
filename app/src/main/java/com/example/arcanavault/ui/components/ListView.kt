@@ -4,36 +4,48 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.arcanavault.AppState
 import com.example.arcanavault.model.data.IItem
 
 @Composable
-fun ListView(
-    items: List<IItem>,
+fun <T : IItem> ListView(
+    items: List<T>,
+    titleProvider: (T) -> String,
+    detailsProvider: (T) -> List<String>,
     onItemClick: (String) -> Unit,
-    appState: AppState,
+    onFavoriteClick: (T) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(2.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(items) { item ->
-            ListItemView(
+            ItemView(
                 imageUrl = item.imageUrl,
-                school = item.school,
-                level = item.level,
-                name = item.name,
-                isFavorite = item.isFavorite,
-                onFavoriteClick = { appState.setSpellToFavorite(item) },
-                modifier = Modifier.fillMaxWidth().clickable { onItemClick(item.index) }
+                title = titleProvider(item),
+                details = detailsProvider(item),
+                actionsContent = {
+                    IconButton(onClick = { onFavoriteClick(item) }) {
+                        Icon(
+                            imageVector = if (item.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                            contentDescription = "Favorite",
+                            tint = if (item.isFavorite) Color(0xFFFFBD05) else Color.Black
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onItemClick(item.index) }
             )
         }
     }
