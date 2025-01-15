@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    id("io.realm.kotlin") version "3.0.0"
+
 }
 
 android {
@@ -61,6 +63,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlin.serialization.converter)
+    implementation("io.realm.kotlin:library-base:3.0.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -14,6 +14,7 @@ import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.Header
+import com.example.arcanavault.DB.FunctionsDB
 import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.ListView
 import androidx.compose.animation.core.animateFloatAsState
@@ -33,6 +34,8 @@ fun SpellListView(
     var spells by remember { mutableStateOf<List<Spell>>(emptyList()) }
     var searchQuery by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
+
+    val functionsDB = remember { FunctionsDB() }
 
     LaunchedEffect(Unit) {
         val fetchedSpells = apiClient.getAllSpells()
@@ -149,7 +152,9 @@ fun SpellListView(
                         )
                     },
                     onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
-                    onFavoriteClick = { spell -> appState.setSpellToFavorite(spell) }
+                    onFavoriteClick = { spell ->
+                        functionsDB.addToFavorites(spell)
+                    }
                 )
             }
         }

@@ -7,11 +7,15 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.arcanavault.AppState
+import com.example.arcanavault.DB.FunctionsDB
+import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.ListView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun FavouritesView(
@@ -20,6 +24,16 @@ fun FavouritesView(
     onSpellSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val functionsDB = remember { FunctionsDB() }
+    var favoriteSpells by remember { mutableStateOf(listOf<Spell>()) }
+
+
+    LaunchedEffect(Unit) {
+        favoriteSpells = withContext(Dispatchers.IO) {
+            functionsDB.getFavoriteSpells()
+        }
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -45,30 +59,30 @@ fun FavouritesView(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        ListView(
-            items = appState.listOfSpells.filter { it.isFavorite },
-            onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
-            onFavoriteClick = { spell -> appState.setSpellToFavorite(spell) },
-            titleProvider = { spell -> spell.name },
-            detailsProvider = { spell ->
-                listOf(
-                    "Level: ${spell.level}",
-                    "School: ${spell.index}"
-                )
-            }
-        )
-
-    }
-    Column {
-    if (appState.listOfSpells.filter { it.isFavorite }.isEmpty()) {
-        Spacer (modifier = Modifier.height(48.dp))
-        Text(
-            text = "No favourites have been saved. " +
-                    "Click on the star icon to save a spell to your favourites.",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(8.dp)
-        )
-    }
+        if (favoriteSpells.isEmpty()) {
+            Spacer(modifier = Modifier.height(48.dp))
+            Text(
+                text = "No favourites have been saved. " +
+                        "Click on the star icon to save a spell to your favourites.",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(8.dp)
+            )
+        } else {
+            ListView(
+                items = favoriteSpells,
+                onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
+                onFavoriteClick = { spell ->
+                    functionsDB.removeFromFavorites(spell.index)
+                    favoriteSpells = favoriteSpells.filter { it.index != spell.index }
+                },
+                titleProvider = { spell -> spell.name },
+                detailsProvider = { spell ->
+                    listOf(
+                        "Level: ${spell.level}",
+                        "School: ${spell.index}"
+                    )
+                }
+            )
+        }
     }
 }
-
