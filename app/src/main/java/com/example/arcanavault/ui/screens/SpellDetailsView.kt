@@ -1,9 +1,12 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,11 +14,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Divider
@@ -45,9 +50,7 @@ import com.example.arcanavault.model.data.AreaOfEffect
 import com.example.arcanavault.model.data.Damage
 import com.example.arcanavault.model.data.ItemReference
 import com.example.arcanavault.model.data.Spell
-import com.halilibo.richtext.commonmark.Markdown
-import com.halilibo.richtext.ui.RichTextStyle
-import com.halilibo.richtext.ui.material3.RichText
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun SpellDetailsView(
@@ -70,7 +73,7 @@ fun SpellDetailsView(
                         imageVector = Icons.Filled.ArrowBackIosNew,
                         contentDescription = "Back",
                         modifier = Modifier
-                            .padding(start = 6.dp)
+                            .padding(start = 4.dp)
                             .height(30.dp)
                             .width(50.dp)
                             .padding(end = 24.dp)
@@ -193,126 +196,108 @@ fun SpellDetailsView(
                 }
             }
 
+            // Spell Description (markdown)
             item {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .height(515.dp) //Height of the container
                 ) {
                     val scrollState = rememberScrollState()
-                    var isTable = false
-                    val tableLines = mutableListOf<String>()
+                    val viewMaxHeight = maxHeight.value
+                    val columnMaxScroll = scrollState.maxValue.toFloat()
+                    val scrollStateValue = scrollState.value.toFloat()
+                    val paddingSize = (scrollStateValue * viewMaxHeight) / columnMaxScroll
+                    val animation = animateDpAsState(targetValue = paddingSize.dp)
+                    val scrollBarHeight = viewMaxHeight / spell.description.size
 
-                    val customTextStyle = TextStyle(
-                        fontSize = 14.sp
-                    )
+                    // Scrollable content
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(state = scrollState)
+                            .fillMaxWidth()
+                            .padding(end = 10.dp), // Space for the scroll-bar
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        var isTable = false
+                        val tableLines = mutableListOf<String>()
 
-                    spell.description.forEach { line ->
-                        if (line.startsWith("|") && line.endsWith("|")) {
-                            // Line is part of a table
-                            isTable = true
-                            tableLines.add(line)
-                        } else if (isTable && line.startsWith("|---")) {
-                            // Line is the table header separator
-                            tableLines.add(line)
-                        } else {
-                            if (isTable) {
-                                // Render the table in a scrollable box
-                                Box(
-                                    modifier = Modifier
-                                        .horizontalScroll(scrollState)
-                                        .width(550.dp) // Set a fixed width for the table
-                                ) {
-                                    ProvideTextStyle(customTextStyle) {
-                                        RichText(
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Markdown(content = tableLines.joinToString("\n"))
+                        val customTextStyle = TextStyle(
+                            fontSize = 14.sp
+                        )
+
+                        spell.description.forEach { line ->
+                            if (line.startsWith("|") && line.endsWith("|")) {
+                                isTable = true
+                                tableLines.add(line)
+                            } else if (isTable && line.startsWith("|---")) {
+                                tableLines.add(line)
+                            } else {
+                                if (isTable) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(380.dp)
+                                    ) {
+                                        ProvideTextStyle(customTextStyle) {
+                                            MarkdownText(
+                                                markdown = tableLines.joinToString("\n"),
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 8.dp)
+                                            )
                                         }
                                     }
+                                    tableLines.clear()
+                                    isTable = false
                                 }
-                                // Clear table lines and reset flag
-                                tableLines.clear()
-                                isTable = false
-                            }
 
-                            // Render normal text with adjusted font size
-                            Box(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                                ProvideTextStyle(customTextStyle) {
-                                    RichText(
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Markdown(content = line)
+                                Box(modifier = Modifier.fillMaxWidth()) {
+                                    ProvideTextStyle(customTextStyle) {
+                                        MarkdownText(
+                                            markdown = line,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp)
+                                        )
                                     }
+                                }
+                            }
+                        }
+
+                        if (tableLines.isNotEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .width(800.dp)
+                            ) {
+                                ProvideTextStyle(customTextStyle) {
+                                    MarkdownText(
+                                        markdown = tableLines.joinToString("\n"),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 0.dp)
+                                    )
                                 }
                             }
                         }
                     }
 
-                    // Render any remaining table if present
-                    if (tableLines.isNotEmpty()) {
+                    // Custom scrollbar
+                    if (scrollState.value < scrollState.maxValue) {
                         Box(
                             modifier = Modifier
-                                .horizontalScroll(scrollState)
-                                .padding(vertical = 8.dp)
-                                .width(800.dp) // Set a fixed width for the table
-                        ) {
-                            ProvideTextStyle(customTextStyle) {
-                                RichText(
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Markdown(content = tableLines.joinToString("\n"))
-                                }
-                            }
-                        }
+                                .paddingFromBaseline(animation.value)
+                                .padding(all = 0.dp)
+                                .height(scrollBarHeight.dp)
+                                .width(4.dp)
+                                .background(
+                                    color = Color.Black,
+                                )
+                                .align(Alignment.TopEnd)
+                        )
                     }
                 }
             }
-
-
-            // Description lines
-            /*items(spell.description) { line ->
-                val regex = Regex("""\*\*\*(.*?)\*\*\*""")
-                var lastIndex = 0
-
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    regex.findAll(line).forEach { matchResult ->
-                        val matchStart = matchResult.range.first
-                        val matchEnd = matchResult.range.last + 1
-                        var boldText = matchResult.groupValues[1]
-
-                        // Replace trailing period in bold text with colon
-                        boldText = boldText.replace(Regex("""\.$"""), ":")
-
-                        // Add regular text before the bold word
-                        if (lastIndex < matchStart) {
-                            val regularText = line.substring(lastIndex, matchStart)
-                            Text(
-                                text = regularText,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-
-                        // Add the bold word
-                        Text(
-                            text = boldText,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                        )
-
-                        lastIndex = matchEnd
-                    }
-
-                    // Add remaining regular text after the last bold word
-                    if (lastIndex < line.length) {
-                        val remainingText = line.substring(lastIndex).trimStart()
-                        Text(
-                            text = remainingText,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-
-                    // Add spacing after the entire line to separate paragraphs
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }*/
 
 
 
