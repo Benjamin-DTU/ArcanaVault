@@ -12,7 +12,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import kotlinx.coroutines.launch
 import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
-import com.example.arcanavault.model.data.IItem
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.ui.components.SearchBar
@@ -31,15 +30,15 @@ fun SpellListView(
     var showSearchBar by remember { mutableStateOf(false) }
     var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
-    var items by remember { mutableStateOf<List<IItem>>(emptyList()) }
+    var spells by remember { mutableStateOf<List<Spell>>(emptyList()) }
     var searchQuery by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        val spells = apiClient.getAllSpells()
-        filters = Spell.generateFilterOptions(spells)
-        items = spells
-        appState.listOfSpells = spells
+        val fetchedSpells = apiClient.getAllSpells()
+        filters = Spell.generateFilterOptions(fetchedSpells)
+        spells = fetchedSpells
+        appState.listOfSpells = fetchedSpells
     }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -70,7 +69,7 @@ fun SpellListView(
                             if (!showSearchBar) {
                                 searchQuery = ""
                                 coroutineScope.launch {
-                                    items = fetchEntities("", selectedFilters, apiClient)
+                                    spells = fetchSpells("", selectedFilters, apiClient)
                                 }
                             }
                         }) {
@@ -104,7 +103,7 @@ fun SpellListView(
                         }
                         selectedFilters = updatedFilters
                         coroutineScope.launch {
-                            items = fetchEntities("", updatedFilters, apiClient)
+                            spells = fetchSpells(searchQuery, updatedFilters, apiClient)
                         }
                     },
                     scrollFraction = scrollFraction.value
@@ -115,13 +114,13 @@ fun SpellListView(
                 SearchBar(onSearch = { query ->
                     searchQuery = query
                     coroutineScope.launch {
-                        items = fetchEntities(searchQuery, selectedFilters, apiClient)
+                        spells = fetchSpells(searchQuery, selectedFilters, apiClient)
                     }
                 })
             }
 
             if (showFilterScreen) {
-                FilterView (
+                FilterView(
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
                     onFilterChange = { category, options ->
@@ -129,21 +128,28 @@ fun SpellListView(
                             this[category] = options
                         }
                         coroutineScope.launch {
-                            items = fetchEntities(searchQuery, selectedFilters, apiClient)
+                            spells = fetchSpells(searchQuery, selectedFilters, apiClient)
                         }
                     },
                     onClearAllFilters = {
                         selectedFilters = emptyMap()
                         coroutineScope.launch {
-                            items = fetchEntities(searchQuery, selectedFilters, apiClient)
+                            spells = fetchSpells(searchQuery, selectedFilters, apiClient)
                         }
                     },
                 )
             } else {
                 ListView(
-                    items = items,
-                    appState = appState,
-                    onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) }
+                    items = spells,
+                    titleProvider = { spell -> spell.name },
+                    detailsProvider = { spell ->
+                        listOf(
+                            "Level: ${spell.level}",
+                            "School: ${spell.school.name}"
+                        )
+                    },
+                    onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
+                    onFavoriteClick = { spell -> appState.setSpellToFavorite(spell) }
                 )
             }
         }
@@ -151,11 +157,11 @@ fun SpellListView(
 }
 
 // Helper function to filter spells by selected filters and search query
-suspend fun fetchEntities(
+suspend fun fetchSpells(
     query: String,
     selectedFilters: Map<String, List<String>>,
     apiClient: ApiClient
-): List<IItem> {
+): List<Spell> {
     val allSpells = apiClient.getAllSpells()
 
     return allSpells.filter { spell ->
@@ -165,10 +171,10 @@ suspend fun fetchEntities(
                 selectedFilters.all { (category, options) ->
                     when (category) {
                         "Level"         -> options.contains(spell.level.toString())
-                        "School"        -> options.contains(spell.school?.name.toString())
+                        "School"        -> options.contains(spell.school.name)
                         "Classes"       -> spell.classes.any { it.name in options }
                         "Casting Time"  -> options.contains(spell.castingTime)
-                        "Damage Type"   -> options.contains(spell.damage?.damageType?.name.toString())
+                        "Damage Type"   -> options.contains(spell.damage?.damageType?.name ?: "Unknown")
                         "Components"    -> options.any { it in spell.components }
                         "Concentration" -> options.contains(spell.concentration.toString())
                         "Ritual"        -> options.contains(spell.ritual.toString())
@@ -177,5 +183,3 @@ suspend fun fetchEntities(
                 }
     }
 }
-
-
