@@ -13,7 +13,9 @@ private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
     secondary = md_theme_light_secondary,
-    onSecondary = md_theme_light_onSecondary
+    onSecondary = md_theme_light_onSecondary,
+    background = md_theme_light_background,
+    surface = md_theme_light_surface
     // ... fill in the rest of your color roles if needed
 )
 
@@ -21,7 +23,9 @@ private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
     secondary = md_theme_dark_secondary,
-    onSecondary = md_theme_dark_onSecondary
+    onSecondary = md_theme_dark_onSecondary,
+    background = md_theme_dark_background,
+    surface = md_theme_dark_surface
     // ... fill in the rest of your color roles
 )
 

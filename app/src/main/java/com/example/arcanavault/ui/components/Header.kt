@@ -34,9 +34,10 @@ fun Header(
                 }
             },
             scrollBehavior = scrollBehavior,
-            /*colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )*/
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                scrolledContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
     }
 }

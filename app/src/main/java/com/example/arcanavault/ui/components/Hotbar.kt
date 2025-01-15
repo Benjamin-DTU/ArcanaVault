@@ -3,7 +3,6 @@ package com.example.arcanavault.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,8 +14,9 @@ fun Hotbar(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-
-    NavigationBar(modifier = modifier) {
+    NavigationBar(modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.surface
+    )  {
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },

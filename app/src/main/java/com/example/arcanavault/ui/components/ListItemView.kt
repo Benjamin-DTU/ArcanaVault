@@ -112,11 +112,15 @@ fun ListItemView(
             onClick = onFavoriteClick
         ) {
             Icon(
-                imageVector = if (isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
+                imageVector = if (isFavorite == true) Icons.Default.Star else
+                    Icons.Default.StarBorder,
                 contentDescription = "Favorite",
-                tint = if (isFavorite == true) Color(0xFFFFBD05) else MaterialTheme.colorScheme.onSurface,
+                tint = if (isFavorite == true) Color(0xFFFFBD05) else
+                    MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .size(35.dp)
+
+
             )
         }
     }
