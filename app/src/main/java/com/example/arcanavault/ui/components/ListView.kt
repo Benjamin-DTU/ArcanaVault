@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,12 +37,28 @@ fun <T : IItem> ListView(
                 details = detailsProvider(item),
                 actionsContent = {
                     IconButton(onClick = { onFavoriteClick(item) }) {
-                        Icon(
-                            imageVector = if (item.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-                            contentDescription = "Favorite",
-                            tint = if (item.isFavorite) Color(0xFFFFBD05) else Color.Black
-                        )
+                        Box {
+
+                            //TODO this looks ugly.
+                            // We should use a different color and the star should not clip with its outline
+                            if (item.isFavorite) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = "Favorite fill",
+                                    tint = Color.Yellow,
+
+                                )
+                            }
+                            // Always show the star border
+                            Icon(
+                                imageVector = Icons.Default.StarBorder,
+                                contentDescription = "Favorite border",
+                                tint = MaterialTheme.colorScheme.onSurface,
+
+                                )
+                        }
                     }
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()
