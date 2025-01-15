@@ -18,7 +18,7 @@ fun Hotbar(
     hotBarColor: Color = MaterialTheme.colorScheme.surface
 ) {
     NavigationBar(modifier = modifier,
-        containerColor = hotBarColor
+        containerColor = hotBarColor //TODO figure out why this is not showing the correct color
     )  {
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
