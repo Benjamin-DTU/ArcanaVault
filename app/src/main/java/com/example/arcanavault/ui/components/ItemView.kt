@@ -35,7 +35,7 @@ fun ItemView(
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .shadow(3.dp, RectangleShape, spotColor = Color.Gray)
-            .background(MaterialTheme.colorScheme.surface)
+            .background(surfaceColor)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
