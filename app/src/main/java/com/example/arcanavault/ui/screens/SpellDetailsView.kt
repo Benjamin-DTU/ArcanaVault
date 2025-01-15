@@ -1,7 +1,9 @@
 package com.example.arcanavault.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,12 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +45,9 @@ import com.example.arcanavault.model.data.AreaOfEffect
 import com.example.arcanavault.model.data.Damage
 import com.example.arcanavault.model.data.ItemReference
 import com.example.arcanavault.model.data.Spell
+import com.halilibo.richtext.commonmark.Markdown
+import com.halilibo.richtext.ui.RichTextStyle
+import com.halilibo.richtext.ui.material3.RichText
 
 @Composable
 fun SpellDetailsView(
@@ -185,8 +193,83 @@ fun SpellDetailsView(
                 }
             }
 
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val scrollState = rememberScrollState()
+                    var isTable = false
+                    val tableLines = mutableListOf<String>()
+
+                    val customTextStyle = TextStyle(
+                        fontSize = 14.sp
+                    )
+
+                    spell.description.forEach { line ->
+                        if (line.startsWith("|") && line.endsWith("|")) {
+                            // Line is part of a table
+                            isTable = true
+                            tableLines.add(line)
+                        } else if (isTable && line.startsWith("|---")) {
+                            // Line is the table header separator
+                            tableLines.add(line)
+                        } else {
+                            if (isTable) {
+                                // Render the table in a scrollable box
+                                Box(
+                                    modifier = Modifier
+                                        .horizontalScroll(scrollState)
+                                        .width(550.dp) // Set a fixed width for the table
+                                ) {
+                                    ProvideTextStyle(customTextStyle) {
+                                        RichText(
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Markdown(content = tableLines.joinToString("\n"))
+                                        }
+                                    }
+                                }
+                                // Clear table lines and reset flag
+                                tableLines.clear()
+                                isTable = false
+                            }
+
+                            // Render normal text with adjusted font size
+                            Box(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                                ProvideTextStyle(customTextStyle) {
+                                    RichText(
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Markdown(content = line)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Render any remaining table if present
+                    if (tableLines.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .horizontalScroll(scrollState)
+                                .padding(vertical = 8.dp)
+                                .width(800.dp) // Set a fixed width for the table
+                        ) {
+                            ProvideTextStyle(customTextStyle) {
+                                RichText(
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Markdown(content = tableLines.joinToString("\n"))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
             // Description lines
-            items(spell.description) { line ->
+            /*items(spell.description) { line ->
                 val regex = Regex("""\*\*\*(.*?)\*\*\*""")
                 var lastIndex = 0
 
@@ -229,7 +312,7 @@ fun SpellDetailsView(
                     // Add spacing after the entire line to separate paragraphs
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-            }
+            }*/
 
 
 
@@ -296,3 +379,4 @@ fun SpellDetailsView(
         }
     }
 }
+

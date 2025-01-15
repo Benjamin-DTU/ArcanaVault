@@ -15,6 +15,7 @@ class Spell(
     override val imageUrl: String,
     private var _isFavorite: Boolean = false,
     @SerialName("desc") val description: List<String> = emptyList(),
+    @SerialName("concatDesc") val concatDesc: String,
     val shortDescription: String = description.firstOrNull() ?: "",
     @SerialName("higher_level") val higherLevel: List<String> = emptyList(),
     @SerialName("range") val range: String = "",
