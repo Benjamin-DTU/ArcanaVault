@@ -41,7 +41,8 @@ fun ListItemView(
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .shadow(3.5.dp, spotColor = Color.Black)
-            .background(Color.White)
+            //.background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -70,7 +71,8 @@ fun ListItemView(
                 text = name,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
+                //color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -85,7 +87,8 @@ fun ListItemView(
                         append(level?.toString() ?: "N/A")
                     },
                     fontSize = 13.sp,
-                    color = Color.Black
+                    //color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -98,7 +101,8 @@ fun ListItemView(
                         append(school.name)
                     },
                     fontSize = 13.sp,
-                    color = Color.Black
+                    //color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -110,7 +114,7 @@ fun ListItemView(
             Icon(
                 imageVector = if (isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
                 contentDescription = "Favorite",
-                tint = if (isFavorite == true) Color(0xFFFFBD05) else Color.Black,
+                tint = if (isFavorite == true) Color(0xFFFFBD05) else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .size(35.dp)
             )
