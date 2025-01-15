@@ -57,11 +57,11 @@ fun SpellListView(
                         IconButton(onClick = {
                             showSearchBar = false
                             searchQuery = ""
-                            showFilterScreen = true
+                            showFilterScreen = !showFilterScreen // Toggle the filter screen
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.FilterList,
-                                contentDescription = "Open Filter Screen"
+                                contentDescription = if (showFilterScreen) "Close Filter Screen" else "Open Filter Screen"
                             )
                         }
                         IconButton(onClick = {
@@ -90,7 +90,6 @@ fun SpellListView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display selected filters as tags, disappearing with the Header
             if (selectedFilters.isNotEmpty()) {
                 FilterRow(
                     selectedFilters = selectedFilters,
@@ -108,12 +107,10 @@ fun SpellListView(
                             items = fetchEntities("", updatedFilters, apiClient)
                         }
                     },
-                    scrollFraction = scrollFraction.value // Pass the animated scroll fraction here
+                    scrollFraction = scrollFraction.value
                 )
-
             }
 
-            // Render SearchBar
             if (showSearchBar) {
                 SearchBar(onSearch = { query ->
                     searchQuery = query
@@ -123,9 +120,8 @@ fun SpellListView(
                 })
             }
 
-            // Conditionally render either the FilterScreen OR the spell list
             if (showFilterScreen) {
-                FilterScreen(
+                FilterView (
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
                     onFilterChange = { category, options ->
@@ -142,7 +138,6 @@ fun SpellListView(
                             items = fetchEntities(searchQuery, selectedFilters, apiClient)
                         }
                     },
-                    onNavigateBack = { showFilterScreen = false }
                 )
             } else {
                 ListView(
@@ -154,8 +149,6 @@ fun SpellListView(
         }
     }
 }
-
-
 
 // Helper function to filter spells by selected filters and search query
 suspend fun fetchEntities(
