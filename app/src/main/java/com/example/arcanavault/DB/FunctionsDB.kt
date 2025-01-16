@@ -53,7 +53,8 @@ class FunctionsDB {
             attackType = this.attackType,
             school = this.schoolName.let { ItemReference(it) },
             classes = this.classes.map { ItemReference(it) },
-            subclasses = this.subclasses.map { ItemReference(it) }
+            subclasses = this.subclasses.map { ItemReference(it) },
+            concatDesc = this.description.joinToString("\n")
         ).apply {
             isFavorite = this@toApiSpell.isFavorite
         }

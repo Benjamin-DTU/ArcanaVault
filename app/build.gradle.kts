@@ -66,6 +66,7 @@ dependencies {
     implementation("io.realm.kotlin:library-base:3.0.0")
 
 
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,5 +78,7 @@ dependencies {
     val nav_version = "2.8.4"
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("com.github.jeziellago:compose-markdown:0.5.6")
+
 
 }
