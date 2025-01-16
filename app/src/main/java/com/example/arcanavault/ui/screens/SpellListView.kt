@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import kotlinx.coroutines.launch
 import com.example.arcanavault.AppState
 import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.Spell
@@ -22,32 +21,22 @@ import androidx.compose.animation.core.animateFloatAsState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpellListView(
-    apiClient: ApiClient,
     appState: AppState,
     onSpellSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    functionsDB: FunctionsDB
 ) {
     var showFilterScreen by remember { mutableStateOf(false) }
     var showSearchBar by remember { mutableStateOf(false) }
-    var filters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
+    var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.getListOfSpells())) }
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
-    var spells by remember { mutableStateOf<List<Spell>>(emptyList()) }
     var searchQuery by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    val functionsDB = remember { FunctionsDB() }
-
-    LaunchedEffect(Unit) {
-        val fetchedSpells = apiClient.getAllSpells()
-        filters = Spell.generateFilterOptions(fetchedSpells)
-        spells = fetchedSpells
-        appState.listOfSpells = fetchedSpells
-    }
+    val spells = appState.getListOfSpells()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val scrollFraction = animateFloatAsState(
-        targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f)
-    )
+    val scrollFraction = animateFloatAsState(targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f))
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -59,7 +48,7 @@ fun SpellListView(
                         IconButton(onClick = {
                             showSearchBar = false
                             searchQuery = ""
-                            showFilterScreen = !showFilterScreen // Toggle the filter screen
+                            showFilterScreen = !showFilterScreen
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.FilterList,
@@ -71,9 +60,6 @@ fun SpellListView(
                             showSearchBar = !showSearchBar
                             if (!showSearchBar) {
                                 searchQuery = ""
-                                coroutineScope.launch {
-                                    spells = fetchSpells("", selectedFilters, apiClient)
-                                }
                             }
                         }) {
                             Icon(
@@ -97,17 +83,9 @@ fun SpellListView(
                     selectedFilters = selectedFilters,
                     onRemoveFilter = { category, option ->
                         val updatedFilters = selectedFilters.toMutableMap()
-                        val updatedOptions = updatedFilters[category]?.toMutableList()
-                        updatedOptions?.remove(option)
-                        if (updatedOptions.isNullOrEmpty()) {
-                            updatedFilters.remove(category)
-                        } else {
-                            updatedFilters[category] = updatedOptions
-                        }
+                        updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
+                        if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
                         selectedFilters = updatedFilters
-                        coroutineScope.launch {
-                            spells = fetchSpells(searchQuery, updatedFilters, apiClient)
-                        }
                     },
                     scrollFraction = scrollFraction.value
                 )
@@ -116,9 +94,6 @@ fun SpellListView(
             if (showSearchBar) {
                 SearchBar(onSearch = { query ->
                     searchQuery = query
-                    coroutineScope.launch {
-                        spells = fetchSpells(searchQuery, selectedFilters, apiClient)
-                    }
                 })
             }
 
@@ -127,39 +102,34 @@ fun SpellListView(
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
                     onFilterChange = { category, options ->
-                        selectedFilters = selectedFilters.toMutableMap().apply {
-                            this[category] = options
-                        }
-                        coroutineScope.launch {
-                            spells = fetchSpells(searchQuery, selectedFilters, apiClient)
-                        }
+                        selectedFilters = selectedFilters.toMutableMap().apply { this[category] = options }
                     },
-                    onClearAllFilters = {
-                        selectedFilters = emptyMap()
-                        coroutineScope.launch {
-                            spells = fetchSpells(searchQuery, selectedFilters, apiClient)
-                        }
-                    },
+                    onClearAllFilters = { selectedFilters = emptyMap() }
                 )
             } else {
                 ListView(
-                    items = spells,
+                    items = spells.filter { spell ->
+                        (searchQuery.isEmpty() || spell.name.contains(searchQuery, ignoreCase = true)) &&
+                                selectedFilters.all { (category, options) ->
+                                    when (category) {
+                                        "Level" -> options.contains(spell.level.toString())
+                                        "School" -> options.contains(spell.school.name)
+                                        else -> true
+                                    }
+                                }
+                    },
                     titleProvider = { spell -> spell.name },
                     detailsProvider = { spell ->
-                        listOf(
-                            "Level: ${spell.level}",
-                            "School: ${spell.school.name}"
-                        )
+                        listOf("Level: ${spell.level}", "School: ${spell.school.name}")
                     },
-                    onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
-                    onFavoriteClick = { spell ->
-                        functionsDB.addToFavorites(spell)
-                    }
+                    onItemClick = onSpellSelected,
+                    onFavoriteClick = { spell -> functionsDB.addToFavorites(spell) }
                 )
             }
         }
     }
 }
+
 
 // Helper function to filter spells by selected filters and search query
 suspend fun fetchSpells(

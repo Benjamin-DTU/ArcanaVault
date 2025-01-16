@@ -9,4 +9,5 @@ interface ApiService {
 
     @GET("spells")
     suspend fun getAllSpells(): List<Spell>
+
 }

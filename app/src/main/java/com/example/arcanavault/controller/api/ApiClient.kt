@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import okhttp3.MediaType.Companion.toMediaType
+import android.util.Log
 
 class ApiClient {
 
@@ -32,6 +33,7 @@ class ApiClient {
     suspend fun getAllSpells(): List<Spell> = coroutineScope {
         if (spells.isEmpty()) {
             spells = apiService.getAllSpells()
+            Log.d("API_SPELLS_COUNT", "Fetched ${spells.size} spells from API")
         }
         spells
     }
