@@ -55,7 +55,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
-
+    implementation ("com.github.jeziellago:compose-markdown:0.5.6")
     implementation(libs.coil)
     implementation(libs.coil.compose)
     implementation(libs.coil.httpok)
