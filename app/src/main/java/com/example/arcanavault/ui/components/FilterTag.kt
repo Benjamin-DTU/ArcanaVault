@@ -1,14 +1,8 @@
 package com.example.arcanavault.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,7 +16,9 @@ fun FilterTag(category: String, option: String, onRemove: () -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(4.dp)
+        modifier = Modifier
+            .padding(4.dp)
+            .clickable { onRemove() } // Remove filter when clicked
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -34,17 +30,6 @@ fun FilterTag(category: String, option: String, onRemove: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1
             )
-            Spacer(modifier = Modifier.width(4.dp))
-            IconButton(
-                onClick = onRemove,
-                modifier = Modifier.size(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Remove Filter",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
         }
     }
 }
