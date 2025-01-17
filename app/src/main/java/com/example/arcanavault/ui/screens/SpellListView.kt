@@ -123,13 +123,30 @@ fun SpellListView(
                         listOf("Level: ${spell.level}", "School: ${spell.school.name}")
                     },
                     onItemClick = onSpellSelected,
-                    onFavoriteClick = { spell -> functionsDB.addToFavorites(spell) }
+                    onFavoriteClick = { spell ->
+                        val newFavoriteStatus = !spell.isFavorite
+
+                        if (newFavoriteStatus) {
+                            functionsDB.addToFavorites(spell)
+                        } else {
+                            functionsDB.removeFromFavorites(spell.index)
+                        }
+
+                        appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
+
+                        val updatedSpells = appState.getListOfSpells().map { s ->
+                            if (s.index == spell.index) {
+                                s.isFavorite = newFavoriteStatus
+                            }
+                            s
+                        }
+                        appState.setListOfSpells(updatedSpells)
+                    }
                 )
             }
         }
     }
 }
-
 
 // Helper function to filter spells by selected filters and search query
 suspend fun fetchSpells(

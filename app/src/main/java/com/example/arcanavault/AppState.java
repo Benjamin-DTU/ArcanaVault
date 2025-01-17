@@ -34,4 +34,15 @@ public class AppState {
         }
         return null; // Return null if not found
     }
+
+    public void updateSpellFavoriteStatus(String index, boolean isFavorite) {
+        for (Spell spell : listOfSpells) {
+            if (spell.getIndex().equals(index)) {
+                spell.setFavorite(isFavorite);
+                break;
+            }
+        }
+    }
+
+
 }

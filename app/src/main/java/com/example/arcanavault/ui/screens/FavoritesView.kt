@@ -72,17 +72,31 @@ fun FavouritesView(
                 items = favoriteSpells,
                 onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
                 onFavoriteClick = { spell ->
+
                     functionsDB.removeFromFavorites(spell.index)
+
+                    appState.updateSpellFavoriteStatus(spell.index, false)
+
                     favoriteSpells = favoriteSpells.filter { it.index != spell.index }
+
+                    val updatedSpells = appState.getListOfSpells().map { s ->
+                        if (s.index == spell.index) {
+                            s.isFavorite = false
+                        }
+                        s
+                    }
+                    appState.setListOfSpells(updatedSpells)
                 },
                 titleProvider = { spell -> spell.name },
                 detailsProvider = { spell ->
                     listOf(
                         "Level: ${spell.level}",
-                        "School: ${spell.index}"
+                        "School: ${spell.school.name}"
                     )
                 }
             )
+
+
         }
     }
 }

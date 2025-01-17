@@ -26,11 +26,12 @@ class FunctionsDB {
             concentration = this@toRealmModel.concentration
             castingTime = this@toRealmModel.castingTime
             attackType = this@toRealmModel.attackType ?: ""
-            schoolName = this@toRealmModel.school.name ?: ""
+            schoolName = this@toRealmModel.school.name ?: "Unknown"
             classes.addAll(this@toRealmModel.classes.map { it.name })
             subclasses.addAll(this@toRealmModel.subclasses.map { it.name })
         }
     }
+
 
 
     private fun RealmSpell.toApiSpell(): ApiSpell {
@@ -51,14 +52,15 @@ class FunctionsDB {
             concentration = this.concentration,
             castingTime = this.castingTime,
             attackType = this.attackType,
-            school = this.schoolName.let { ItemReference(it) },
-            classes = this.classes.map { ItemReference(it) },
-            subclasses = this.subclasses.map { ItemReference(it) },
+            school = ItemReference(index = this.schoolName, name = this.schoolName.ifEmpty { "Unknown" }),
+            classes = this.classes.map { ItemReference(it, it) },
+            subclasses = this.subclasses.map { ItemReference(it, it) },
             concatDesc = this.description.joinToString("\n")
         ).apply {
             isFavorite = this@toApiSpell.isFavorite
         }
     }
+
 
     fun addToFavorites(spell: ApiSpell) {
         val realmInstance = AppDB_Config.realm
@@ -103,6 +105,7 @@ class FunctionsDB {
             }
         }
     }
+
 
     fun getFavoriteSpells(): List<ApiSpell> {
         val realmInstance = AppDB_Config.realm
