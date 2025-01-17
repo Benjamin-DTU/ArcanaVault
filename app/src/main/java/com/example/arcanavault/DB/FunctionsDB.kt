@@ -55,7 +55,6 @@ class FunctionsDB {
             school = ItemReference(index = this.schoolName, name = this.schoolName.ifEmpty { "Unknown" }),
             classes = this.classes.map { ItemReference(it, it) },
             subclasses = this.subclasses.map { ItemReference(it, it) },
-            concatDesc = this.description.joinToString("\n")
         ).apply {
             isFavorite = this@toApiSpell.isFavorite
         }

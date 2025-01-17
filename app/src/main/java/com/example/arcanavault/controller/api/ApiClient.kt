@@ -7,10 +7,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import okhttp3.MediaType.Companion.toMediaType
 import android.util.Log
+import com.example.arcanavault.model.data.Condition
+import com.example.arcanavault.model.data.Rule
 
 class ApiClient {
 
     private var spells: List<Spell> = emptyList()
+    private var rules: List<Rule> = emptyList()
+    private var conditions: List<Condition> = emptyList()
 
     companion object {
         const val BASE_URL = "https://arcanavaultapi.azurewebsites.net/api/"
@@ -37,4 +41,19 @@ class ApiClient {
         }
         spells
     }
+
+    suspend fun getAllRules(): List<Rule> = coroutineScope {
+        if (rules.isEmpty()){
+            rules = apiService.getAllRules()
+        }
+        rules
+    }
+
+    suspend fun getAllConditions(): List<Condition> = coroutineScope {
+        if (conditions.isEmpty()){
+            conditions = apiService.getAllConditions()
+        }
+        conditions
+    }
+
 }

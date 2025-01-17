@@ -3,7 +3,6 @@ package com.example.arcanavault.ui.screens
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -18,18 +17,22 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material3.Divider
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,23 +44,23 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.arcanavault.model.data.AreaOfEffect
-import com.example.arcanavault.model.data.Damage
-import com.example.arcanavault.model.data.ItemReference
+import com.example.arcanavault.AppState
 import com.example.arcanavault.model.data.Spell
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun SpellDetailsView(
+    appState: AppState,
     spell: Spell?,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit
 ) {
+    var showConditionDialog by remember { mutableStateOf(false) }
+    var selectedCondition by remember { mutableStateOf<com.example.arcanavault.model.data.Condition?>(null) }
+
     if (spell != null) {
         LazyColumn(
             modifier = modifier
@@ -114,8 +117,10 @@ fun SpellDetailsView(
 
             // Spell school
             item {
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
                     Text(
                         text = buildAnnotatedString {
                             withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
@@ -161,16 +166,16 @@ fun SpellDetailsView(
 
             // Range
             item {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                append("Range: ")
-                            }
-                            append(spell.range)
-                        },
-                        fontSize = 14.sp,
-                        color = Color.Black
-                    )
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append("Range: ")
+                        }
+                        append(spell.range)
+                    },
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
@@ -242,9 +247,28 @@ fun SpellDetailsView(
                                         ProvideTextStyle(customTextStyle) {
                                             MarkdownText(
                                                 markdown = tableLines.joinToString("\n"),
+                                                onLinkClicked = { url ->
+                                                    if (url.startsWith("navigate://conditions/")) {
+                                                        val conditionName = url
+                                                            .substringAfter("navigate://conditions/")
+                                                            .replace("-", " ")
+                                                            .trim()
+
+                                                        if (conditionName.isNotBlank()) {
+                                                            val condition =
+                                                                appState.getConditionByName(
+                                                                    conditionName
+                                                                )
+                                                            if (condition != null) {
+                                                                selectedCondition = condition
+                                                                showConditionDialog = true
+                                                            }
+                                                        }
+                                                    }
+                                                },
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .padding(vertical = 8.dp)
+                                                    .padding(vertical = 4.dp)
                                             )
                                         }
                                     }
@@ -256,10 +280,29 @@ fun SpellDetailsView(
                                     ProvideTextStyle(customTextStyle) {
                                         MarkdownText(
                                             markdown = line,
+                                            onLinkClicked = { url ->
+                                                if (url.startsWith("navigate://conditions/")) {
+                                                    val conditionName = url
+                                                        .substringAfter("navigate://conditions/")
+                                                        .replace("-", " ")
+                                                        .trim()
+
+                                                    if (conditionName.isNotBlank()) {
+                                                        val condition = appState.getConditionByName(
+                                                            conditionName
+                                                        )
+                                                        if (condition != null) {
+                                                            selectedCondition = condition
+                                                            showConditionDialog = true
+                                                        }
+                                                    }
+                                                }
+                                            },
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(vertical = 4.dp)
                                         )
+
                                     }
                                 }
                             }
@@ -273,9 +316,26 @@ fun SpellDetailsView(
                                 ProvideTextStyle(customTextStyle) {
                                     MarkdownText(
                                         markdown = tableLines.joinToString("\n"),
+                                        onLinkClicked = { url ->
+                                            if (url.startsWith("navigate://conditions/")) {
+                                                val conditionName = url
+                                                    .substringAfter("navigate://conditions/")
+                                                    .replace("-", " ")
+                                                    .trim()
+
+                                                if (conditionName.isNotBlank()) {
+                                                    val condition =
+                                                        appState.getConditionByName(conditionName)
+                                                    if (condition != null) {
+                                                        selectedCondition = condition
+                                                        showConditionDialog = true
+                                                    }
+                                                }
+                                            }
+                                        },
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 0.dp)
+                                            .padding(vertical = 4.dp)
                                     )
                                 }
                             }
@@ -298,8 +358,6 @@ fun SpellDetailsView(
                     }
                 }
             }
-
-
 
             // Damage information
             if (spell.damage != null) {
@@ -350,6 +408,16 @@ fun SpellDetailsView(
                 }
             }
         }
+        // Render condition dialog
+        if (showConditionDialog && selectedCondition != null) {
+            selectedCondition?.description?.toList()?.let {
+                ConditionDialog(
+                    conditionName = selectedCondition?.name.toString(),
+                    conditionDescription = it,
+                    onDismiss = { showConditionDialog = false }
+                )
+            }
+        }
     } else {
         Column(
             modifier = modifier
@@ -364,4 +432,41 @@ fun SpellDetailsView(
         }
     }
 }
-
+@Composable
+fun ConditionDialog(
+    conditionName: String,
+    conditionDescription: List<String>,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = {
+            Text(
+                text = conditionName,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                conditionDescription.forEach { description ->
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("Close")
+            }
+        }
+    )
+}

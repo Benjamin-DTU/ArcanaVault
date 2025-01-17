@@ -45,14 +45,18 @@ class MainActivity : ComponentActivity() {
                     Log.d("SPELLS_FROM_DB", "Cached spells count: ${cachedSpells.size}")
 
                     try {
+                        val apiRules = apiClient.getAllRules()
+                        val apiConditions = apiClient.getAllConditions()
                         val apiSpells = apiClient.getAllSpells()
                         Log.d("API_SPELLS_COUNT", "Fetched ${apiSpells.size} spells from API")
 
-                        if (cachedSpells.size != apiSpells.size) {
+                        if (cachedSpells.size == apiSpells.size) {
 
                             Log.d("SPELL_SYNC", "Updating spells in DB. Replacing with spells from API.")
                             functionsDB.saveAllSpells(apiSpells)
                             appState.setListOfSpells(apiSpells)
+                            appState.setListOfRules(apiRules)
+                            appState.setListOfCondition(apiConditions)
                         } else {
 
                             Log.d("SPELL_SYNC", "Spell count matches. Using cached spells from DB.")
@@ -99,7 +103,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable("details/{selectedSpell}") { backStackEntry ->
                                     val spell = appState.getSpellByIndex(backStackEntry.arguments?.getString("selectedSpell"))
-                                    SpellDetailsView(spell = spell, onBackClick = { navController.popBackStack() })
+                                    SpellDetailsView(appState = appState,spell = spell, onBackClick = { navController.popBackStack() })
                                 }
                                 composable(Routes.favorites) {
                                     FavouritesView(

@@ -2,13 +2,17 @@ package com.example.arcanavault;
 
 import android.content.ClipData;
 
+import com.example.arcanavault.model.data.Condition;
 import com.example.arcanavault.model.data.IItem;
+import com.example.arcanavault.model.data.Rule;
 import com.example.arcanavault.model.data.Spell;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AppState {
     private List<Spell> listOfSpells;
+    private List<Condition> listOfConditions;
+    private List<Rule> listOfRules;
 
     public AppState() {
         this.listOfSpells = new ArrayList<>();
@@ -17,9 +21,21 @@ public class AppState {
     public List<Spell> getListOfSpells() {
         return listOfSpells;
     }
+    public List<Rule> getListOfRules() {
+        return listOfRules;
+    }
+    public List<Condition> getListOfConditions() {
+        return listOfConditions;
+    }
 
     public void setListOfSpells(List<Spell> spells) {
         this.listOfSpells = spells;
+    }
+    public void setListOfRules(List<Rule> rules) {
+        this.listOfRules = rules;
+    }
+    public void setListOfCondition(List<Condition> conditions) {
+        this.listOfConditions = conditions;
     }
 
     public void setSpellToFavorite(IItem item) {
@@ -33,6 +49,17 @@ public class AppState {
             }
         }
         return null; // Return null if not found
+    }
+
+    public Condition getConditionByName(String name) {
+        var conditions = getListOfConditions();
+        if (conditions == null || name == null) {
+            return null;
+        }
+        return listOfConditions.stream()
+                .filter(condition -> condition.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public void updateSpellFavoriteStatus(String index, boolean isFavorite) {
