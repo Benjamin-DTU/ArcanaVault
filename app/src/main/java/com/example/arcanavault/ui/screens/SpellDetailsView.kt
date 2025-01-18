@@ -1,5 +1,6 @@
 package com.example.arcanavault.ui.screens
 
+import android.content.res.Resources
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,9 +45,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.arcanavault.AppState
 import com.example.arcanavault.model.data.Spell
@@ -203,12 +207,12 @@ fun SpellDetailsView(
 
             // Spell Description (markdown)
             item {
-                BoxWithConstraints(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .height(515.dp) //Height of the container
-                ) {
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .height(515.dp) //Height of the container
+                    ) {
                     val scrollState = rememberScrollState()
                     val viewMaxHeight = maxHeight.value
                     val columnMaxScroll = scrollState.maxValue.toFloat()
@@ -242,7 +246,8 @@ fun SpellDetailsView(
                                 if (isTable) {
                                     Box(
                                         modifier = Modifier
-                                            .width(380.dp)
+                                            .width(400.dp)
+                                            .height(400.dp)
                                     ) {
                                         ProvideTextStyle(customTextStyle) {
                                             MarkdownText(
@@ -266,6 +271,8 @@ fun SpellDetailsView(
                                                         }
                                                     }
                                                 },
+                                                linkColor = Color.Blue,
+                                                enableUnderlineForLink = false,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(vertical = 4.dp)
@@ -298,6 +305,8 @@ fun SpellDetailsView(
                                                     }
                                                 }
                                             },
+                                            linkColor = Color.Blue,
+                                            enableUnderlineForLink = false,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(vertical = 4.dp)
@@ -333,6 +342,8 @@ fun SpellDetailsView(
                                                 }
                                             }
                                         },
+                                        linkColor = Color.Blue,
+                                        enableUnderlineForLink = false,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(vertical = 4.dp)
@@ -408,6 +419,7 @@ fun SpellDetailsView(
                 }
             }
         }
+
         // Render condition dialog
         if (showConditionDialog && selectedCondition != null) {
             selectedCondition?.description?.toList()?.let {
@@ -418,6 +430,7 @@ fun SpellDetailsView(
                 )
             }
         }
+
     } else {
         Column(
             modifier = modifier
@@ -432,41 +445,64 @@ fun SpellDetailsView(
         }
     }
 }
+
 @Composable
 fun ConditionDialog(
     conditionName: String,
     conditionDescription: List<String>,
     onDismiss: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = {
-            Text(
-                text = conditionName,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
-        },
-        text = {
+    Dialog(
+        onDismissRequest = { onDismiss() }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.White,
+                    shape = MaterialTheme.shapes.small
+                )
+                .padding(16.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
+                // Title
+                Text(
+                    text = conditionName,
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+
+                // Description
                 conditionDescription.forEach { description ->
-                    Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontSize = 16.sp
+                    MarkdownText(
+                        markdown = description,
+                        style = TextStyle(fontSize = 16.sp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
                     )
                 }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text("Close")
+
+
+                // Dismiss button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextButton(onClick = { onDismiss() }) {
+                        Text(text = "Close")
+                    }
+                }
             }
         }
-    )
+    }
 }
+
