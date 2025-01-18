@@ -2,11 +2,11 @@ package com.example.arcanavault.ui.screens
 
 import android.content.res.Resources
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
@@ -23,7 +24,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,15 +45,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.arcanavault.AppState
+import com.example.arcanavault.model.data.Rule
 import com.example.arcanavault.model.data.Spell
 import dev.jeziellago.compose.markdowntext.MarkdownText
+import kotlin.reflect.typeOf
 
 @Composable
 fun SpellDetailsView(
@@ -63,7 +64,9 @@ fun SpellDetailsView(
     onBackClick: () -> Unit
 ) {
     var showConditionDialog by remember { mutableStateOf(false) }
+    var showRuleDialog by remember { mutableStateOf(false) }
     var selectedCondition by remember { mutableStateOf<com.example.arcanavault.model.data.Condition?>(null) }
+    var selectedRule by remember { mutableStateOf<Rule?>(null) }
 
     if (spell != null) {
         LazyColumn(
@@ -207,26 +210,22 @@ fun SpellDetailsView(
 
             // Spell Description (markdown)
             item {
-                    BoxWithConstraints(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .height(515.dp) //Height of the container
+                            .height(515.dp)
                     ) {
-                    val scrollState = rememberScrollState()
-                    val viewMaxHeight = maxHeight.value
-                    val columnMaxScroll = scrollState.maxValue.toFloat()
-                    val scrollStateValue = scrollState.value.toFloat()
-                    val paddingSize = (scrollStateValue * viewMaxHeight) / columnMaxScroll
-                    val animation = animateDpAsState(targetValue = paddingSize.dp)
-                    val scrollBarHeight = viewMaxHeight / spell.description.size
+
+                        val scrollState = rememberScrollState()
+
 
                     // Scrollable content
                     Column(
                         modifier = Modifier
                             .verticalScroll(state = scrollState)
                             .fillMaxWidth()
-                            .padding(end = 10.dp), // Space for the scroll-bar
+                            .padding(end = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         var isTable = false
@@ -253,20 +252,33 @@ fun SpellDetailsView(
                                             MarkdownText(
                                                 markdown = tableLines.joinToString("\n"),
                                                 onLinkClicked = { url ->
-                                                    if (url.startsWith("navigate://conditions/")) {
-                                                        val conditionName = url
-                                                            .substringAfter("navigate://conditions/")
-                                                            .replace("-", " ")
-                                                            .trim()
+                                                    when {
+                                                        url.startsWith("navigate://conditions/") -> {
+                                                            val conditionName = url
+                                                                .substringAfter("navigate://conditions/")
+                                                                .replace("-", " ")
+                                                                .trim()
 
-                                                        if (conditionName.isNotBlank()) {
-                                                            val condition =
-                                                                appState.getConditionByName(
-                                                                    conditionName
-                                                                )
-                                                            if (condition != null) {
-                                                                selectedCondition = condition
-                                                                showConditionDialog = true
+                                                            if (conditionName.isNotBlank()) {
+                                                                val condition = appState.getConditionByName(conditionName)
+                                                                if (condition != null) {
+                                                                    selectedCondition = condition
+                                                                    showConditionDialog = true
+                                                                }
+                                                            }
+                                                        }
+                                                        url.startsWith("navigate://rules/") -> {
+                                                            val ruleName = url
+                                                                .substringAfter("navigate://rules/")
+                                                                .replace("-", " ")
+                                                                .trim()
+
+                                                            if (ruleName.isNotBlank()) {
+                                                                val rule = appState.getRuleByName(ruleName)
+                                                                if (rule != null) {
+                                                                    selectedRule = rule
+                                                                    showRuleDialog = true
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -288,19 +300,33 @@ fun SpellDetailsView(
                                         MarkdownText(
                                             markdown = line,
                                             onLinkClicked = { url ->
-                                                if (url.startsWith("navigate://conditions/")) {
-                                                    val conditionName = url
-                                                        .substringAfter("navigate://conditions/")
-                                                        .replace("-", " ")
-                                                        .trim()
+                                                when {
+                                                    url.startsWith("navigate://conditions/") -> {
+                                                        val conditionName = url
+                                                            .substringAfter("navigate://conditions/")
+                                                            .replace("-", " ")
+                                                            .trim()
 
-                                                    if (conditionName.isNotBlank()) {
-                                                        val condition = appState.getConditionByName(
-                                                            conditionName
-                                                        )
-                                                        if (condition != null) {
-                                                            selectedCondition = condition
-                                                            showConditionDialog = true
+                                                        if (conditionName.isNotBlank()) {
+                                                            val condition = appState.getConditionByName(conditionName)
+                                                            if (condition != null) {
+                                                                selectedCondition = condition
+                                                                showConditionDialog = true
+                                                            }
+                                                        }
+                                                    }
+                                                    url.startsWith("navigate://rules/") -> {
+                                                        val ruleName = url
+                                                            .substringAfter("navigate://rules/")
+                                                            .replace("-", " ")
+                                                            .trim()
+
+                                                        if (ruleName.isNotBlank()) {
+                                                            val rule = appState.getRuleByName(ruleName)
+                                                            if (rule != null) {
+                                                                selectedRule = rule
+                                                                showRuleDialog = true
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -326,18 +352,33 @@ fun SpellDetailsView(
                                     MarkdownText(
                                         markdown = tableLines.joinToString("\n"),
                                         onLinkClicked = { url ->
-                                            if (url.startsWith("navigate://conditions/")) {
-                                                val conditionName = url
-                                                    .substringAfter("navigate://conditions/")
-                                                    .replace("-", " ")
-                                                    .trim()
+                                            when {
+                                                url.startsWith("navigate://conditions/") -> {
+                                                    val conditionName = url
+                                                        .substringAfter("navigate://conditions/")
+                                                        .replace("-", " ")
+                                                        .trim()
 
-                                                if (conditionName.isNotBlank()) {
-                                                    val condition =
-                                                        appState.getConditionByName(conditionName)
-                                                    if (condition != null) {
-                                                        selectedCondition = condition
-                                                        showConditionDialog = true
+                                                    if (conditionName.isNotBlank()) {
+                                                        val condition = appState.getConditionByName(conditionName)
+                                                        if (condition != null) {
+                                                            selectedCondition = condition
+                                                            showConditionDialog = true
+                                                        }
+                                                    }
+                                                }
+                                                url.startsWith("navigate://rules/") -> {
+                                                    val ruleName = url
+                                                        .substringAfter("navigate://rules/")
+                                                        .replace("-", " ")
+                                                        .trim()
+
+                                                    if (ruleName.isNotBlank()) {
+                                                        val rule = appState.getRuleByName(ruleName)
+                                                        if (rule != null) {
+                                                            selectedRule = rule
+                                                            showRuleDialog = true
+                                                        }
                                                     }
                                                 }
                                             }
@@ -352,21 +393,7 @@ fun SpellDetailsView(
                             }
                         }
                     }
-
-                    // Custom scrollbar
-                    if (scrollState.value < scrollState.maxValue) {
-                        Box(
-                            modifier = Modifier
-                                .paddingFromBaseline(animation.value)
-                                .padding(all = 0.dp)
-                                .height(scrollBarHeight.dp)
-                                .width(4.dp)
-                                .background(
-                                    color = Color.Black,
-                                )
-                                .align(Alignment.TopEnd)
-                        )
-                    }
+                        CustomScrollbar(scrollState = scrollState)
                 }
             }
 
@@ -420,16 +447,29 @@ fun SpellDetailsView(
             }
         }
 
+
         // Render condition dialog
         if (showConditionDialog && selectedCondition != null) {
             selectedCondition?.description?.toList()?.let {
-                ConditionDialog(
-                    conditionName = selectedCondition?.name.toString(),
-                    conditionDescription = it,
+                EntityDialog(
+                    entityName = selectedCondition?.name.toString(),
+                    entityDescription = it,
                     onDismiss = { showConditionDialog = false }
                 )
             }
         }
+
+        // Render rule dialog
+        if (showRuleDialog && selectedRule != null) {
+            selectedRule?.description?.let {
+                EntityDialog(
+                    entityName = "",
+                    entityDescription = listOf(it),
+                    onDismiss = { showRuleDialog = false }
+                )
+            }
+        }
+
 
     } else {
         Column(
@@ -447,52 +487,57 @@ fun SpellDetailsView(
 }
 
 @Composable
-fun ConditionDialog(
-    conditionName: String,
-    conditionDescription: List<String>,
+fun EntityDialog(
+    entityName: String,
+    entityDescription: List<String>,
     onDismiss: () -> Unit
 ) {
-    Dialog(
-        onDismissRequest = { onDismiss() }
-    ) {
+    Dialog(onDismissRequest = { onDismiss() }) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
                     color = Color.White,
-                    shape = MaterialTheme.shapes.small
+                    shape = MaterialTheme.shapes.medium
                 )
                 .padding(16.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                    .padding(8.dp)
             ) {
                 // Title
                 Text(
-                    text = conditionName,
+                    text = entityName,
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
-                    fontSize = 18.sp,
                     modifier = Modifier.fillMaxWidth()
                 )
 
-
-                // Description
-                conditionDescription.forEach { description ->
-                    MarkdownText(
-                        markdown = description,
-                        style = TextStyle(fontSize = 16.sp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                    )
+                // Scrollable Content
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp) // Ensures content takes available space
+                        .verticalScroll(rememberScrollState()) // Enables scrolling
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        entityDescription.forEach { description ->
+                            MarkdownText(
+                                markdown = description,
+                                style = TextStyle(fontSize = 14.sp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
+                    }
                 }
 
-
-                // Dismiss button
+                // Dismiss Button
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
@@ -505,4 +550,32 @@ fun ConditionDialog(
         }
     }
 }
-
+@Composable
+fun CustomScrollbar(scrollState: ScrollState) {
+    val scrollBarHeight = 50.dp // Set a fixed height for the scrollbar
+    val scrollRatio = if (scrollState.maxValue > 0) {
+        scrollState.value.toFloat() / scrollState.maxValue
+    } else {
+        0f
+    }
+    if(scrollState.maxValue > 0) {
+        Box(modifier = Modifier.fillMaxWidth()){
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(3.dp)
+                    .background(Color.Transparent)
+                    .padding(vertical = 2.dp)
+                    .align(Alignment.CenterEnd)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(scrollBarHeight)
+                        .offset(y = (scrollRatio * (515.dp.value - scrollBarHeight.value)).dp) // Vertical position based on scroll
+                        .background(Color.Black) // Color for the scrollbar thumb
+                )
+            }
+        }
+    }
+}

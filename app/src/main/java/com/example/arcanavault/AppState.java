@@ -61,6 +61,16 @@ public class AppState {
                 .findFirst()
                 .orElse(null);
     }
+    public Rule getRuleByName(String name) {
+        var rules = getListOfRules();
+        if (rules == null || name == null) {
+            return null;
+        }
+        return listOfRules.stream()
+                .filter(rule -> rule.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
+    }
 
     public void updateSpellFavoriteStatus(String index, boolean isFavorite) {
         for (Spell spell : listOfSpells) {
