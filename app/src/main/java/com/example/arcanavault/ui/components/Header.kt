@@ -15,7 +15,7 @@ fun Header(
     buttons: List<@Composable () -> Unit>,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
-    ArcanaVaultTheme {
+
         CenterAlignedTopAppBar(
             title = {
                 Text(
@@ -40,4 +40,4 @@ fun Header(
             )
         )
     }
-}
+
