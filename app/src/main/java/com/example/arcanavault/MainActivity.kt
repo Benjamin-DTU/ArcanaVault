@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                     }}
 
                 Scaffold(
-                    bottomBar = { Hotbar(navController = navController, hotBarColor = MaterialTheme.colorScheme.surface) }
+                    bottomBar = { Hotbar(navController = navController) }
                 ) { paddingValues ->
                     Surface(
                         modifier = Modifier.padding(paddingValues),

@@ -1,13 +1,16 @@
 package com.example.arcanavault.ui.components
 
-import android.content.res.Resources
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.arcanavault.Routes
 
@@ -15,10 +18,10 @@ import com.example.arcanavault.Routes
 fun Hotbar(
     navController: NavController,
     modifier: Modifier = Modifier,
-    hotBarColor: Color = MaterialTheme.colorScheme.surface
 ) {
     NavigationBar(modifier = modifier,
-        containerColor = hotBarColor //TODO figure out why this is not showing the correct color
+        containerColor = MaterialTheme.colorScheme.surface //TODO figure out why this is not showing the correct color
+                ,tonalElevation = 0.dp
     )  {
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
