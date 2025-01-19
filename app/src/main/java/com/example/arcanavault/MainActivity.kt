@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                         val apiSpells = apiClient.getAllSpells()
                         Log.d("API_SPELLS_COUNT", "Fetched ${apiSpells.size} spells from API")
 
-                        if (cachedSpells.size == apiSpells.size) {
+                        if (cachedSpells.size != apiSpells.size) {
 
                             Log.d("SPELL_SYNC", "Updating spells in DB. Replacing with spells from API.")
                             functionsDB.saveAllSpells(apiSpells)
