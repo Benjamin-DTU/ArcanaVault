@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                     }}
 
                 Scaffold(
-                    bottomBar = { Hotbar(navController = navController, hotBarColor = MaterialTheme.colorScheme.surface) }
+                    bottomBar = { Hotbar(navController = navController) }
                 ) { paddingValues ->
                     Surface(
                         modifier = Modifier.padding(paddingValues),
@@ -108,8 +108,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Routes.favorites) {
                                     FavouritesView(
                                         appState = appState,
-                                        onSpellSelected = { selectedSpell -> navController.navigate("details/${selectedSpell}") },
-                                        onBackClick = { navController.popBackStack() }
+                                        onSpellSelected = { selectedSpell -> navController.navigate("details/${selectedSpell}") }
                                     )
                                 }
                             }
