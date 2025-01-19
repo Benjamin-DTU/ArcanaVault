@@ -23,15 +23,14 @@ import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.ui.components.ListView
 import com.example.arcanavault.ui.components.SearchBar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavouritesView(
     appState: AppState,
     onSpellSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    functionsDB: FunctionsDB
 ) {
     var showFilterScreen by remember { mutableStateOf(false) }
     var showSearchBar by remember { mutableStateOf(false) }
@@ -39,16 +38,14 @@ fun FavouritesView(
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var searchQuery by remember { mutableStateOf("") }
 
-    val functionsDB = remember { FunctionsDB() }
-    var favoriteSpells by remember { mutableStateOf(listOf<Spell>()) }
+    var favoriteSpells by remember { mutableStateOf(emptyList<Spell>()) }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val scrollFraction = animateFloatAsState(targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f))
 
-    LaunchedEffect(Unit) {
-        favoriteSpells = withContext(Dispatchers.IO) {
-            functionsDB.getFavoriteSpells()
-        }
+    // Fetch spells whenever searchQuery or selectedFilters change
+    LaunchedEffect(searchQuery, selectedFilters) {
+        favoriteSpells = fetchSpells(searchQuery, selectedFilters, functionsDB).filter { it.isFavorite }
     }
 
     Scaffold(
@@ -131,16 +128,7 @@ fun FavouritesView(
                         )
                     } else {
                         ListView(
-                            items = favoriteSpells.filter { spell ->
-                                (searchQuery.isEmpty() || spell.name.contains(searchQuery, ignoreCase = true)) &&
-                                        selectedFilters.all { (category, options) ->
-                                            when (category) {
-                                                "Level" -> options.contains(spell.level.toString())
-                                                "School" -> options.contains(spell.school.name)
-                                                else -> true
-                                            }
-                                        }
-                            },
+                            items = favoriteSpells,
                             onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
                             onFavoriteClick = { spell ->
 
@@ -148,7 +136,8 @@ fun FavouritesView(
 
                                 appState.updateSpellFavoriteStatus(spell.index, false)
 
-                                favoriteSpells = favoriteSpells.filter { it.index != spell.index }
+                                // Refresh favoriteSpells after removing from favorites
+                                favoriteSpells = fetchSpells(searchQuery, selectedFilters, functionsDB).filter { it.isFavorite }
 
                                 val updatedSpells = appState.getListOfSpells().map { s ->
                                     if (s.index == spell.index) {
@@ -172,3 +161,6 @@ fun FavouritesView(
         }
     }
 }
+
+
+

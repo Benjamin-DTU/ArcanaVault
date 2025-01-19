@@ -108,6 +108,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Routes.favorites) {
                                     FavouritesView(
                                         appState = appState,
+                                        functionsDB = functionsDB,
                                         onSpellSelected = { selectedSpell -> navController.navigate("details/${selectedSpell}") }
                                     )
                                 }
