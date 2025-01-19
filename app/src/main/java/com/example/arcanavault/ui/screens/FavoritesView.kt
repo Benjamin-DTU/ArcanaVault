@@ -31,7 +31,6 @@ fun FavouritesView(
     var favoriteSpells by remember { mutableStateOf(listOf<Spell>()) }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val scrollFraction = animateFloatAsState(targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f))
 
     LaunchedEffect(Unit) {
         favoriteSpells = withContext(Dispatchers.IO) {
