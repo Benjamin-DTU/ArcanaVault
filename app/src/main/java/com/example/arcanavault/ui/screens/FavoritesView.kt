@@ -23,7 +23,6 @@ import kotlinx.coroutines.withContext
 @Composable
 fun FavouritesView(
     appState: AppState,
-    onBackClick: () -> Unit,
     onSpellSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
