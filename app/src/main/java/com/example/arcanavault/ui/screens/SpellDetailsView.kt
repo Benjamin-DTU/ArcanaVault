@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -47,11 +48,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.times
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.arcanavault.AppState
 import com.example.arcanavault.model.data.Rule
 import com.example.arcanavault.model.data.Spell
+import com.example.arcanavault.ui.components.CustomScrollbar
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
@@ -210,7 +213,7 @@ fun SpellDetailsView(
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 4.dp).fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                         )
 
                         Box(
@@ -222,13 +225,13 @@ fun SpellDetailsView(
                             Row(
                                 modifier = Modifier
                                     .horizontalScroll(scrollState)
-                                    .fillMaxWidth()
+                                    .wrapContentWidth()
                                     .padding(6.dp),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 spell.damage.damageAtSlotLevel.forEach { (lvl, damage) ->
                                     Column(
-                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        modifier = Modifier.padding(horizontal = 4.dp),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
@@ -240,20 +243,24 @@ fun SpellDetailsView(
                                             text = damage,
                                             style = MaterialTheme.typography.bodyMedium
                                         )
-                                Spacer(modifier = Modifier.height(8.dp))
+                                        if (scrollState.maxValue > 0) {
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                        }
                                     }
                                 }
 
                             }
 
-                            HorizontalScrollbar(
-                                scrollState = scrollState,
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(horizontal = 6.dp)
-                            )
+                            if (scrollState.maxValue > 0) {
+                                CustomScrollbar(
+                                    scrollState = scrollState,
+                                    type ="horizontal",
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
                         }
-                            Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
 
@@ -265,7 +272,7 @@ fun SpellDetailsView(
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                         )
 
                         Box(
@@ -283,7 +290,7 @@ fun SpellDetailsView(
                             ) {
                                 spell.damage.damageAtCharLevel.forEach { (lvl, damage) ->
                                     Column(
-                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        modifier = Modifier.padding(horizontal = 4.dp),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
@@ -295,20 +302,14 @@ fun SpellDetailsView(
                                             text = damage,
                                             style = MaterialTheme.typography.bodyMedium
                                         )
-                                        Spacer(modifier = Modifier.height(8.dp))
+                                        if (scrollState.maxValue > 0) {
+                                            Spacer(modifier = Modifier.height(8.dp))
+                                        }
                                     }
                                 }
 
                             }
-
-                            HorizontalScrollbar(
-                                scrollState = scrollState,
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(horizontal = 6.dp)
-                            )
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
@@ -520,7 +521,7 @@ fun SpellDetailsView(
                             }
                         }
                     }
-                        CustomScrollbar(scrollState = scrollState)
+                        CustomScrollbar(scrollState = scrollState, type = "vertical")
                 }
             }
 
@@ -639,60 +640,5 @@ fun EntityDialog(
         }
     }
 }
-@Composable
-fun CustomScrollbar(scrollState: ScrollState) {
-    val scrollBarHeight = 50.dp
-    val scrollRatio = if (scrollState.maxValue > 0) {
-        scrollState.value.toFloat() / scrollState.maxValue
-    } else {
-        0f
-    }
-    if(scrollState.maxValue > 0) {
-        Box(modifier = Modifier.fillMaxWidth()){
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(3.dp)
-                    .background(Color.Transparent)
-                    .padding(vertical = 2.dp)
-                    .align(Alignment.CenterEnd)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(scrollBarHeight)
-                        .offset(y = (scrollRatio * (515.dp.value - scrollBarHeight.value)).dp)
-                        .background(Color.Black)
-                )
-            }
-        }
-    }
-}
-@Composable
-fun HorizontalScrollbar(scrollState: ScrollState, modifier: Modifier = Modifier) {
-    val scrollRatio = if (scrollState.maxValue > 0) {
-        scrollState.value.toFloat() / scrollState.maxValue
-    } else {
-        0f
-    }
-    val scrollbarWidth = 50.dp
-    val thumbOffset = scrollRatio * (scrollState.maxValue.dp.value - scrollbarWidth.value)
 
-    if(scrollState.maxValue > 0) {
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(4.dp)
-                .background(Color.Transparent)
-        ) {
-            Box(
-                modifier = Modifier
-                    .width(scrollbarWidth)
-                    .height(4.dp)
-                    .offset(x = thumbOffset.dp)
-                    .background(Color.Black)
-                    .clip(MaterialTheme.shapes.extraSmall)
-            )
-        }
-    }
-}
+
