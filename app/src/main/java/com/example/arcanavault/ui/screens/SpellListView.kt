@@ -31,12 +31,15 @@ fun SpellListView(
     var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.getListOfSpells())) }
     var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
     var searchQuery by remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
 
-    val spells = appState.getListOfSpells()
-
+    var spells by remember { mutableStateOf(emptyList<Spell>()) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val scrollFraction = animateFloatAsState(targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f))
+
+    // Fetch spells whenever searchQuery or selectedFilters change
+    LaunchedEffect(searchQuery, selectedFilters) {
+        spells = fetchSpells(searchQuery, selectedFilters, functionsDB)
+    }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -108,16 +111,7 @@ fun SpellListView(
                 )
             } else {
                 ListView(
-                    items = spells.filter { spell ->
-                        (searchQuery.isEmpty() || spell.name.contains(searchQuery, ignoreCase = true)) &&
-                                selectedFilters.all { (category, options) ->
-                                    when (category) {
-                                        "Level" -> options.contains(spell.level.toString())
-                                        "School" -> options.contains(spell.school.name)
-                                        else -> true
-                                    }
-                                }
-                    },
+                    items = spells,
                     titleProvider = { spell -> spell.name },
                     detailsProvider = { spell ->
                         listOf("Level: ${spell.level}", "School: ${spell.school.name}")
@@ -148,13 +142,14 @@ fun SpellListView(
     }
 }
 
+
 // Helper function to filter spells by selected filters and search query
-suspend fun fetchSpells(
+fun fetchSpells(
     query: String,
     selectedFilters: Map<String, List<String>>,
-    apiClient: ApiClient
+    functionsDB: FunctionsDB
 ): List<Spell> {
-    val allSpells = apiClient.getAllSpells()
+    val allSpells = functionsDB.getSpellsFromDB()
 
     return allSpells.filter { spell ->
         // Check if the spell matches the search query
@@ -175,3 +170,4 @@ suspend fun fetchSpells(
                 }
     }
 }
+
