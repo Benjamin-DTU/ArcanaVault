@@ -641,7 +641,7 @@ fun EntityDialog(
 }
 @Composable
 fun CustomScrollbar(scrollState: ScrollState) {
-    val scrollBarHeight = 50.dp // Set a fixed height for the scrollbar
+    val scrollBarHeight = 50.dp
     val scrollRatio = if (scrollState.maxValue > 0) {
         scrollState.value.toFloat() / scrollState.maxValue
     } else {
@@ -661,8 +661,8 @@ fun CustomScrollbar(scrollState: ScrollState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(scrollBarHeight)
-                        .offset(y = (scrollRatio * (515.dp.value - scrollBarHeight.value)).dp) // Vertical position based on scroll
-                        .background(Color.Black) // Color for the scrollbar thumb
+                        .offset(y = (scrollRatio * (515.dp.value - scrollBarHeight.value)).dp)
+                        .background(Color.Black)
                 )
             }
         }
@@ -675,23 +675,23 @@ fun HorizontalScrollbar(scrollState: ScrollState, modifier: Modifier = Modifier)
     } else {
         0f
     }
-    val scrollbarWidth = 50.dp // Fixed width for the scrollbar thumb
+    val scrollbarWidth = 50.dp
     val thumbOffset = scrollRatio * (scrollState.maxValue.dp.value - scrollbarWidth.value)
 
     if(scrollState.maxValue > 0) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .height(4.dp) // Height of the scrollbar track
-                .background(Color.Transparent) // Track color
+                .height(4.dp)
+                .background(Color.Transparent)
         ) {
             Box(
                 modifier = Modifier
                     .width(scrollbarWidth)
-                    .height(4.dp) // Thumb height
-                    .offset(x = thumbOffset.dp) // Thumb offset based on scroll
-                    .background(Color.Black) // Thumb color
-                    .clip(MaterialTheme.shapes.extraSmall) // Rounded thumb shape
+                    .height(4.dp)
+                    .offset(x = thumbOffset.dp)
+                    .background(Color.Black)
+                    .clip(MaterialTheme.shapes.extraSmall)
             )
         }
     }
