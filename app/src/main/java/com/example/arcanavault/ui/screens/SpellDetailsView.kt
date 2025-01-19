@@ -1,10 +1,10 @@
 package com.example.arcanavault.ui.screens
 
-import android.content.res.Resources
-import androidx.compose.animation.core.animateDpAsState
+import android.graphics.Paint.Align
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -54,7 +53,6 @@ import com.example.arcanavault.AppState
 import com.example.arcanavault.model.data.Rule
 import com.example.arcanavault.model.data.Spell
 import dev.jeziellago.compose.markdowntext.MarkdownText
-import kotlin.reflect.typeOf
 
 @Composable
 fun SpellDetailsView(
@@ -70,8 +68,9 @@ fun SpellDetailsView(
 
     if (spell != null) {
         LazyColumn(
+            userScrollEnabled = false,
             modifier = modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(14.dp)
         ) {
             item {
@@ -184,6 +183,134 @@ fun SpellDetailsView(
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Damage information
+            if (spell.damage != null) {
+                item {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                append("Damage Type: ")
+                            }
+                            append(spell.damage.damageType?.name ?: "Unknown")
+                        },
+                        fontSize = 14.sp,
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+
+                if (spell.damage.damageAtSlotLevel.isNotEmpty()) {
+                    item {
+                        // Title
+                        Text(
+                            text = "Damage by Slot Level",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(bottom = 4.dp).fillMaxWidth()
+                        )
+
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val scrollState = rememberScrollState()
+
+                            Row(
+                                modifier = Modifier
+                                    .horizontalScroll(scrollState)
+                                    .fillMaxWidth()
+                                    .padding(6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                spell.damage.damageAtSlotLevel.forEach { (lvl, damage) ->
+                                    Column(
+                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Level $lvl",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            text = damage,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                    }
+                                }
+
+                            }
+
+                            HorizontalScrollbar(
+                                scrollState = scrollState,
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(horizontal = 6.dp)
+                            )
+                        }
+                            Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+
+                if (spell.damage.damageAtCharLevel.isNotEmpty()) {
+                    item {
+                        // Title
+                        Text(
+                            text = "Damage by Character Level",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+                        )
+
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val scrollState = rememberScrollState()
+
+                            Row(
+                                modifier = Modifier
+                                    .horizontalScroll(scrollState)
+                                    .fillMaxWidth()
+                                    .padding(6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                spell.damage.damageAtCharLevel.forEach { (lvl, damage) ->
+                                    Column(
+                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Level $lvl",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            text = damage,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
+                                }
+
+                            }
+
+                            HorizontalScrollbar(
+                                scrollState = scrollState,
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(horizontal = 6.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
             }
 
             // Description header
@@ -397,54 +524,7 @@ fun SpellDetailsView(
                 }
             }
 
-            // Damage information
-            if (spell.damage != null) {
-                item {
 
-                    Text(
-                        text = "Damage Type: ${spell.damage.damageType?.name ?: "Unknown"}",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
-                if (spell.damage.damageAtSlotLevel.isNotEmpty()) {
-                    item {
-                        Text(
-                            text = "Damage by Slot Level:",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-
-                        spell.damage.damageAtSlotLevel.forEach { (lvl, damage) ->
-                            Text(
-                                text = "Slot Level $lvl: $damage",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-
-                if (spell.damage.damageAtCharLevel.isNotEmpty()) {
-                    item {
-                        Text(
-                            text = "Damage by Character Level:",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-
-                        spell.damage.damageAtCharLevel.forEach { (charLvl, damage) ->
-                            Text(
-                                text = "Character Level $charLvl: $damage",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-            }
         }
 
 
@@ -454,6 +534,7 @@ fun SpellDetailsView(
                 EntityDialog(
                     entityName = selectedCondition?.name.toString(),
                     entityDescription = it,
+                    type = "Condition",
                     onDismiss = { showConditionDialog = false }
                 )
             }
@@ -464,6 +545,7 @@ fun SpellDetailsView(
             selectedRule?.description?.let {
                 EntityDialog(
                     entityName = "",
+                    type = "Rule",
                     entityDescription = listOf(it),
                     onDismiss = { showRuleDialog = false }
                 )
@@ -489,6 +571,7 @@ fun SpellDetailsView(
 @Composable
 fun EntityDialog(
     entityName: String,
+    type: String,
     entityDescription: List<String>,
     onDismiss: () -> Unit
 ) {
@@ -502,11 +585,17 @@ fun EntityDialog(
                 )
                 .padding(16.dp)
         ) {
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
+                Text(text = type,
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 // Title
                 Text(
                     text = entityName,
@@ -519,8 +608,8 @@ fun EntityDialog(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(400.dp) // Ensures content takes available space
-                        .verticalScroll(rememberScrollState()) // Enables scrolling
+                        .height(400.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -576,6 +665,34 @@ fun CustomScrollbar(scrollState: ScrollState) {
                         .background(Color.Black) // Color for the scrollbar thumb
                 )
             }
+        }
+    }
+}
+@Composable
+fun HorizontalScrollbar(scrollState: ScrollState, modifier: Modifier = Modifier) {
+    val scrollRatio = if (scrollState.maxValue > 0) {
+        scrollState.value.toFloat() / scrollState.maxValue
+    } else {
+        0f
+    }
+    val scrollbarWidth = 50.dp // Fixed width for the scrollbar thumb
+    val thumbOffset = scrollRatio * (scrollState.maxValue.dp.value - scrollbarWidth.value)
+
+    if(scrollState.maxValue > 0) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(4.dp) // Height of the scrollbar track
+                .background(Color.Transparent) // Track color
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(scrollbarWidth)
+                    .height(4.dp) // Thumb height
+                    .offset(x = thumbOffset.dp) // Thumb offset based on scroll
+                    .background(Color.Black) // Thumb color
+                    .clip(MaterialTheme.shapes.extraSmall) // Rounded thumb shape
+            )
         }
     }
 }
