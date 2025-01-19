@@ -1,7 +1,5 @@
 package com.example.arcanavault.ui.screens
 
-import android.graphics.Paint.Align
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -10,11 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,7 +44,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.times
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.arcanavault.AppState
@@ -56,7 +51,6 @@ import com.example.arcanavault.model.data.Rule
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.CustomScrollbar
 import dev.jeziellago.compose.markdowntext.MarkdownText
-
 
 
 @Composable
@@ -121,7 +115,6 @@ fun SpellDetailsView(
                         append(spell.level.toString())
                     },
                     fontSize = 14.sp,
-                    color = Color.Black
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -141,7 +134,6 @@ fun SpellDetailsView(
                             append(spell.school?.name)
                         },
                         fontSize = 14.sp,
-                        color = Color.Black
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     AsyncImage(
@@ -169,7 +161,6 @@ fun SpellDetailsView(
                         append(spell.castingTime)
                     },
                     fontSize = 14.sp,
-                    color = Color.Black
                 )
 
 
@@ -186,7 +177,6 @@ fun SpellDetailsView(
                         append(spell.range)
                     },
                     fontSize = 14.sp,
-                    color = Color.Black
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -202,7 +192,6 @@ fun SpellDetailsView(
                             append(spell.damage.damageType?.name ?: "Unknown")
                         },
                         fontSize = 14.sp,
-                        color = Color.Black
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -332,7 +321,6 @@ fun SpellDetailsView(
                     )
 
                     HorizontalDivider(
-                        color = Color.Black,
                         thickness = 1.5.dp,
                         modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp, top = 4.dp)
                     )
@@ -414,7 +402,6 @@ fun SpellDetailsView(
                                                         }
                                                     }
                                                 },
-                                                linkColor = Color.Blue,
                                                 enableUnderlineForLink = false,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
@@ -584,7 +571,7 @@ fun EntityDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surface,
                     shape = MaterialTheme.shapes.medium
                 )
                 .padding(16.dp)
