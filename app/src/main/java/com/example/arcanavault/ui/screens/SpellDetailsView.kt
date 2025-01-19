@@ -57,6 +57,8 @@ import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.CustomScrollbar
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
+
+
 @Composable
 fun SpellDetailsView(
     appState: AppState,
@@ -64,6 +66,7 @@ fun SpellDetailsView(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit
 ) {
+
     var showConditionDialog by remember { mutableStateOf(false) }
     var showRuleDialog by remember { mutableStateOf(false) }
     var selectedCondition by remember { mutableStateOf<com.example.arcanavault.model.data.Condition?>(null) }
@@ -71,7 +74,7 @@ fun SpellDetailsView(
 
     if (spell != null) {
         LazyColumn(
-            userScrollEnabled = false,
+            //userScrollEnabled = false,
             modifier = modifier
                 .fillMaxWidth()
                 .padding(14.dp)
@@ -352,7 +355,7 @@ fun SpellDetailsView(
                     Column(
                         modifier = Modifier
                             .verticalScroll(state = scrollState)
-                            .fillMaxWidth()
+                            .fillMaxSize()
                             .padding(end = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {

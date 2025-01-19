@@ -28,6 +28,8 @@ public class AppState {
         return listOfConditions;
     }
 
+
+
     public void setListOfSpells(List<Spell> spells) {
         this.listOfSpells = spells;
     }
