@@ -37,7 +37,7 @@ class ApiClient {
     suspend fun getAllSpells(): List<Spell> = coroutineScope {
         if (spells.isEmpty()) {
             spells = apiService.getAllSpells()
-            Log.d("API_SPELLS_COUNT", "Fetched ${spells.size} spells from API")
+            //Log.d("API_SPELLS_COUNT", "Fetched ${spells.size} spells from API")
         }
         spells
     }

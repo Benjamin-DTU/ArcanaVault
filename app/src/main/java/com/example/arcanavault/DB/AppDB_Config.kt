@@ -17,10 +17,11 @@ class AppDB_Config : Application() {
         Log.d("AppDB_Config", "Realm has been initialized")
 
         val realmConfig = RealmConfiguration.Builder(
-            schema = setOf(Spell::class)
+            schema = setOf(Spell::class, Condition::class, Rule::class, RuleSection::class)
         )
-            .deleteRealmIfMigrationNeeded()  // No argument is needed here
+            .deleteRealmIfMigrationNeeded()
             .build()
+
 
         realm = Realm.open(realmConfig)
     }

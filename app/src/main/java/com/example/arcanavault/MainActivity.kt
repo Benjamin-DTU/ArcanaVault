@@ -42,41 +42,73 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) {
                     val cachedSpells = functionsDB.getSpellsFromDB()
+                    val cachedRules = functionsDB.getRulesFromDB()
+                    val cachedConditions = functionsDB.getConditionsFromDB()
+
                     Log.d("SPELLS_FROM_DB", "Cached spells count: ${cachedSpells.size}")
+                    Log.d("RULES_FROM_DB", "Cached rules count: ${cachedRules.size}")
+                    Log.d("CONDITIONS_FROM_DB", "Cached conditions count: ${cachedConditions.size}")
 
                     try {
+                        // Fetch data from API
+                        val apiSpells = apiClient.getAllSpells()
                         val apiRules = apiClient.getAllRules()
                         val apiConditions = apiClient.getAllConditions()
-                        val apiSpells = apiClient.getAllSpells()
+
                         Log.d("API_SPELLS_COUNT", "Fetched ${apiSpells.size} spells from API")
+                        Log.d("API_RULES_COUNT", "Fetched ${apiRules.size} rules from API")
+                        Log.d("API_CONDITIONS_COUNT", "Fetched ${apiConditions.size} conditions from API")
 
+                        // Sync Spells
                         if (cachedSpells.size != apiSpells.size) {
-
                             Log.d("SPELL_SYNC", "Updating spells in DB. Replacing with spells from API.")
                             functionsDB.saveAllSpells(apiSpells)
                             appState.setListOfSpells(apiSpells)
-                            appState.setListOfRules(apiRules)
-                            appState.setListOfCondition(apiConditions)
                         } else {
-
                             Log.d("SPELL_SYNC", "Spell count matches. Using cached spells from DB.")
                             appState.setListOfSpells(cachedSpells)
                         }
+
+                        // Sync Rules
+                        if (cachedRules.size != apiRules.size) {
+                            Log.d("RULE_SYNC", "Updating rules in DB. Replacing with rules from API.")
+                            functionsDB.saveAllRules(apiRules)
+                            appState.setListOfRules(apiRules)
+                        } else {
+                            Log.d("RULE_SYNC", "Rule count matches. Using cached rules from DB.")
+                            appState.setListOfRules(cachedRules)
+                        }
+
+                        // Sync Conditions
+                        if (cachedConditions.size != apiConditions.size) {
+                            Log.d("CONDITION_SYNC", "Updating conditions in DB. Replacing with conditions from API.")
+                            functionsDB.saveAllConditions(apiConditions)
+                            appState.setListOfCondition(apiConditions)
+                        } else {
+                            Log.d("CONDITION_SYNC", "Condition count matches. Using cached conditions from DB.")
+                            appState.setListOfCondition(cachedConditions)
+                        }
+
                         isLoading = false
                     } catch (e: Exception) {
-                        Log.e("SPELL_SYNC_ERROR", "Error fetching spells from API: ${e.message}")
+                        Log.e("SYNC_ERROR", "Error fetching data from API: ${e.message}")
 
-                        if (cachedSpells.isNotEmpty()) {
-                            Log.d("SPELL_SYNC", "API failed. Using cached spells from DB.")
+                        // Handle API errors by falling back to cached data
+                        if (cachedSpells.isNotEmpty() || cachedRules.isNotEmpty() || cachedConditions.isNotEmpty()) {
+                            Log.d("SYNC_ERROR", "API failed. Using cached data from DB.")
                             appState.setListOfSpells(cachedSpells)
+                            appState.setListOfRules(cachedRules)
+                            appState.setListOfCondition(cachedConditions)
                         } else {
                             Log.e(
-                                "SPELL_SYNC_ERROR",
-                                "No cached spells available. Showing error UI."
+                                "SYNC_ERROR",
+                                "No cached data available. Showing error UI."
                             )
                         }
                         isLoading = false
-                    }}
+                    }
+                }
+
 
                 Scaffold(
                     bottomBar = { Hotbar(navController = navController) }
