@@ -49,7 +49,7 @@ fun <T : IItem> ListView(
 
                                 )
                             }
-                            // Always show the star border
+
                             Icon(
                                 imageVector = Icons.Default.StarBorder,
                                 contentDescription = "Favorite border",

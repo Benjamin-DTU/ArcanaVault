@@ -152,18 +152,20 @@ fun SpellListView(
                     },
                     onItemClick = onSpellSelected,
                     onFavoriteClick = { spell ->
-                        // Toggle favorite status
+
                         val newFavoriteStatus = !spell.isFavorite
                         spell.isFavorite = newFavoriteStatus
+
                         if (newFavoriteStatus) {
-                            functionsDB.addToFavorites(spell) // Add to favorites in DB
+                            functionsDB.addToFavorites(spell)
                         } else {
-                            functionsDB.removeFromFavorites(spell.index) // Remove from favorites in DB
+                            functionsDB.removeFromFavorites(spell.index)
                         }
 
-                        appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus) // Update AppState
 
-                        // Update the spells list with the new favorite status
+                        appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
+
+                        // Refresh spell list in AppState
                         val updatedSpells = appState.getListOfSpells().map { s ->
                             if (s.index == spell.index) {
                                 s.isFavorite = newFavoriteStatus

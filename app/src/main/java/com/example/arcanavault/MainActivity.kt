@@ -135,7 +135,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable("details/{selectedSpell}") { backStackEntry ->
                                     val spell = appState.getSpellByIndex(backStackEntry.arguments?.getString("selectedSpell"))
-                                    SpellDetailsView(appState = appState,spell = spell, onBackClick = { navController.popBackStack() })
+                                    SpellDetailsView(appState = appState,spell = spell,functionsDB = functionsDB, onBackClick = { navController.popBackStack() })
                                 }
                                 composable(Routes.favorites) {
                                     FavouritesView(

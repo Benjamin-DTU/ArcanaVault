@@ -34,7 +34,7 @@ class FunctionsDB {
             classes.addAll(this@toRealmModel.classes.map { it.name })
             subclasses.addAll(this@toRealmModel.subclasses.map { it.name })
             damageType =
-                this@toRealmModel.damage?.damageType?.name ?: "Unknown" // Flatten damageType
+                this@toRealmModel.damage?.damageType?.name ?: "Unknown"
             damageAtSlotLevel.addAll(
                 this@toRealmModel.damage?.damageAtSlotLevel?.values ?: emptyList()
             )
@@ -70,8 +70,8 @@ class FunctionsDB {
             damage = Damage(
                 damageType = ItemReference(index = this.damageType, name = this.damageType),
                 damageAtSlotLevel = this.damageAtSlotLevel.associate {
-                    val parts = it.split(": ") // Example: "1: 5 damage"
-                    parts[0] to parts.getOrElse(1) { "" } // Safe handling for unexpected formats
+                    val parts = it.split(": ")
+                    parts[0] to parts.getOrElse(1) { "" }
                 }
             )
         ).apply {
@@ -117,7 +117,6 @@ class FunctionsDB {
             //Log.d("Database", spell.toString())
         //}
 
-        // Convert Realm objects to API models and log them as well
         val apiSpells = allSpells.map { it.toApiSpell() }
         //apiSpells.forEach { spell ->
         //Log.d("Database", spell.toString())

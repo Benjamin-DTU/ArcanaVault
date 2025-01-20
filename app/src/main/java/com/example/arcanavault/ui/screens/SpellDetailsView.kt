@@ -2,7 +2,8 @@ package com.example.arcanavault.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +22,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,12 +52,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil.compose.AsyncImage
 import com.example.arcanavault.AppState
 import com.example.arcanavault.model.data.Rule
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.CustomScrollbar
 import dev.jeziellago.compose.markdowntext.MarkdownText
+import com.example.arcanavault.DB.FunctionsDB
+
 
 
 @Composable
@@ -62,9 +66,10 @@ fun SpellDetailsView(
     appState: AppState,
     spell: Spell?,
     modifier: Modifier = Modifier,
+    functionsDB: FunctionsDB,
     onBackClick: () -> Unit
-) {
 
+) {
     var showConditionDialog by remember { mutableStateOf(false) }
     var showRuleDialog by remember { mutableStateOf(false) }
     var selectedCondition by remember { mutableStateOf<com.example.arcanavault.model.data.Condition?>(null) }
@@ -72,26 +77,65 @@ fun SpellDetailsView(
 
     if (spell != null) {
         LazyColumn(
-            //userScrollEnabled = false,
             modifier = modifier
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
             item {
+                // Back button and favorite button row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    // Back Button
                     Icon(
                         imageVector = Icons.Filled.ArrowBackIosNew,
                         contentDescription = "Back",
                         modifier = Modifier
                             .padding(start = 4.dp)
-                            .height(30.dp)
-                            .width(50.dp)
-                            .padding(end = 24.dp)
                             .clickable { onBackClick() }
                     )
+
+                    // Favorite Button
+                    val isFavorite = remember { mutableStateOf(spell.isFavorite) }
+                    IconButton(onClick = {
+
+                        val newFavoriteStatus = !isFavorite.value
+                        isFavorite.value = newFavoriteStatus
+                        spell.isFavorite = newFavoriteStatus
+
+
+                        if (newFavoriteStatus) {
+                            functionsDB.addToFavorites(spell)
+                        } else {
+                            functionsDB.removeFromFavorites(spell.index)
+                        }
+
+
+                        appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
+                    }) {
+                        Box {
+
+                            if (isFavorite.value) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = "Remove from Favorites",
+                                    tint = Color.Yellow,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                )
+                            }
+
+                            Icon(
+                                imageVector = Icons.Default.StarOutline,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .size(28.dp)
+                            )
+
+                        }
+                    }
                 }
             }
 
