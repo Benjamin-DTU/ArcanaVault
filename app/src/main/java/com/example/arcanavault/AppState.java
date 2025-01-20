@@ -18,6 +18,8 @@ public class AppState {
 
     private Map<String, List<String>> selectedFilters = new HashMap<>();
     private String searchQuery = "";
+    private String sortOption = "A-Z";
+
 
     public AppState() {
         this.listOfSpells = new ArrayList<>();
@@ -102,5 +104,13 @@ public class AppState {
 
     public void setSearchQuery(String query) {
         this.searchQuery = query;
+    }
+
+    public String getSortOption() {
+        return sortOption;
+    }
+
+    public void setSortOption(String sortOption) {
+        this.sortOption = sortOption;
     }
 }
