@@ -56,7 +56,7 @@ fun Hotbar(
         )
 
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorite") },
+            icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorites") },
             label = { Text("Favorite") },
             selected = currentRoute == Routes.favorites,
             onClick = {
