@@ -45,7 +45,7 @@ fun <T : IItem> ListView(
                                 Icon(
                                     imageVector = Icons.Default.Star,
                                     contentDescription = "Favorite fill",
-                                    tint =  Color.Yellow,
+                                    tint = Color.Yellow,
 
                                 )
                             }
