@@ -1,6 +1,8 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -136,7 +140,24 @@ fun SpellDetailsView(
                         fontSize = 14.sp,
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    AsyncImage(
+
+                    val context = LocalContext.current
+                    val imageId = context.resources.getIdentifier(
+                        spell.school.name.lowercase(),
+                        "drawable",
+                        context.packageName
+                    )
+
+                    Image(
+                        painter = painterResource(id = imageId),
+                        contentDescription = "School name Image",
+                        contentScale = ContentScale.Fit,
+                        alignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(MaterialTheme.shapes.extraSmall)
+                    )
+                    /*AsyncImage(
                         model = spell.imageUrl,
                         contentDescription = "${spell.name} Image",
                         contentScale = ContentScale.Fit,
@@ -144,7 +165,7 @@ fun SpellDetailsView(
                         modifier = Modifier
                             .size(24.dp)
                             .clip(MaterialTheme.shapes.extraSmall)
-                    )
+                    )*/
                 }
 
 
