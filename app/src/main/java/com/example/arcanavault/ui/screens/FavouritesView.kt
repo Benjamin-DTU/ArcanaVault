@@ -6,13 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -35,8 +29,10 @@ fun FavouritesView(
     var showFilterScreen by remember { mutableStateOf(false) }
     var showSearchBar by remember { mutableStateOf(false) }
     var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.getListOfSpells())) }
-    var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
-    var searchQuery by remember { mutableStateOf("") }
+
+    // Initialize filters and query from AppState
+    var selectedFilters by remember { mutableStateOf(appState.getSelectedFilters()) }
+    var searchQuery by remember { mutableStateOf(appState.getSearchQuery()) }
 
     var favoriteSpells by remember { mutableStateOf(emptyList<Spell>()) }
 
@@ -46,6 +42,8 @@ fun FavouritesView(
     // Fetch spells whenever searchQuery or selectedFilters change
     LaunchedEffect(searchQuery, selectedFilters) {
         favoriteSpells = fetchSpells(searchQuery, selectedFilters, functionsDB).filter { it.isFavorite }
+        appState.setSelectedFilters(selectedFilters) // Save filters to AppState
+        appState.setSearchQuery(searchQuery)         // Save query to AppState
     }
 
     Scaffold(
@@ -121,8 +119,8 @@ fun FavouritesView(
                     if (favoriteSpells.isEmpty()) {
                         Spacer(modifier = Modifier.height(48.dp))
                         Text(
-                            text = "No favourites have been saved. " +
-                                    "Click on the star icon to save a spell to your favourites.",
+                            text = "No favorites have been saved. " +
+                                    "Click on the star icon to save a spell to your favorites.",
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(8.dp)
                         )
@@ -161,6 +159,3 @@ fun FavouritesView(
         }
     }
 }
-
-
-

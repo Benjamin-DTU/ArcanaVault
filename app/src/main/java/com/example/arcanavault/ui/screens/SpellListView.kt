@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.example.arcanavault.AppState
-import com.example.arcanavault.controller.api.ApiClient
 import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.DB.FunctionsDB
@@ -29,8 +28,10 @@ fun SpellListView(
     var showFilterScreen by remember { mutableStateOf(false) }
     var showSearchBar by remember { mutableStateOf(false) }
     var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.getListOfSpells())) }
-    var selectedFilters by remember { mutableStateOf(emptyMap<String, List<String>>()) }
-    var searchQuery by remember { mutableStateOf("") }
+
+    // Initialize filters and query from AppState
+    var selectedFilters by remember { mutableStateOf(appState.getSelectedFilters()) }
+    var searchQuery by remember { mutableStateOf(appState.getSearchQuery()) }
 
     var spells by remember { mutableStateOf(emptyList<Spell>()) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -39,6 +40,8 @@ fun SpellListView(
     // Fetch spells whenever searchQuery or selectedFilters change
     LaunchedEffect(searchQuery, selectedFilters) {
         spells = fetchSpells(searchQuery, selectedFilters, functionsDB)
+        appState.selectedFilters = selectedFilters // Save filters to AppState
+        appState.searchQuery = searchQuery         // Save query to AppState
     }
 
     Scaffold(
@@ -119,7 +122,7 @@ fun SpellListView(
                     onItemClick = onSpellSelected,
                     onFavoriteClick = { spell ->
                         val newFavoriteStatus = !spell.isFavorite
-                        spell.isFavorite = !spell.isFavorite
+                        spell.isFavorite = newFavoriteStatus
                         if (newFavoriteStatus) {
                             functionsDB.addToFavorites(spell)
                         } else {
@@ -141,7 +144,6 @@ fun SpellListView(
         }
     }
 }
-
 
 // Helper function to filter spells by selected filters and search query
 fun fetchSpells(
@@ -170,4 +172,3 @@ fun fetchSpells(
                 }
     }
 }
-

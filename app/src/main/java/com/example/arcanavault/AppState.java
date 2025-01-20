@@ -7,12 +7,17 @@ import com.example.arcanavault.model.data.IItem;
 import com.example.arcanavault.model.data.Rule;
 import com.example.arcanavault.model.data.Spell;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AppState {
     private List<Spell> listOfSpells;
     private List<Condition> listOfConditions;
     private List<Rule> listOfRules;
+
+    private Map<String, List<String>> selectedFilters = new HashMap<>();
+    private String searchQuery = "";
 
     public AppState() {
         this.listOfSpells = new ArrayList<>();
@@ -83,5 +88,19 @@ public class AppState {
         }
     }
 
+    public Map<String, List<String>> getSelectedFilters() {
+        return selectedFilters;
+    }
 
+    public void setSelectedFilters(Map<String, List<String>> filters) {
+        this.selectedFilters = filters;
+    }
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String query) {
+        this.searchQuery = query;
+    }
 }
