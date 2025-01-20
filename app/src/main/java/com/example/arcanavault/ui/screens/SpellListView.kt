@@ -191,7 +191,7 @@ fun fetchSpells(
 
     return allSpells.filter { spell ->
         // Check if the spell matches the search query
-        (query.isEmpty() || spell.name.startsWith(query, ignoreCase = true)) &&
+        (query.isEmpty() || spell.searchCombined.contains(query, ignoreCase = true)) &&
                 // Check if the spell matches the selected filters
                 selectedFilters.all { (category, options) ->
                     when (category) {

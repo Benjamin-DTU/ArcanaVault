@@ -29,7 +29,8 @@ class Spell(
     @SerialName("damage") val damage: Damage? = null,
     val school: ItemReference,
     @SerialName("classes") val classes: List<ItemReference> = emptyList(),
-    @SerialName("subclasses") val subclasses: List<ItemReference> = emptyList()
+    @SerialName("subclasses") val subclasses: List<ItemReference> = emptyList(),
+    @SerialName("searchCombined") val searchCombined: String = ""
 ) : IItem {
     override var isFavorite: Boolean by mutableStateOf(_isFavorite);
 

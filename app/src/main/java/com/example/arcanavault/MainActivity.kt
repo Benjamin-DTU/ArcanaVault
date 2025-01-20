@@ -60,34 +60,34 @@ class MainActivity : ComponentActivity() {
                         Log.d("API_CONDITIONS_COUNT", "Fetched ${apiConditions.size} conditions from API")
 
                         // Sync Spells
-                        if (cachedSpells.size != apiSpells.size) {
+
                             Log.d("SPELL_SYNC", "Updating spells in DB. Replacing with spells from API.")
                             functionsDB.saveAllSpells(apiSpells)
                             appState.setListOfSpells(apiSpells)
-                        } else {
-                            Log.d("SPELL_SYNC", "Spell count matches. Using cached spells from DB.")
-                            appState.setListOfSpells(cachedSpells)
-                        }
+
+                            //Log.d("SPELL_SYNC", "Spell count matches. Using cached spells from DB.")
+                            //appState.setListOfSpells(cachedSpells)
+
 
                         // Sync Rules
-                        if (cachedRules.size != apiRules.size) {
+
                             Log.d("RULE_SYNC", "Updating rules in DB. Replacing with rules from API.")
                             functionsDB.saveAllRules(apiRules)
                             appState.setListOfRules(apiRules)
-                        } else {
-                            Log.d("RULE_SYNC", "Rule count matches. Using cached rules from DB.")
-                            appState.setListOfRules(cachedRules)
-                        }
+
+                            //Log.d("RULE_SYNC", "Rule count matches. Using cached rules from DB.")
+                            //appState.setListOfRules(cachedRules)
+
 
                         // Sync Conditions
-                        if (cachedConditions.size != apiConditions.size) {
+
                             Log.d("CONDITION_SYNC", "Updating conditions in DB. Replacing with conditions from API.")
                             functionsDB.saveAllConditions(apiConditions)
                             appState.setListOfCondition(apiConditions)
-                        } else {
-                            Log.d("CONDITION_SYNC", "Condition count matches. Using cached conditions from DB.")
-                            appState.setListOfCondition(cachedConditions)
-                        }
+
+                            //Log.d("CONDITION_SYNC", "Condition count matches. Using cached conditions from DB.")
+                            //appState.setListOfCondition(cachedConditions)
+
 
                         isLoading = false
                     } catch (e: Exception) {

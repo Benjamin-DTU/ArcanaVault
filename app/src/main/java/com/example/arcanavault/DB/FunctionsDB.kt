@@ -6,6 +6,7 @@ import com.example.arcanavault.model.data.Spell as ApiSpell
 import com.example.arcanavault.DB.Spell as RealmSpell
 import com.example.arcanavault.model.data.ItemReference
 import android.util.Log
+import io.realm.kotlin.UpdatePolicy
 
 class FunctionsDB {
 
@@ -38,8 +39,7 @@ class FunctionsDB {
             damageAtSlotLevel.addAll(
                 this@toRealmModel.damage?.damageAtSlotLevel?.values ?: emptyList()
             )
-
-
+            searchCombined = this@toRealmModel.searchCombined
         }
     }
 
@@ -73,7 +73,8 @@ class FunctionsDB {
                     val parts = it.split(": ")
                     parts[0] to parts.getOrElse(1) { "" }
                 }
-            )
+            ),
+            searchCombined = this.searchCombined
         ).apply {
             isFavorite = this@toApiSpell.isFavorite
         }
@@ -98,10 +99,8 @@ class FunctionsDB {
         val realmInstance = AppDB_Config.realm
         realmInstance.writeBlocking {
             spells.forEach { spell ->
-                val existingSpell = query<RealmSpell>("index == $0", spell.index).first().find()
-                if (existingSpell == null) {
-                    copyToRealm(spell.toRealmModel())
-                }
+                // Convert the API object to the Realm model and add or update it
+                copyToRealm(spell.toRealmModel(), updatePolicy = UpdatePolicy.ALL)
             }
         }
     }

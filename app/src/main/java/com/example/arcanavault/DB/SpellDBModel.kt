@@ -31,6 +31,7 @@ class Spell : RealmObject {
     var schoolName: String = ""
     var classes: RealmList<String> = realmListOf()
     var subclasses: RealmList<String> = realmListOf()
+    var searchCombined: String = ""
 }
 
 class Condition : RealmObject {
