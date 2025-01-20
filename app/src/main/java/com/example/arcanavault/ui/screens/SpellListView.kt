@@ -119,7 +119,7 @@ fun SpellListView(
                     onItemClick = onSpellSelected,
                     onFavoriteClick = { spell ->
                         val newFavoriteStatus = !spell.isFavorite
-
+                        spell.isFavorite = !spell.isFavorite
                         if (newFavoriteStatus) {
                             functionsDB.addToFavorites(spell)
                         } else {

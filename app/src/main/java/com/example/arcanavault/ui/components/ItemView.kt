@@ -108,7 +108,6 @@ fun ItemView(
             IconButton(
                 onClick = {},
                 modifier = Modifier.size(36.dp),
-                //TODO change the color of the star
             ) {
                 actionsContent()
             }
