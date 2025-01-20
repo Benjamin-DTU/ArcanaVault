@@ -1,5 +1,6 @@
 package com.example.arcanavault.DB
 
+import com.example.arcanavault.model.data.Damage
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
@@ -24,6 +25,7 @@ class Spell : RealmObject {
     var concentration: Boolean = false
     var castingTime: String = ""
     var attackType: String = ""
+    var damageType: String = ""
     var schoolName: String = ""
     var classes: RealmList<String> = realmListOf()
     var subclasses: RealmList<String> = realmListOf()

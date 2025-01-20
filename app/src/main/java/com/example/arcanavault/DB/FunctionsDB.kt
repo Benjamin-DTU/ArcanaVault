@@ -1,5 +1,6 @@
 package com.example.arcanavault.DB
 
+import com.example.arcanavault.model.data.Damage
 import io.realm.kotlin.ext.query
 import com.example.arcanavault.model.data.Spell as ApiSpell
 import com.example.arcanavault.DB.Spell as RealmSpell
@@ -52,6 +53,7 @@ class FunctionsDB {
             concentration = this.concentration,
             castingTime = this.castingTime,
             attackType = this.attackType,
+            damage = this.damageType.let { Damage(ItemReference(it, it)) },
             school = ItemReference(index = this.schoolName, name = this.schoolName.ifEmpty { "Unknown" }),
             classes = this.classes.map { ItemReference(it, it) },
             subclasses = this.subclasses.map { ItemReference(it, it) },
