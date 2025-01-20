@@ -17,9 +17,10 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun SearchBar(
+    query: String,
     onSearch: (String) -> Unit
 ) {
-    var userInput by remember { mutableStateOf("") }
+    var userInput by remember { mutableStateOf(query) }
 
     OutlinedTextField(
         value = userInput,
@@ -47,3 +48,4 @@ fun SearchBar(
         modifier = Modifier.fillMaxWidth()
     )
 }
+

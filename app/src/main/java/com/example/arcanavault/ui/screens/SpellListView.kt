@@ -26,16 +26,19 @@ fun SpellListView(
     functionsDB: FunctionsDB
 ) {
     var showFilterScreen by remember { mutableStateOf(false) }
-    var showSearchBar by remember { mutableStateOf(false) }
-    var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.getListOfSpells())) }
+    var showSearchBar by remember { mutableStateOf(appState.searchQuery.isNotEmpty()) }
+
+    // Generate filters for the spells
+    var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.listOfSpells)) }
 
     // Initialize filters and query from AppState
-    var selectedFilters by remember { mutableStateOf(appState.getSelectedFilters()) }
-    var searchQuery by remember { mutableStateOf(appState.getSearchQuery()) }
+    var selectedFilters by remember { mutableStateOf(appState.selectedFilters) }
+    var searchQuery by remember { mutableStateOf(appState.searchQuery) }
 
     var spells by remember { mutableStateOf(emptyList<Spell>()) }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val scrollFraction = animateFloatAsState(targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f))
+    val scrollFraction = animateFloatAsState(targetValue = (scrollBehavior.state.collapsedFraction
+        ?: 0f))
 
     // Fetch spells whenever searchQuery or selectedFilters change
     LaunchedEffect(searchQuery, selectedFilters) {
@@ -98,9 +101,12 @@ fun SpellListView(
             }
 
             if (showSearchBar) {
-                SearchBar(onSearch = { query ->
-                    searchQuery = query
-                })
+                SearchBar(
+                    query = searchQuery,
+                    onSearch = { query ->
+                        searchQuery = query
+                    }
+                )
             }
 
             if (showFilterScreen) {

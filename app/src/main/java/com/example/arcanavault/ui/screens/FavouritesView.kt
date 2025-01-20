@@ -27,7 +27,9 @@ fun FavouritesView(
     functionsDB: FunctionsDB
 ) {
     var showFilterScreen by remember { mutableStateOf(false) }
-    var showSearchBar by remember { mutableStateOf(false) }
+    var showSearchBar by remember { mutableStateOf(appState.searchQuery.isNotEmpty()) }
+
+    // Generate filters for the spells
     var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.getListOfSpells())) }
 
     // Initialize filters and query from AppState
@@ -100,9 +102,12 @@ fun FavouritesView(
             }
 
             if (showSearchBar) {
-                SearchBar(onSearch = { query ->
-                    searchQuery = query
-                })
+                SearchBar(
+                    query = searchQuery,
+                    onSearch = { query ->
+                        searchQuery = query
+                    }
+                )
             }
 
             if (showFilterScreen) {
