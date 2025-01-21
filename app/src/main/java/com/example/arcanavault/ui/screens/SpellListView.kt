@@ -15,6 +15,8 @@ import com.example.arcanavault.DB.FunctionsDB
 import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.ListView
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.verticalScroll
 import com.example.arcanavault.ui.components.FilterRow
 import com.example.arcanavault.ui.components.SortView
 import com.example.arcanavault.ui.components.getSortComparator
@@ -25,7 +27,8 @@ fun SpellListView(
     appState: AppState,
     onSpellSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
-    functionsDB: FunctionsDB
+    functionsDB: FunctionsDB,
+    scrollState: ScrollState
 ) {
     // State variables for UI control
     var showFilterScreen by remember { mutableStateOf(false) } // Toggles filter view
@@ -105,6 +108,7 @@ fun SpellListView(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(scrollState)
         ) {
             // Display active filters as tags
             if (selectedFilters.isNotEmpty()) {
