@@ -28,6 +28,7 @@ class Spell : RealmObject {
     var attackType: String = ""
     var damageType: String = ""
     var damageAtSlotLevel: RealmList<String> = realmListOf()
+    var damageAtCharLevel: RealmList<String> = realmListOf()
     var schoolName: String = ""
     var classes: RealmList<String> = realmListOf()
     var subclasses: RealmList<String> = realmListOf()
