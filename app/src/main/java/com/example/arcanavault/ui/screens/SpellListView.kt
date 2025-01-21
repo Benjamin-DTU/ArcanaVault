@@ -115,7 +115,8 @@ fun SpellListView(
                             itemCount = spells.size
                         )
                     }
-
+            )
+        }
 
 
     ) { paddingValues ->
