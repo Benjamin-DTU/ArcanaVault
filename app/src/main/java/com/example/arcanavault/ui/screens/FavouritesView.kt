@@ -107,18 +107,19 @@ fun FavouritesView(
                 .padding(paddingValues)
         ) {
             // Display active filters as tags
-            if (selectedFilters.isNotEmpty()) {
+            //if (selectedFilters.isNotEmpty()) {
                 FilterRow(
                     selectedFilters = selectedFilters,
                     onRemoveFilter = { category, option ->
                         val updatedFilters = selectedFilters.toMutableMap()
                         updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
-                        if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
+                        //if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
                         selectedFilters = updatedFilters
                     },
-                    scrollFraction = scrollFraction.value
+                    scrollFraction = scrollFraction.value,
+                    itemCount = favoriteSpells.size,
                 )
-            }
+            //}
 
             // Display search bar if toggled on
             if (showSearchBar) {

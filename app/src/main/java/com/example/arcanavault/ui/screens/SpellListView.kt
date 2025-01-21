@@ -107,7 +107,7 @@ fun SpellListView(
                 .padding(paddingValues)
         ) {
             // Display active filters as tags
-            if (selectedFilters.isNotEmpty()) {
+            //if (selectedFilters.isNotEmpty()) {
                 FilterRow(
                     selectedFilters = selectedFilters,
                     onRemoveFilter = { category, option ->
@@ -117,9 +117,10 @@ fun SpellListView(
                         if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
                         selectedFilters = updatedFilters
                     },
-                    scrollFraction = scrollFraction.value
+                    scrollFraction = scrollFraction.value,
+                    itemCount = spells.size
                 )
-            }
+           // }
 
             // Display search bar if toggled on
             if (showSearchBar) {
