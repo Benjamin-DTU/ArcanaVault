@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -37,33 +38,6 @@ fun FilterView(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        val titleText = if (selectedCategory != null) {
-                            "Select $selectedCategory"
-                        } else {
-                            "Filters"
-                        }
-                        Text(
-                            text = titleText,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f)
-                        )
-                        if (itemCount != null) {
-                            Text(
-                                text = "Count: $itemCount",
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-                            )
-                        }
-                    }
-                },
                 navigationIcon = {
                     if (selectedCategory != null) {
                         IconButton(onClick = { selectedCategory = null }) {
@@ -73,10 +47,30 @@ fun FilterView(
                             )
                         }
                     }
+                },
+                title = {
+                    // Left-anchored title
+                    Text(
+                        text = if (selectedCategory != null) "Select $selectedCategory" else "Filters",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                actions = { //use actions here so item count doesn't move
+                    itemCount?.let {
+                        Text(
+                            text = "Count: $it",
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
                 }
             )
         }
-    ) { innerPadding ->
+    )
+ { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
