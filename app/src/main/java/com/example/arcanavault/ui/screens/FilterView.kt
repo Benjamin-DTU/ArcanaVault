@@ -110,7 +110,7 @@ fun FilterView(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f)
-                            .verticalScroll(scrollState)
+                            //.verticalScroll(scrollState)
                     ) {
                         filterOptions.keys.forEach { category ->
                             OutlinedButton(
