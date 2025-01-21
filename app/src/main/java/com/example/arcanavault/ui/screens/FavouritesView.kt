@@ -1,9 +1,7 @@
 package com.example.arcanavault.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -22,12 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.arcanavault.AppState
 import com.example.arcanavault.DB.FunctionsDB
 import com.example.arcanavault.model.data.Spell
-import com.example.arcanavault.ui.components.FilterRow
-import com.example.arcanavault.ui.components.Header
-import com.example.arcanavault.ui.components.ListView
-import com.example.arcanavault.ui.components.SearchBar
-import com.example.arcanavault.ui.components.SortView
-import com.example.arcanavault.ui.components.getSortComparator
+import com.example.arcanavault.ui.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,40 +30,40 @@ fun FavouritesView(
     modifier: Modifier = Modifier,
     functionsDB: FunctionsDB
 ) {
-    // State variables for UI control
+    // UI state variables
     var showFilterScreen by remember { mutableStateOf(false) }
     var showSearchBar by remember { mutableStateOf(appState.searchQuery.isNotEmpty()) }
 
-    // State variables for filters, sorting, and spells
-    var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.getListOfSpells())) }
-    var selectedFilters by remember { mutableStateOf(appState.getSelectedFilters()) }
-    var searchQuery by remember { mutableStateOf(appState.getSearchQuery()) }
+    // Sorting and filtering states
+    var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.listOfSpells)) }
+    var selectedFilters by remember { mutableStateOf(appState.selectedFilters) }
+    var searchQuery by remember { mutableStateOf(appState.searchQuery) }
     var sortOption by remember { mutableStateOf(appState.sortOption) }
+    var sortOrder by remember { mutableStateOf(appState.sortOrderAscending) }
     var favoriteSpells by remember { mutableStateOf(emptyList<Spell>()) }
 
-    // Controls the behavior of the top app bar during scrolling
+    // Scroll behavior for the top app bar
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val scrollFraction = animateFloatAsState(targetValue = (scrollBehavior.state?.collapsedFraction ?: 0f))
 
-    // Fetch spells whenever searchQuery, selectedFilters, or sortOption changes
-    LaunchedEffect(searchQuery, selectedFilters, sortOption) {
+    // Fetch favorite spells when search, filter, or sort options change
+    LaunchedEffect(searchQuery, selectedFilters, sortOption, sortOrder) {
         favoriteSpells = fetchSpells(searchQuery, selectedFilters, functionsDB)
             .filter { it.isFavorite }
-            .sortedWith(getSortComparator(sortOption))
-        appState.setSelectedFilters(selectedFilters)
-        appState.setSearchQuery(searchQuery)
+            .sortedWith(getSortComparator(sortOption, sortOrder))
+        appState.selectedFilters = selectedFilters
+        appState.searchQuery = searchQuery
         appState.sortOption = sortOption
+        appState.sortOrderAscending = sortOrder
     }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            // Header with filter, search, and sort buttons
             Header(
                 title = "Favorites",
                 buttons = listOf(
                     {
-                        // Filter button to toggle filter view
+                        // Filter button
                         IconButton(onClick = {
                             showSearchBar = false
                             searchQuery = ""
@@ -83,7 +76,7 @@ fun FavouritesView(
                         }
                     },
                     {
-                        // Search button to toggle search bar
+                        // Search button
                         IconButton(onClick = {
                             showFilterScreen = false
                             showSearchBar = !showSearchBar
@@ -98,10 +91,13 @@ fun FavouritesView(
                         }
                     },
                     {
-                        // Sort button to display sorting options
+                        // Sort button
                         SortView(
-                            onSortSelected = { selectedSort ->
-                                sortOption = selectedSort
+                            selectedSort = sortOption,
+                            isSortOrderAscending = sortOrder,
+                            onSortSelected = { selected, ascending ->
+                                sortOption = selected
+                                sortOrder = ascending
                             }
                         )
                     }
@@ -128,7 +124,7 @@ fun FavouritesView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display search bar if toggled on
+            // Search bar
             AnimatedVisibility(
                 visible = showSearchBar,
                 enter = fadeIn(animationSpec = tween(durationMillis = 200)) +
@@ -138,13 +134,11 @@ fun FavouritesView(
             ) {
                 SearchBar(
                     query = searchQuery,
-                    onSearch = { query ->
-                        searchQuery = query
-                    }
+                    onSearch = { query -> searchQuery = query }
                 )
             }
 
-            // Show filter view or favorite spells list
+            // Main content: filter view or favorite spells list
             if (showFilterScreen) {
                 FilterView(
                     filterOptions = filters,
@@ -155,45 +149,37 @@ fun FavouritesView(
                     onClearAllFilters = { selectedFilters = emptyMap() }
                 )
             } else {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    if (favoriteSpells.isEmpty()) {
-                        Spacer(modifier = Modifier.height(48.dp))
-                        Text(
-                            text = "No favorites have been saved. " +
-                                    "Click on the star icon to save a spell to your favorites.",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    } else {
-                        ListView(
-                            items = favoriteSpells,
-                            onItemClick = { selectedSpell -> onSpellSelected(selectedSpell) },
-                            onFavoriteClick = { spell ->
-                                // Remove from favorites and refresh the list
-                                functionsDB.removeFromFavorites(spell.index)
-                                appState.updateSpellFavoriteStatus(spell.index, false)
+                if (favoriteSpells.isEmpty()) {
+                    Spacer(modifier = Modifier.height(48.dp))
+                    Text(
+                        text = "No favorites have been saved. Click on the star icon to save a spell to your favorites.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                } else {
+                    ListView(
+                        items = favoriteSpells,
+                        titleProvider = { it.name },
+                        detailsProvider = { listOf("Level: ${it.level}", "School: ${it.school.name}") },
+                        onItemClick = onSpellSelected,
+                        onFavoriteClick = { spell ->
+                            functionsDB.removeFromFavorites(spell.index)
+                            appState.updateSpellFavoriteStatus(spell.index, false)
 
-                                favoriteSpells = fetchSpells(searchQuery, selectedFilters, functionsDB)
-                                    .filter { it.isFavorite }
-                                    .sortedWith(getSortComparator(sortOption))
+                            // Refresh favorite spells
+                            favoriteSpells = fetchSpells(searchQuery, selectedFilters, functionsDB)
+                                .filter { it.isFavorite }
+                                .sortedWith(getSortComparator(sortOption, sortOrder))
 
-                                val updatedSpells = appState.getListOfSpells().map { s ->
-                                    if (s.index == spell.index) {
-                                        s.isFavorite = false
-                                    }
-                                    s
+                            val updatedSpells = appState.listOfSpells.map { s ->
+                                if (s.index == spell.index) {
+                                    s.isFavorite = false
                                 }
-                                appState.setListOfSpells(updatedSpells)
-                            },
-                            titleProvider = { spell -> spell.name },
-                            detailsProvider = { spell ->
-                                listOf(
-                                    "Level: ${spell.level}",
-                                    "School: ${spell.school.name}"
-                                )
+                                s
                             }
-                        )
-                    }
+                            appState.setListOfSpells(updatedSpells)
+                        }
+                    )
                 }
             }
         }

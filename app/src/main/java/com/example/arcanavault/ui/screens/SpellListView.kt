@@ -37,7 +37,6 @@ fun SpellListView(
     onSpellSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
     functionsDB: FunctionsDB,
-    scrollState: ScrollState
 ) {
     // State variables for UI control
     var showFilterScreen by remember { mutableStateOf(false) } // Toggles filter view
@@ -48,21 +47,21 @@ fun SpellListView(
     var selectedFilters by remember { mutableStateOf(appState.selectedFilters) } // Current selected filters
     var searchQuery by remember { mutableStateOf(appState.searchQuery) } // Current search query
     var sortOption by remember { mutableStateOf(appState.sortOption) } // Get initial sort option from AppState
+    var sortOrder by remember { mutableStateOf(appState.sortOrderAscending) } // Get the selected sort order
 
     // Holds the currently displayed spells
     var spells by remember { mutableStateOf(emptyList<Spell>()) }
 
     // Controls the behavior of the top app bar during scrolling
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val scrollFraction = animateFloatAsState(targetValue = (scrollBehavior.state.collapsedFraction
-        ?: 0f))
 
     // Recomputes the spells list whenever searchQuery, selectedFilters, or sortOption changes
-    LaunchedEffect(searchQuery, selectedFilters, sortOption) {
-        spells = fetchSpells(searchQuery, selectedFilters, functionsDB).sortedWith(getSortComparator(sortOption))
-        appState.selectedFilters = selectedFilters // Save selected filters to AppState
-        appState.searchQuery = searchQuery         // Save search query to AppState
-        appState.sortOption = sortOption          // Save sort option to AppState
+    LaunchedEffect(searchQuery, selectedFilters, sortOption, sortOrder) {
+        spells = fetchSpells(searchQuery, selectedFilters, functionsDB).sortedWith(getSortComparator(sortOption, sortOrder))
+        appState.selectedFilters = selectedFilters  // Save selected filters to AppState
+        appState.searchQuery = searchQuery          // Save search query to AppState
+        appState.sortOption = sortOption            // Save sort option to AppState
+        appState.sortOrderAscending = sortOrder     // Save sort order option to AppState
     }
 
     Scaffold(
@@ -103,8 +102,11 @@ fun SpellListView(
                     {
                         // Sort button to display sorting options
                         SortView(
-                            onSortSelected = { selectedSort ->
-                                sortOption = selectedSort
+                            selectedSort = sortOption,
+                            isSortOrderAscending = sortOrder,
+                            onSortSelected = { selected, ascending ->
+                                sortOption = selected
+                                sortOrder = ascending
                             }
                         )
                     }

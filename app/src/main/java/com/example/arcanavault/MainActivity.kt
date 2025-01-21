@@ -175,7 +175,6 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     SpellListView(
                                         appState = appState,
-                                        scrollState = scrollState,
                                         functionsDB = functionsDB,
                                         onSpellSelected = { selectedSpell ->
                                             navController.navigate("details/${selectedSpell}")

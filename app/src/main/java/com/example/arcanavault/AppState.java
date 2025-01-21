@@ -18,8 +18,9 @@ public class AppState {
 
     private Map<String, List<String>> selectedFilters = new HashMap<>();
     private String searchQuery = "";
-    private String sortOption = "A-Z";
 
+    private String sortOption = "Name";
+    private boolean sortOrderAscending = true;
 
     public AppState() {
         this.listOfSpells = new ArrayList<>();
@@ -112,5 +113,13 @@ public class AppState {
 
     public void setSortOption(String sortOption) {
         this.sortOption = sortOption;
+    }
+
+    public boolean getSortOrderAscending() {
+        return sortOrderAscending;
+    }
+
+    public void setSortOrderAscending(boolean sortOrderAscending) {
+        this.sortOrderAscending = sortOrderAscending;
     }
 }
