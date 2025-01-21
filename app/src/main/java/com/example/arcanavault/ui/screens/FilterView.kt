@@ -81,10 +81,10 @@ fun FilterView(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = Color.White, //TODO implement theme
-                            contentColor = Color.Black
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
                         ),
-                        border = BorderStroke(1.dp, Color.Black),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
                         shape = RectangleShape
                     ) {
                         Text(category)
