@@ -120,7 +120,6 @@ fun SpellListView(
                                 updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
                                 if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
                                 selectedFilters = if (updatedFilters.isEmpty()) {
-                                    // Reset filters when no filters are left
                                     emptyMap()
                                 } else {
                                     updatedFilters
@@ -130,7 +129,6 @@ fun SpellListView(
                         )
                     }
                 }
-
             )
         }
     ) { paddingValues ->
@@ -139,6 +137,7 @@ fun SpellListView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // Search bar with animation
             AnimatedVisibility(
                 visible = showSearchBar,
                 enter = fadeIn() + expandVertically(),
@@ -146,13 +145,16 @@ fun SpellListView(
             ) {
                 SearchBar(
                     query = searchQuery,
-                    onSearch = { query ->
-                        searchQuery = query
-                    }
+                    onSearch = { query -> searchQuery = query }
                 )
             }
 
-            if (showFilterScreen) {
+            // Animated FilterView
+            AnimatedVisibility(
+                visible = showFilterScreen,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
                 FilterView(
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
@@ -173,7 +175,10 @@ fun SpellListView(
                     onClearAllFilters = { selectedFilters = emptyMap() },
                     itemCount = spells.size
                 )
-            } else {
+            }
+
+            // ListView for spells
+            if (!showFilterScreen) {
                 ListView(
                     items = spells,
                     titleProvider = { spell -> spell.name },
@@ -218,20 +223,18 @@ fun fetchSpells(
     val allSpells = functionsDB.getSpellsFromDB()
 
     return allSpells.filter { spell ->
-        // Check if the spell matches the search query
         (query.isEmpty() || spell.searchCombined.contains(query, ignoreCase = true)) &&
-                // Check if the spell matches the selected filters
                 selectedFilters.all { (category, options) ->
                     options.isEmpty() || when (category) {
-                        "Level"         -> options.contains(spell.level.toString())
-                        "School"        -> options.contains(spell.school.name)
-                        "Classes"       -> spell.classes.any { it.name in options }
-                        "Casting Time"  -> options.contains(spell.castingTime)
-                        "Damage Type"   -> options.contains(spell.damage?.damageType?.name ?: "Unknown")
-                        "Components"    -> options.any { it in spell.components }
+                        "Level" -> options.contains(spell.level.toString())
+                        "School" -> options.contains(spell.school.name)
+                        "Classes" -> spell.classes.any { it.name in options }
+                        "Casting Time" -> options.contains(spell.castingTime)
+                        "Damage Type" -> options.contains(spell.damage?.damageType?.name ?: "Unknown")
+                        "Components" -> options.any { it in spell.components }
                         "Concentration" -> options.contains(spell.concentration.toString())
-                        "Ritual"        -> options.contains(spell.ritual.toString())
-                        else            -> true
+                        "Ritual" -> options.contains(spell.ritual.toString())
+                        else -> true
                     }
                 }
     }

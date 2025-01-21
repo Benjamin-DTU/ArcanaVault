@@ -1,5 +1,11 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -47,13 +53,13 @@ fun FilterView(
                             text = titleText,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f) // Title takes up available space
+                            modifier = Modifier.weight(1f)
                         )
                         if (itemCount != null) {
                             Text(
                                 text = "Count: $itemCount",
                                 color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), // Bold style added
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
                             )
                         }
                     }
@@ -75,65 +81,95 @@ fun FilterView(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp) // Ensure consistent horizontal padding
+                .padding(horizontal = 16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-            ) {
-                if (selectedCategory == null) {
-                    filterOptions.keys.forEach { category ->
-                        OutlinedButton(
-                            onClick = { selectedCategory = category },
+            AnimatedContent(
+                targetState = selectedCategory,
+                transitionSpec = {
+                    if (targetState != null) {
+                        slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        ) togetherWith slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+                    } else {
+                        slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        ) togetherWith slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }
+            ) { category ->
+                if (category == null) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .verticalScroll(scrollState)
+                    ) {
+                        filterOptions.keys.forEach { category ->
+                            OutlinedButton(
+                                onClick = { selectedCategory = category },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.onBackground
+                                ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+                                shape = RectangleShape
+                            ) {
+                                Text(category)
+                            }
+                        }
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = MaterialTheme.colorScheme.background,
-                                contentColor = MaterialTheme.colorScheme.onBackground
-                            ),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-                            shape = RectangleShape
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Text(category)
-                        }
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = onClearAllFilters,
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = Color(0xFF8B0000)
-                            )
-                        ) {
-                            Text(
-                                text = "Clear All",
-                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold) // Bold style added
-                            )
+                            TextButton(
+                                onClick = onClearAllFilters,
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = Color(0xFF8B0000)
+                                )
+                            ) {
+                                Text(
+                                    text = "Clear All",
+                                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+                                )
+                            }
                         }
                     }
                 } else {
-                    val options = filterOptions[selectedCategory] ?: emptyList()
-                    options.forEach { option ->
-                        val isSelected = selectedFilters[selectedCategory]?.contains(option) == true
-                        FilterOption(
-                            label = option,
-                            selected = isSelected,
-                            onSelect = { newValue ->
-                                val updatedList = if (newValue) {
-                                    (selectedFilters[selectedCategory] ?: emptyList()) + option
-                                } else {
-                                    (selectedFilters[selectedCategory] ?: emptyList()) - option
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .verticalScroll(scrollState)
+                    ) {
+                        val options = filterOptions[category] ?: emptyList()
+                        options.forEach { option ->
+                            val isSelected = selectedFilters[category]?.contains(option) == true
+                            FilterOption(
+                                label = option,
+                                selected = isSelected,
+                                onSelect = { newValue ->
+                                    val updatedList = if (newValue) {
+                                        (selectedFilters[category] ?: emptyList()) + option
+                                    } else {
+                                        (selectedFilters[category] ?: emptyList()) - option
+                                    }
+                                    onFilterChange(category, updatedList)
                                 }
-                                onFilterChange(selectedCategory!!, updatedList)
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
@@ -163,4 +199,3 @@ fun FilterOption(
         Text(label)
     }
 }
-
