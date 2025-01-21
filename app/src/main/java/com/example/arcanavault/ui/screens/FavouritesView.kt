@@ -104,17 +104,23 @@ fun FavouritesView(
                 ),
                 scrollBehavior = scrollBehavior,
                 content = {
-                    FilterRow(
-                        selectedFilters = selectedFilters,
-                        onRemoveFilter = { category, option ->
-                            val updatedFilters = selectedFilters.toMutableMap()
-                            updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
-                            if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
-                            selectedFilters = updatedFilters
-                        },
-                        scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
-                        itemCount = favoriteSpells.size
-                    )
+                    if (selectedFilters.isNotEmpty()) {
+                        FilterRow(
+                            selectedFilters = selectedFilters,
+                            onRemoveFilter = { category, option ->
+                                val updatedFilters = selectedFilters.toMutableMap()
+                                updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
+                                if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
+                                if (updatedFilters.isEmpty()) {
+                                    // Reset filters when no filters are left
+                                    selectedFilters = emptyMap()
+                                } else {
+                                    selectedFilters = updatedFilters
+                                }
+                            },
+                            scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
+                        )
+                    }
                 }
             )
         }
@@ -144,9 +150,21 @@ fun FavouritesView(
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
                     onFilterChange = { category, options ->
-                        selectedFilters = selectedFilters.toMutableMap().apply { this[category] = options }
+                        val updatedFilters = selectedFilters.toMutableMap().apply {
+                            if (options.isEmpty()) {
+                                remove(category)
+                            } else {
+                                this[category] = options
+                            }
+                        }
+                        selectedFilters = if (updatedFilters.isEmpty()) {
+                            emptyMap() // Reset filters when no filters are left
+                        } else {
+                            updatedFilters
+                        }
                     },
-                    onClearAllFilters = { selectedFilters = emptyMap() }
+                    onClearAllFilters = { selectedFilters = emptyMap() },
+                    itemCount = favoriteSpells.size
                 )
             } else {
                 if (favoriteSpells.isEmpty()) {

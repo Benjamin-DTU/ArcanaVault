@@ -1,8 +1,6 @@
 package com.example.arcanavault.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -17,11 +15,6 @@ import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.DB.FunctionsDB
 import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.ListView
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -39,44 +32,40 @@ fun SpellListView(
     functionsDB: FunctionsDB,
 ) {
     // State variables for UI control
-    var showFilterScreen by remember { mutableStateOf(false) } // Toggles filter view
-    var showSearchBar by remember { mutableStateOf(appState.searchQuery.isNotEmpty()) } // Toggles search bar visibility
+    var showFilterScreen by remember { mutableStateOf(false) }
+    var showSearchBar by remember { mutableStateOf(appState.searchQuery.isNotEmpty()) }
 
     // State variables for filters and sorting
-    var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.listOfSpells)) } // Filter options based on spells
-    var selectedFilters by remember { mutableStateOf(appState.selectedFilters) } // Current selected filters
-    var searchQuery by remember { mutableStateOf(appState.searchQuery) } // Current search query
-    var sortOption by remember { mutableStateOf(appState.sortOption) } // Get initial sort option from AppState
-    var sortOrder by remember { mutableStateOf(appState.sortOrderAscending) } // Get the selected sort order
+    var filters by remember { mutableStateOf(Spell.generateFilterOptions(appState.listOfSpells)) }
+    var selectedFilters by remember { mutableStateOf(appState.selectedFilters) }
+    var searchQuery by remember { mutableStateOf(appState.searchQuery) }
+    var sortOption by remember { mutableStateOf(appState.sortOption) }
+    var sortOrder by remember { mutableStateOf(appState.sortOrderAscending) }
 
-    // Holds the currently displayed spells
     var spells by remember { mutableStateOf(emptyList<Spell>()) }
 
-    // Controls the behavior of the top app bar during scrolling
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     // Recomputes the spells list whenever searchQuery, selectedFilters, or sortOption changes
     LaunchedEffect(searchQuery, selectedFilters, sortOption, sortOrder) {
         spells = fetchSpells(searchQuery, selectedFilters, functionsDB).sortedWith(getSortComparator(sortOption, sortOrder))
-        appState.selectedFilters = selectedFilters  // Save selected filters to AppState
-        appState.searchQuery = searchQuery          // Save search query to AppState
-        appState.sortOption = sortOption            // Save sort option to AppState
-        appState.sortOrderAscending = sortOrder     // Save sort order option to AppState
+        appState.selectedFilters = selectedFilters
+        appState.searchQuery = searchQuery
+        appState.sortOption = sortOption
+        appState.sortOrderAscending = sortOrder
     }
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            // Header with filter, search, and sort buttons
             Header(
                 title = "Spells",
                 buttons = listOf(
                     {
-                        // Filter button to toggle filter view
                         IconButton(onClick = {
-                            showSearchBar = false // Close search bar when filter view is opened
-                            searchQuery = "" // Clear search query when toggling filters
-                            showFilterScreen = !showFilterScreen // Toggle filter view
+                            showSearchBar = false
+                            searchQuery = ""
+                            showFilterScreen = !showFilterScreen
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.FilterList,
@@ -85,12 +74,11 @@ fun SpellListView(
                         }
                     },
                     {
-                        // Search button to toggle search bar
                         IconButton(onClick = {
-                            showFilterScreen = false // Close filter view when search bar is opened
-                            showSearchBar = !showSearchBar // Toggle search bar visibility
+                            showFilterScreen = false
+                            showSearchBar = !showSearchBar
                             if (!showSearchBar) {
-                                searchQuery = "" // Clear search query when search bar is closed
+                                searchQuery = ""
                             }
                         }) {
                             Icon(
@@ -100,7 +88,6 @@ fun SpellListView(
                         }
                     },
                     {
-                        // Sort button to display sorting options
                         SortView(
                             selectedSort = sortOption,
                             isSortOrderAscending = sortOrder,
@@ -112,59 +99,68 @@ fun SpellListView(
                     }
                 ),
                 scrollBehavior = scrollBehavior,
-                content =
-                    {
+                content = {
+                    if (selectedFilters.isNotEmpty()) {
                         FilterRow(
                             selectedFilters = selectedFilters,
                             onRemoveFilter = { category, option ->
                                 val updatedFilters = selectedFilters.toMutableMap()
                                 updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
                                 if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
-                                selectedFilters = updatedFilters
+                                selectedFilters = if (updatedFilters.isEmpty()) {
+                                    // Reset filters when no filters are left
+                                    emptyMap()
+                                } else {
+                                    updatedFilters
+                                }
                             },
                             scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
-                            itemCount = spells.size
                         )
                     }
+                }
             )
         }
-
-
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display search bar if toggled on
             AnimatedVisibility(
                 visible = showSearchBar,
-                enter = fadeIn(animationSpec = tween(durationMillis = 200)) +
-                        expandVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
-                        shrinkVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy))
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
             ) {
                 SearchBar(
-                    query = searchQuery, // Pass current search query
+                    query = searchQuery,
                     onSearch = { query ->
-                        searchQuery = query // Update search query as user types
+                        searchQuery = query
                     }
                 )
             }
 
-            // Show filter view or spell list
             if (showFilterScreen) {
                 FilterView(
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
                     onFilterChange = { category, options ->
-                        // Update selected filters
-                        selectedFilters = selectedFilters.toMutableMap().apply { this[category] = options }
+                        val updatedFilters = selectedFilters.toMutableMap().apply {
+                            if (options.isEmpty()) {
+                                remove(category)
+                            } else {
+                                this[category] = options
+                            }
+                        }
+                        selectedFilters = if (updatedFilters.isEmpty()) {
+                            emptyMap() // Reset filters when no filters are left
+                        } else {
+                            updatedFilters
+                        }
                     },
-                    onClearAllFilters = { selectedFilters = emptyMap() } // Clear all filters
+                    onClearAllFilters = { selectedFilters = emptyMap() },
+                    itemCount = spells.size
                 )
             } else {
-                // ListView displaying filtered and sorted spells
                 ListView(
                     items = spells,
                     titleProvider = { spell -> spell.name },
@@ -173,7 +169,6 @@ fun SpellListView(
                     },
                     onItemClick = onSpellSelected,
                     onFavoriteClick = { spell ->
-
                         val newFavoriteStatus = !spell.isFavorite
                         spell.isFavorite = newFavoriteStatus
 
@@ -183,10 +178,8 @@ fun SpellListView(
                             functionsDB.removeFromFavorites(spell.index)
                         }
 
-
                         appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
 
-                        // Refresh spell list in AppState
                         val updatedSpells = appState.getListOfSpells().map { s ->
                             if (s.index == spell.index) {
                                 s.isFavorite = newFavoriteStatus
@@ -201,7 +194,6 @@ fun SpellListView(
     }
 }
 
-
 // Helper function to filter spells by selected filters and search query
 fun fetchSpells(
     query: String,
@@ -215,7 +207,7 @@ fun fetchSpells(
         (query.isEmpty() || spell.searchCombined.contains(query, ignoreCase = true)) &&
                 // Check if the spell matches the selected filters
                 selectedFilters.all { (category, options) ->
-                    when (category) {
+                    options.isEmpty() || when (category) {
                         "Level"         -> options.contains(spell.level.toString())
                         "School"        -> options.contains(spell.school.name)
                         "Classes"       -> spell.classes.any { it.name in options }
