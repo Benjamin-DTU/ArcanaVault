@@ -14,6 +14,7 @@ All requirements fulfilled except pagination
 * Persistent **caching** of favorites and spells -> show no internet connection boot
 * Sorting
 * Searching
+* Damage tables (example fireball)
 * Rule/condition info dialog -> use "animal shapes" as example
 * Custom themes, Dark/light mode
 * Animations
