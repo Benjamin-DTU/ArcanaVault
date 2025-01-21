@@ -108,7 +108,11 @@ fun SpellListView(
                 ),
                 scrollBehavior = scrollBehavior,
                 content = {
-                    if (selectedFilters.isNotEmpty()) {
+                    AnimatedVisibility(
+                        visible = selectedFilters.isNotEmpty(),
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
                         FilterRow(
                             selectedFilters = selectedFilters,
                             onRemoveFilter = { category, option ->
@@ -126,6 +130,7 @@ fun SpellListView(
                         )
                     }
                 }
+
             )
         }
     ) { paddingValues ->
