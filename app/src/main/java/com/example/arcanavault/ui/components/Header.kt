@@ -20,8 +20,8 @@ fun Header(
             title = {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleLarge
-
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
                 )
             },
             actions = {
@@ -35,8 +35,8 @@ fun Header(
             },
             scrollBehavior = scrollBehavior,
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.surface,
+                scrolledContainerColor = MaterialTheme.colorScheme.surface,
                 titleContentColor = MaterialTheme.colorScheme.onSurface,
             )
         )
