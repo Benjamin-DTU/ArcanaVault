@@ -418,7 +418,7 @@ fun SpellDetailsView(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding( start = 8.dp, end = 8.dp)
                     ) {
 
                         val scrollState = rememberScrollState()
