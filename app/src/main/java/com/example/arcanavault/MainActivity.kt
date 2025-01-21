@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 import com.example.arcanavault.ui.theme.ArcanaVaultTheme
 import com.example.arcanavault.DB.FunctionsDB
 import android.util.Log
-
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 
 
 class MainActivity : ComponentActivity() {
@@ -124,7 +125,35 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 startDestination = Routes.home
                             ) {
-                                composable(Routes.home) {
+                                composable(
+                                    Routes.home,
+                                    enterTransition = {
+                                        when (initialState.destination.route) {
+                                            Routes.favorites -> slideIntoContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                                tween(700)
+                                            )
+                                            "details/{selectedSpell}" -> slideIntoContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.End,
+                                                tween(700)
+                                            )
+                                            else -> null
+                                        }
+                                    },
+                                    exitTransition = {
+                                        when (targetState.destination.route) {
+                                            Routes.favorites -> slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                                tween(700)
+                                            )
+                                            "details/{selectedSpell}" -> slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                                tween(700)
+                                            )
+                                            else -> null
+                                        }
+                                    }
+                                ) {
                                     SpellListView(
                                         appState = appState,
                                         functionsDB = functionsDB,
@@ -133,15 +162,71 @@ class MainActivity : ComponentActivity() {
                                         }
                                     )
                                 }
-                                composable("details/{selectedSpell}") { backStackEntry ->
+                                composable("details/{selectedSpell}",
+                                    enterTransition = {
+                                        when (initialState.destination.route) {
+                                            Routes.home -> slideIntoContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                                tween(700)
+                                            )
+                                            Routes.favorites -> slideIntoContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                                tween(700)
+                                            )
+                                            else -> null
+                                        }
+                                    },
+                                    exitTransition = {
+                                        when (targetState.destination.route) {
+                                            Routes.home -> slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.End,
+                                                tween(700)
+                                            )
+                                            Routes.favorites -> slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                                tween(700)
+                                            )
+                                            else -> null
+                                        }
+                                    }
+                                ){ backStackEntry ->
                                     val spell = appState.getSpellByIndex(backStackEntry.arguments?.getString("selectedSpell"))
                                     SpellDetailsView(appState = appState,spell = spell,functionsDB = functionsDB, onBackClick = { navController.popBackStack() })
                                 }
-                                composable(Routes.favorites) {
+                                composable(Routes.favorites,
+                                    enterTransition = {
+                                        when (initialState.destination.route) {
+                                            Routes.home -> slideIntoContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                                tween(700)
+                                            )
+                                            "details/{selectedSpell}" -> slideIntoContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                                tween(700)
+                                            )
+                                            else -> null
+                                        }
+                                    },
+                                    exitTransition = {
+                                        when (targetState.destination.route) {
+                                            Routes.home -> slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                                tween(700)
+                                            )
+                                            "details/{selectedSpell}" -> slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                                tween(700)
+                                            )
+                                            else -> null
+                                        }
+                                    }
+                                ) {
                                     FavouritesView(
                                         appState = appState,
                                         functionsDB = functionsDB,
-                                        onSpellSelected = { selectedSpell -> navController.navigate("details/${selectedSpell}") }
+                                        onSpellSelected = { selectedSpell ->
+                                            navController.navigate("details/${selectedSpell}")
+                                        }
                                     )
                                 }
                             }
