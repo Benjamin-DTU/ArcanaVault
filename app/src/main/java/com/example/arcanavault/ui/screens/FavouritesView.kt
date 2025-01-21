@@ -104,18 +104,22 @@ fun FavouritesView(
                 ),
                 scrollBehavior = scrollBehavior,
                 content = {
-                    if (selectedFilters.isNotEmpty()) {
+                    AnimatedVisibility(
+                        visible = selectedFilters.isNotEmpty(),
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
                         FilterRow(
                             selectedFilters = selectedFilters,
                             onRemoveFilter = { category, option ->
                                 val updatedFilters = selectedFilters.toMutableMap()
                                 updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
                                 if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
-                                if (updatedFilters.isEmpty()) {
+                                selectedFilters = if (updatedFilters.isEmpty()) {
                                     // Reset filters when no filters are left
-                                    selectedFilters = emptyMap()
+                                    emptyMap()
                                 } else {
-                                    selectedFilters = updatedFilters
+                                    updatedFilters
                                 }
                             },
                             scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,

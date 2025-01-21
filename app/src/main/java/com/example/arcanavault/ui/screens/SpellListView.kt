@@ -1,7 +1,12 @@
 package com.example.arcanavault.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
@@ -10,16 +15,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.example.arcanavault.AppState
-import com.example.arcanavault.model.data.Spell
-import com.example.arcanavault.ui.components.Header
 import com.example.arcanavault.DB.FunctionsDB
-import com.example.arcanavault.ui.components.SearchBar
-import com.example.arcanavault.ui.components.ListView
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import com.example.arcanavault.model.data.Spell
 import com.example.arcanavault.ui.components.FilterRow
+import com.example.arcanavault.ui.components.Header
+import com.example.arcanavault.ui.components.ListView
+import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.SortView
 import com.example.arcanavault.ui.components.getSortComparator
 
@@ -45,14 +46,21 @@ fun SpellListView(
     var spells by remember { mutableStateOf(emptyList<Spell>()) }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = appState.savedScrollPosition
+    )
 
     // Recomputes the spells list whenever searchQuery, selectedFilters, or sortOption changes
-    LaunchedEffect(searchQuery, selectedFilters, sortOption, sortOrder) {
+    LaunchedEffect(searchQuery, selectedFilters, sortOption, sortOrder, listState.firstVisibleItemIndex) {
         spells = fetchSpells(searchQuery, selectedFilters, functionsDB).sortedWith(getSortComparator(sortOption, sortOrder))
         appState.selectedFilters = selectedFilters
         appState.searchQuery = searchQuery
         appState.sortOption = sortOption
         appState.sortOrderAscending = sortOrder
+
+        snapshotFlow { listState.firstVisibleItemIndex }.collect { index ->
+            appState.savedScrollPosition = index
+        }
     }
 
     Scaffold(
@@ -100,7 +108,11 @@ fun SpellListView(
                 ),
                 scrollBehavior = scrollBehavior,
                 content = {
-                    if (selectedFilters.isNotEmpty()) {
+                    AnimatedVisibility(
+                        visible = selectedFilters.isNotEmpty(),
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
                         FilterRow(
                             selectedFilters = selectedFilters,
                             onRemoveFilter = { category, option ->
@@ -118,6 +130,7 @@ fun SpellListView(
                         )
                     }
                 }
+
             )
         }
     ) { paddingValues ->
@@ -187,7 +200,9 @@ fun SpellListView(
                             s
                         }
                         appState.setListOfSpells(updatedSpells)
-                    }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                    listState = listState
                 )
             }
         }
