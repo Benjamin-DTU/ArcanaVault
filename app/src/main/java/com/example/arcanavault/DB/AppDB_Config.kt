@@ -30,6 +30,6 @@ class AppDB_Config : Application() {
     override fun onTerminate() {
         super.onTerminate()
         realm.close()
-        Log.d("AppDB_Config", "Realm has been closed")
+        //Log.d("AppDB_Config", "Realm has been closed")
     }
 }

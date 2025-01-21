@@ -129,7 +129,7 @@ fun SpellDetailsView(
 
                         appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
                     }) {
-                        Box {
+                        Box (contentAlignment = Alignment.Center){
 
                             if (isFavorite.value) {
                                 Icon(
@@ -180,7 +180,7 @@ fun SpellDetailsView(
                     fontSize = 14.sp,
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
             // Spell school
@@ -198,7 +198,7 @@ fun SpellDetailsView(
                         },
                         fontSize = 14.sp,
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     val context = LocalContext.current
                     val imageId = context.resources.getIdentifier(
@@ -228,7 +228,7 @@ fun SpellDetailsView(
                 }
 
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
             // Casting time
@@ -244,7 +244,7 @@ fun SpellDetailsView(
                 )
 
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
             // Range
@@ -258,7 +258,7 @@ fun SpellDetailsView(
                     },
                     fontSize = 14.sp,
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
             // Damage information
@@ -274,7 +274,7 @@ fun SpellDetailsView(
                         fontSize = 14.sp,
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 if (spell.damage.damageAtSlotLevel.isNotEmpty()) {
@@ -330,7 +330,7 @@ fun SpellDetailsView(
                                     modifier = Modifier
                                         .align(Alignment.BottomCenter)
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }
@@ -375,7 +375,7 @@ fun SpellDetailsView(
                                             style = MaterialTheme.typography.bodyMedium
                                         )
                                         if (scrollState.maxValue > 0) {
-                                            Spacer(modifier = Modifier.height(8.dp))
+                                            Spacer(modifier = Modifier.height(12.dp))
                                         }
                                     }
                                 }
@@ -402,7 +402,7 @@ fun SpellDetailsView(
 
                     HorizontalDivider(
                         thickness = 1.5.dp,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp, top = 4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, top = 8.dp)
                     )
                 }
             }
@@ -425,7 +425,7 @@ fun SpellDetailsView(
                             .verticalScroll(state = scrollState)
                             .fillMaxSize()
                             .padding(end = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         var isTable = false
                         val tableLines = mutableListOf<String>()
@@ -683,7 +683,7 @@ fun EntityDialog(
                         .verticalScroll(rememberScrollState())
                 ) {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         entityDescription.forEach { description ->
                             MarkdownText(

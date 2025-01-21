@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import com.example.arcanavault.ui.theme.ArcanaVaultTheme
 import com.example.arcanavault.DB.FunctionsDB
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
@@ -53,13 +54,21 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                BackHandler(enabled = true) {
+                    if (navController.currentBackStackEntry?.destination?.route != Routes.home) {
+                        navController.popBackStack()
+                    } else {
+                        finish()
+                    }
+                }
+
                 LaunchedEffect(Unit) {
                     val cachedSpells = functionsDB.getSpellsFromDB()
                     val cachedRules = functionsDB.getRulesFromDB()
                     val cachedConditions = functionsDB.getConditionsFromDB()
 
-                    Log.d("SPELLS_FROM_DB", "Cached spells count: ${cachedSpells.size}")
-                    Log.d("RULES_FROM_DB", "Cached rules count: ${cachedRules.size}")
+                    //Log.d("SPELLS_FROM_DB", "Cached spells count: ${cachedSpells.size}")
+                    //Log.d("RULES_FROM_DB", "Cached rules count: ${cachedRules.size}")
                     Log.d("CONDITIONS_FROM_DB", "Cached conditions count: ${cachedConditions.size}")
 
                     try {

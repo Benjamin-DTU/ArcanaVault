@@ -114,16 +114,16 @@ class FunctionsDB {
         val realmInstance = AppDB_Config.realm
         val allSpells = realmInstance.query<RealmSpell>().find()
 
-        // Log each spell retrieved from the database
-        Log.d("Database", "Retrieved ${allSpells.size} spells from the database:")
+        //Log each spell retrieved from the database
+        //Log.d("Database", "Retrieved ${allSpells.size} spells from the database:")
         //allSpells.forEach { spell ->
             //Log.d("Database", spell.toString())
         //}
 
         val apiSpells = allSpells.map { it.toApiSpell() }
-        //apiSpells.forEach { spell ->
+        apiSpells.forEach { spell ->
         //Log.d("Database", spell.toString())
-        //}
+        }
 
         return apiSpells
     }
