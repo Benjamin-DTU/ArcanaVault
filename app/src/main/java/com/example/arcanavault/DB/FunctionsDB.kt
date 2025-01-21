@@ -37,7 +37,14 @@ class FunctionsDB {
             damageType =
                 this@toRealmModel.damage?.damageType?.name ?: "Unknown"
             damageAtSlotLevel.addAll(
-                this@toRealmModel.damage?.damageAtSlotLevel?.values ?: emptyList()
+                this@toRealmModel.damage?.damageAtSlotLevel
+                    ?.map { (level, value) -> "$level: $value" }
+                    ?: emptyList()
+            )
+            damageAtCharLevel.addAll(
+                this@toRealmModel.damage?.damageAtCharLevel
+                    ?.map { (level, value) -> "$level: $value" }
+                    ?: emptyList()
             )
             searchCombined = this@toRealmModel.searchCombined
         }
@@ -70,6 +77,10 @@ class FunctionsDB {
             damage = Damage(
                 damageType = ItemReference(index = this.damageType, name = this.damageType),
                 damageAtSlotLevel = this.damageAtSlotLevel.associate {
+                    val parts = it.split(": ")
+                    parts[0] to parts.getOrElse(1) { "" }
+                },
+                damageAtCharLevel = this.damageAtCharLevel.associate {
                     val parts = it.split(": ")
                     parts[0] to parts.getOrElse(1) { "" }
                 }

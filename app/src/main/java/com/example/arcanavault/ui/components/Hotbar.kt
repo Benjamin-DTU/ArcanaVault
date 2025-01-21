@@ -1,5 +1,6 @@
 package com.example.arcanavault.ui.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -31,7 +32,7 @@ fun Hotbar(
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
-        modifier = modifier,
+        modifier = modifier.height(65.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 0.dp,
     ) {
@@ -64,7 +65,7 @@ fun Hotbar(
 
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorites") },
-            label = { Text("Favorite") },
+            label = { Text("Favorites") },
             selected = currentRoute == Routes.favorites,
             onClick = {
                 navController.navigate(Routes.favorites) {
