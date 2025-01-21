@@ -87,7 +87,7 @@ class FunctionsDB {
             val existingSpell = query<RealmSpell>("index == $0", spell.index).first().find()
             if (existingSpell != null) {
                 existingSpell.isFavorite = true
-                copyToRealm(existingSpell)
+                copyToRealm(existingSpell, updatePolicy = UpdatePolicy.ALL)
             } else {
 
                 copyToRealm(spell.toRealmModel().apply { isFavorite = true })
@@ -99,8 +99,12 @@ class FunctionsDB {
         val realmInstance = AppDB_Config.realm
         realmInstance.writeBlocking {
             spells.forEach { spell ->
-                // Convert the API object to the Realm model and add or update it
-                copyToRealm(spell.toRealmModel(), updatePolicy = UpdatePolicy.ALL)
+                val existingSpell = query<RealmSpell>("index == $0", spell.index).first().find()
+                val isFavorite = existingSpell?.isFavorite ?: false
+                copyToRealm(
+                    spell.toRealmModel().apply { this.isFavorite = isFavorite },
+                    updatePolicy = UpdatePolicy.ALL
+                )
             }
         }
     }
