@@ -1,5 +1,6 @@
 package com.example.arcanavault.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +23,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.arcanavault.R
+
 @Composable
 fun ItemView(
     imageUrl: String,
@@ -40,8 +45,26 @@ fun ItemView(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        val schoolName = details.find { it.contains("school", ignoreCase = true) }
+            ?.split(": ")?.lastOrNull()?.lowercase()
+
+        val context = LocalContext.current
+        val imageId = context.resources.getIdentifier(
+            schoolName,
+            "drawable",
+            context.packageName
+        )
         // Image on the left
-        AsyncImage(
+        Image(
+            painter = painterResource(id = imageId),
+            contentDescription = "$schoolName Image",
+            modifier = Modifier
+                .size(62.dp)
+                .clip(MaterialTheme.shapes.extraSmall)
+                .border(1.dp, onSurfaceColor, MaterialTheme.shapes.extraSmall)
+        )
+
+        /*AsyncImage(
             model = imageUrl,
             contentDescription = "$title Image",
             contentScale = ContentScale.Crop,
@@ -50,7 +73,7 @@ fun ItemView(
                 .size(62.dp)
                 .clip(MaterialTheme.shapes.extraSmall)
                 .border(1.dp, onSurfaceColor, MaterialTheme.shapes.extraSmall)
-        )
+        )*/
 
         // Title and details
         Column(

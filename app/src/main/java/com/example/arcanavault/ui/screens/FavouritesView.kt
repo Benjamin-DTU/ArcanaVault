@@ -1,6 +1,15 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -97,7 +106,20 @@ fun FavouritesView(
                         )
                     }
                 ),
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                content = {
+                    FilterRow(
+                        selectedFilters = selectedFilters,
+                        onRemoveFilter = { category, option ->
+                            val updatedFilters = selectedFilters.toMutableMap()
+                            updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
+                            if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
+                            selectedFilters = updatedFilters
+                        },
+                        scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
+                        itemCount = favoriteSpells.size
+                    )
+                }
             )
         }
     ) { paddingValues ->
@@ -106,22 +128,14 @@ fun FavouritesView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display active filters as tags
-            if (selectedFilters.isNotEmpty()) {
-                FilterRow(
-                    selectedFilters = selectedFilters,
-                    onRemoveFilter = { category, option ->
-                        val updatedFilters = selectedFilters.toMutableMap()
-                        updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
-                        if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
-                        selectedFilters = updatedFilters
-                    },
-                    scrollFraction = scrollFraction.value
-                )
-            }
-
             // Display search bar if toggled on
-            if (showSearchBar) {
+            AnimatedVisibility(
+                visible = showSearchBar,
+                enter = fadeIn(animationSpec = tween(durationMillis = 200)) +
+                        expandVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
+                        shrinkVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy))
+            ) {
                 SearchBar(
                     query = searchQuery,
                     onSearch = { query ->

@@ -1,5 +1,6 @@
 package com.example.arcanavault.ui.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -23,6 +24,7 @@ import com.example.arcanavault.Routes
 fun Hotbar(
     navController: NavController,
     modifier: Modifier = Modifier,
+    scrollToTop: () -> Unit
 ) {
     // Observe the current back stack entry as state, so recomposition occurs on route changes
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -48,11 +50,16 @@ fun Hotbar(
             label = { Text("Home") },
             selected = currentRoute == Routes.home,
             onClick = {
-                navController.navigate(Routes.home) {
-                    popUpTo(Routes.home) { inclusive = true }
+                if (currentRoute == Routes.home) {
+                    scrollToTop() // Trigger scroll to top if already on the Home route
+                } else {
+                    navController.navigate(Routes.home) {
+                        popUpTo(Routes.home) { inclusive = true }
+                    }
                 }
             },
-            colors = colors
+            colors = colors,
+            modifier = Modifier.size(width = 30.dp, height = 30.dp)
         )
 
         NavigationBarItem(
@@ -64,7 +71,8 @@ fun Hotbar(
                     popUpTo(Routes.home) { inclusive = false }
                 }
             },
-            colors = colors
+            colors = colors,
+            modifier = Modifier.size(width = 20.dp, height = 20.dp)
         )
     }
 }

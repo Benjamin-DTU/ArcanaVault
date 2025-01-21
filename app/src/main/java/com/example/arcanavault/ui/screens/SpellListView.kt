@@ -1,5 +1,8 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -15,6 +18,14 @@ import com.example.arcanavault.DB.FunctionsDB
 import com.example.arcanavault.ui.components.SearchBar
 import com.example.arcanavault.ui.components.ListView
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import com.example.arcanavault.ui.components.FilterRow
 import com.example.arcanavault.ui.components.SortView
 import com.example.arcanavault.ui.components.getSortComparator
@@ -25,7 +36,8 @@ fun SpellListView(
     appState: AppState,
     onSpellSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
-    functionsDB: FunctionsDB
+    functionsDB: FunctionsDB,
+    scrollState: ScrollState
 ) {
     // State variables for UI control
     var showFilterScreen by remember { mutableStateOf(false) } // Toggles filter view
@@ -97,32 +109,39 @@ fun SpellListView(
                         )
                     }
                 ),
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                content =
+                    {
+                        FilterRow(
+                            selectedFilters = selectedFilters,
+                            onRemoveFilter = { category, option ->
+                                val updatedFilters = selectedFilters.toMutableMap()
+                                updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
+                                if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
+                                selectedFilters = updatedFilters
+                            },
+                            scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
+                            itemCount = spells.size
+                        )
+                    }
             )
         }
+
+
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display active filters as tags
-            if (selectedFilters.isNotEmpty()) {
-                FilterRow(
-                    selectedFilters = selectedFilters,
-                    onRemoveFilter = { category, option ->
-                        // Remove selected filter
-                        val updatedFilters = selectedFilters.toMutableMap()
-                        updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
-                        if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
-                        selectedFilters = updatedFilters
-                    },
-                    scrollFraction = scrollFraction.value
-                )
-            }
-
             // Display search bar if toggled on
-            if (showSearchBar) {
+            AnimatedVisibility(
+                visible = showSearchBar,
+                enter = fadeIn(animationSpec = tween(durationMillis = 200)) +
+                        expandVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
+                        shrinkVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy))
+            ) {
                 SearchBar(
                     query = searchQuery, // Pass current search query
                     onSearch = { query ->
@@ -152,18 +171,20 @@ fun SpellListView(
                     },
                     onItemClick = onSpellSelected,
                     onFavoriteClick = { spell ->
-                        // Toggle favorite status
+
                         val newFavoriteStatus = !spell.isFavorite
                         spell.isFavorite = newFavoriteStatus
+
                         if (newFavoriteStatus) {
-                            functionsDB.addToFavorites(spell) // Add to favorites in DB
+                            functionsDB.addToFavorites(spell)
                         } else {
-                            functionsDB.removeFromFavorites(spell.index) // Remove from favorites in DB
+                            functionsDB.removeFromFavorites(spell.index)
                         }
 
-                        appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus) // Update AppState
 
-                        // Update the spells list with the new favorite status
+                        appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
+
+                        // Refresh spell list in AppState
                         val updatedSpells = appState.getListOfSpells().map { s ->
                             if (s.index == spell.index) {
                                 s.isFavorite = newFavoriteStatus
@@ -189,7 +210,7 @@ fun fetchSpells(
 
     return allSpells.filter { spell ->
         // Check if the spell matches the search query
-        (query.isEmpty() || spell.name.startsWith(query, ignoreCase = true)) &&
+        (query.isEmpty() || spell.searchCombined.contains(query, ignoreCase = true)) &&
                 // Check if the spell matches the selected filters
                 selectedFilters.all { (category, options) ->
                     when (category) {

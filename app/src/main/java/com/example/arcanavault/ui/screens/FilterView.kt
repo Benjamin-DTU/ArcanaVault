@@ -81,7 +81,7 @@ fun FilterView(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = Color.White,
+                            containerColor = Color.White, //TODO implement theme
                             contentColor = Color.Black
                         ),
                         border = BorderStroke(1.dp, Color.Black),
