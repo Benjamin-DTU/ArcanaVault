@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
                                                 tween(700)
                                             )
                                             "details/{selectedSpell}" -> slideOutOfContainer(
-                                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                                AnimatedContentTransitionScope.SlideDirection.Up,
                                                 tween(700)
                                             )
                                             else -> null
@@ -178,11 +178,11 @@ class MainActivity : ComponentActivity() {
                                     enterTransition = {
                                         when (initialState.destination.route) {
                                             Routes.home -> slideIntoContainer(
-                                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                                AnimatedContentTransitionScope.SlideDirection.Up,
                                                 tween(700)
                                             )
                                             Routes.favorites -> slideIntoContainer(
-                                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                                AnimatedContentTransitionScope.SlideDirection.Up,
                                                 tween(700)
                                             )
                                             else -> null
@@ -195,7 +195,7 @@ class MainActivity : ComponentActivity() {
                                                 tween(700)
                                             )
                                             Routes.favorites -> slideOutOfContainer(
-                                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                                AnimatedContentTransitionScope.SlideDirection.Down,
                                                 tween(700)
                                             )
                                             else -> null
@@ -213,7 +213,7 @@ class MainActivity : ComponentActivity() {
                                                 tween(700)
                                             )
                                             "details/{selectedSpell}" -> slideIntoContainer(
-                                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                                AnimatedContentTransitionScope.SlideDirection.Down,
                                                 tween(700)
                                             )
                                             else -> null
@@ -226,7 +226,7 @@ class MainActivity : ComponentActivity() {
                                                 tween(700)
                                             )
                                             "details/{selectedSpell}" -> slideOutOfContainer(
-                                                AnimatedContentTransitionScope.SlideDirection.Left,
+                                                AnimatedContentTransitionScope.SlideDirection.Up,
                                                 tween(700)
                                             )
                                             else -> null
