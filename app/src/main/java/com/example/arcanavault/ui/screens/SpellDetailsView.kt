@@ -529,7 +529,7 @@ fun SpellDetailsView(
                                                     }
                                                 }
                                             },
-                                            linkColor = Color.Blue,
+                                            linkColor = Color(0xFF2196F3),
                                             enableUnderlineForLink = false,
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -581,7 +581,7 @@ fun SpellDetailsView(
                                                 }
                                             }
                                         },
-                                        linkColor = Color.Blue,
+                                        linkColor = Color(0xFF2196F3),
                                         enableUnderlineForLink = false,
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -652,9 +652,9 @@ fun EntityDialog(
                 .fillMaxWidth()
                 .background(
                     color = MaterialTheme.colorScheme.surface,
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.small
                 )
-                .padding(16.dp)
+                .padding(8.dp)
         ) {
 
             Column(

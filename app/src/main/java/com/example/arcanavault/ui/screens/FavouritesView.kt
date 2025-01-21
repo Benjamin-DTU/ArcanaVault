@@ -1,6 +1,15 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -122,7 +131,13 @@ fun FavouritesView(
             //}
 
             // Display search bar if toggled on
-            if (showSearchBar) {
+            AnimatedVisibility(
+                visible = showSearchBar,
+                enter = fadeIn(animationSpec = tween(durationMillis = 200)) +
+                        expandVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
+                        shrinkVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy))
+            ) {
                 SearchBar(
                     query = searchQuery,
                     onSearch = { query ->
