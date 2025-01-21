@@ -81,7 +81,7 @@ fun FilterView(
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1f)
-                    .verticalScroll(scrollState)
+                    //.verticalScroll(scrollState)
             ) {
                 if (selectedCategory == null) {
                     filterOptions.keys.forEach { category ->
