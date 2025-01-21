@@ -22,6 +22,8 @@ public class AppState {
     private String sortOption = "Name";
     private boolean sortOrderAscending = true;
 
+    private int savedScrollPosition = 0;
+
     public AppState() {
         this.listOfSpells = new ArrayList<>();
     }
@@ -121,5 +123,13 @@ public class AppState {
 
     public void setSortOrderAscending(boolean sortOrderAscending) {
         this.sortOrderAscending = sortOrderAscending;
+    }
+
+    public int getSavedScrollPosition() {
+        return savedScrollPosition;
+    }
+
+    public void setSavedScrollPosition(int position) {
+        this.savedScrollPosition = position;
     }
 }

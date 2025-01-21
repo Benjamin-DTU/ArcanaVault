@@ -36,7 +36,7 @@ fun FilterView(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp) // Consistent padding for title and count
+                            .padding(horizontal = 16.dp)
                     ) {
                         val titleText = if (selectedCategory != null) {
                             "Select $selectedCategory"
