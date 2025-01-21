@@ -97,7 +97,20 @@ fun FavouritesView(
                         )
                     }
                 ),
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                content = {
+                    FilterRow(
+                        selectedFilters = selectedFilters,
+                        onRemoveFilter = { category, option ->
+                            val updatedFilters = selectedFilters.toMutableMap()
+                            updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
+                            if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
+                            selectedFilters = updatedFilters
+                        },
+                        scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
+                        itemCount = favoriteSpells.size
+                    )
+                }
             )
         }
     ) { paddingValues ->
@@ -106,21 +119,6 @@ fun FavouritesView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display active filters as tags
-            //if (selectedFilters.isNotEmpty()) {
-                FilterRow(
-                    selectedFilters = selectedFilters,
-                    onRemoveFilter = { category, option ->
-                        val updatedFilters = selectedFilters.toMutableMap()
-                        updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
-                        //if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
-                        selectedFilters = updatedFilters
-                    },
-                    scrollFraction = scrollFraction.value,
-                    itemCount = favoriteSpells.size,
-                )
-            //}
-
             // Display search bar if toggled on
             if (showSearchBar) {
                 SearchBar(

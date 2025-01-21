@@ -18,7 +18,7 @@ fun Header(
     title: String,
     buttons: List<@Composable () -> Unit>,
     scrollBehavior: TopAppBarScrollBehavior,
-    content: (@Composable () -> Unit)? = null, // Optional content below the header
+    content: (@Composable () -> Unit), // Optional content below the header
 ) {
     Column {
         CenterAlignedTopAppBar(
@@ -45,23 +45,19 @@ fun Header(
                 titleContentColor = MaterialTheme.colorScheme.onSurface,
             )
         )
-        // Add the optional content (e.g., FilterRow) below the TopAppBar
-        content?.let {
-            TopAppBar(
-                title = { Text("") },
-                scrollBehavior = scrollBehavior,
-                actions = {
-                    it()
-                },
-                modifier = Modifier
-                    .heightIn(max = 50.dp),
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+        TopAppBar(
+            title = { Text("") },
+            scrollBehavior = scrollBehavior,
+            actions = {
+                content()
+            },
+            modifier = Modifier
+                .heightIn(max = 50.dp),
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                scrolledContainerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface
             )
-        }
-
+        )
     }
 }
