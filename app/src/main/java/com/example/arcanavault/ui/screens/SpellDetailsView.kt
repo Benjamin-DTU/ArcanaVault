@@ -96,7 +96,8 @@ fun SpellDetailsView(
                 // Back button and favorite button row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     // Back Button
                     Icon(
