@@ -144,30 +144,31 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 startDestination = Routes.home
                             ) {
+                                var animationTime = 500
                                 composable(
                                     Routes.home,
                                     enterTransition = {
-                                        when (initialState.destination.route) {
+                                        when (initialState.destination.route) { //from favorites to home
                                             Routes.favorites -> slideIntoContainer(
                                                 AnimatedContentTransitionScope.SlideDirection.Right,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
-                                            "details/{selectedSpell}" -> slideIntoContainer(
-                                                AnimatedContentTransitionScope.SlideDirection.End,
-                                                tween(700)
+                                            "details/{selectedSpell}" -> slideIntoContainer( //from details to home
+                                                AnimatedContentTransitionScope.SlideDirection.Down,
+                                                tween(animationTime)
                                             )
                                             else -> null
                                         }
                                     },
                                     exitTransition = {
-                                        when (targetState.destination.route) {
+                                        when (targetState.destination.route) { //Home to favorites
                                             Routes.favorites -> slideOutOfContainer(
                                                 AnimatedContentTransitionScope.SlideDirection.Left,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
-                                            "details/{selectedSpell}" -> slideOutOfContainer(
+                                            "details/{selectedSpell}" -> slideOutOfContainer( //Home to details
                                                 AnimatedContentTransitionScope.SlideDirection.Up,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
                                             else -> null
                                         }
@@ -184,27 +185,27 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable("details/{selectedSpell}",
                                     enterTransition = {
-                                        when (initialState.destination.route) {
+                                        when (initialState.destination.route) { //from home to details
                                             Routes.home -> slideIntoContainer(
                                                 AnimatedContentTransitionScope.SlideDirection.Up,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
-                                            Routes.favorites -> slideIntoContainer(
+                                            Routes.favorites -> slideIntoContainer( //details to favorites
                                                 AnimatedContentTransitionScope.SlideDirection.Up,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
                                             else -> null
                                         }
                                     },
                                     exitTransition = {
                                         when (targetState.destination.route) {
-                                            Routes.home -> slideOutOfContainer(
-                                                AnimatedContentTransitionScope.SlideDirection.End,
-                                                tween(700)
-                                            )
-                                            Routes.favorites -> slideOutOfContainer(
+                                            Routes.home -> slideOutOfContainer( //details to home
                                                 AnimatedContentTransitionScope.SlideDirection.Down,
-                                                tween(700)
+                                                tween(animationTime)
+                                            )
+                                            Routes.favorites -> slideOutOfContainer( //details to favorites
+                                                AnimatedContentTransitionScope.SlideDirection.Down,
+                                                tween(animationTime)
                                             )
                                             else -> null
                                         }
@@ -218,11 +219,11 @@ class MainActivity : ComponentActivity() {
                                         when (initialState.destination.route) {
                                             Routes.home -> slideIntoContainer(
                                                 AnimatedContentTransitionScope.SlideDirection.Left,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
                                             "details/{selectedSpell}" -> slideIntoContainer(
                                                 AnimatedContentTransitionScope.SlideDirection.Down,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
                                             else -> null
                                         }
@@ -231,11 +232,11 @@ class MainActivity : ComponentActivity() {
                                         when (targetState.destination.route) {
                                             Routes.home -> slideOutOfContainer(
                                                 AnimatedContentTransitionScope.SlideDirection.Right,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
                                             "details/{selectedSpell}" -> slideOutOfContainer(
                                                 AnimatedContentTransitionScope.SlideDirection.Up,
-                                                tween(700)
+                                                tween(animationTime)
                                             )
                                             else -> null
                                         }
