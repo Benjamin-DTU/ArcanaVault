@@ -97,7 +97,21 @@ fun SpellListView(
                         )
                     }
                 ),
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                content = {
+                    if (selectedFilters.isNotEmpty()) {
+                        FilterRow(
+                            selectedFilters = selectedFilters,
+                            onRemoveFilter = { category, option ->
+                                val updatedFilters = selectedFilters.toMutableMap()
+                                updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
+                                if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
+                                selectedFilters = updatedFilters
+                            },
+                            scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -106,21 +120,6 @@ fun SpellListView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Display active filters as tags
-            if (selectedFilters.isNotEmpty()) {
-                FilterRow(
-                    selectedFilters = selectedFilters,
-                    onRemoveFilter = { category, option ->
-                        // Remove selected filter
-                        val updatedFilters = selectedFilters.toMutableMap()
-                        updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
-                        if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
-                        selectedFilters = updatedFilters
-                    },
-                    scrollFraction = scrollFraction.value
-                )
-            }
-
             // Display search bar if toggled on
             if (showSearchBar) {
                 SearchBar(
