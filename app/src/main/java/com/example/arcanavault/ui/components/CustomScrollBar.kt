@@ -15,16 +15,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CustomScrollbar(scrollState: ScrollState, type: String, modifier: Modifier = Modifier) {
+fun CustomScrollbar(descHeight: Dp, scrollState: ScrollState, type: String, modifier: Modifier = Modifier) {
     val thumbSize = if (scrollState.maxValue > 0) { 50.dp } else { 0.dp }
 
     val thumbOffset = if (scrollState.maxValue > 0 && type == "horizontal") {
         scrollState.value.toFloat() / scrollState.maxValue * (375.dp.value - thumbSize.value)
     } else if (scrollState.maxValue > 0 && type == "vertical") {
-        scrollState.value.toFloat() / scrollState.maxValue * (495.dp.value - thumbSize.value)
+        scrollState.value.toFloat() / scrollState.maxValue * (descHeight.value - thumbSize.value)
     } else {
         0f
     }

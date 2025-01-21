@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -131,7 +132,7 @@ fun SpellDetailsView(
 
                         appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
                     }) {
-                        Box (contentAlignment = Alignment.Center){
+                        Box(contentAlignment = Alignment.Center) {
 
                             if (isFavorite.value) {
                                 Icon(
@@ -326,9 +327,9 @@ fun SpellDetailsView(
                             }
 
                             if (scrollState.maxValue > 0) {
-                                CustomScrollbar(
+                                CustomScrollbar(375.dp,
                                     scrollState = scrollState,
-                                    type ="horizontal",
+                                    type = "horizontal",
                                     modifier = Modifier
                                         .align(Alignment.BottomCenter)
                                 )
@@ -411,15 +412,19 @@ fun SpellDetailsView(
 
             // Spell Description (markdown)
             item {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .height(505.dp)
-                ) {
+                var descHeight = 500.dp
+                if (spell.damage != null) {
+                    if (spell.damage.damageAtCharLevel.isNotEmpty()) {
+                        descHeight = 390.dp
+                    }
+                    if (spell.damage.damageAtSlotLevel.isNotEmpty()) {
+                        descHeight = 390.dp
+                    }
+                }
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding( start = 8.dp, end = 8.dp)
+                            .height(descHeight)
+                            .padding(start = 8.dp, end = 8.dp)
                     ) {
 
                         val scrollState = rememberScrollState()
@@ -615,12 +620,12 @@ fun SpellDetailsView(
                                 }
                             }
                         }
-                        CustomScrollbar(scrollState = scrollState, type = "vertical")
+                        CustomScrollbar(descHeight,scrollState = scrollState, type = "vertical")
                     }
                 }
             }
 
-        }
+
 
 
         // Render condition dialog
