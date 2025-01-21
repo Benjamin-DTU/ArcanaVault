@@ -88,6 +88,7 @@ fun SpellDetailsView(
 
     if (spell != null) {
         LazyColumn(
+            userScrollEnabled = false,
             modifier = modifier
                 .fillMaxWidth()
                 .padding(14.dp)
