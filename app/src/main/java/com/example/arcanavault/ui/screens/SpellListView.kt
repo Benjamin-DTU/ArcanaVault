@@ -108,7 +108,7 @@ fun SpellListView(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(scrollState)
+                //.verticalScroll(scrollState)
         ) {
             // Display active filters as tags
             if (selectedFilters.isNotEmpty()) {

@@ -32,6 +32,7 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,6 +75,15 @@ fun SpellDetailsView(
     var showRuleDialog by remember { mutableStateOf(false) }
     var selectedCondition by remember { mutableStateOf<com.example.arcanavault.model.data.Condition?>(null) }
     var selectedRule by remember { mutableStateOf<Rule?>(null) }
+    var isBackProcessing by remember { mutableStateOf(false) }
+
+
+    if (isBackProcessing) {
+        LaunchedEffect(Unit) {
+            kotlinx.coroutines.delay(300) // Adjust delay as needed
+            isBackProcessing = false
+        }
+    }
 
     if (spell != null) {
         LazyColumn(
@@ -93,7 +103,12 @@ fun SpellDetailsView(
                         contentDescription = "Back",
                         modifier = Modifier
                             .padding(start = 4.dp)
-                            .clickable { onBackClick() }
+                            .clickable(enabled = !isBackProcessing) {
+                                if (!isBackProcessing) {
+                                    isBackProcessing = true // Disable further clicks
+                                    onBackClick() // Trigger the back navigation
+                                }
+                            }
                     )
 
                     // Favorite Button
