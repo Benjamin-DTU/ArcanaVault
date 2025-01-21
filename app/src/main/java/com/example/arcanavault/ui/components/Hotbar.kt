@@ -1,5 +1,6 @@
 package com.example.arcanavault.ui.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -52,7 +53,8 @@ fun Hotbar(
                     popUpTo(Routes.home) { inclusive = true }
                 }
             },
-            colors = colors
+            colors = colors,
+            modifier = Modifier.size(width = 30.dp, height = 30.dp)
         )
 
         NavigationBarItem(
@@ -64,7 +66,8 @@ fun Hotbar(
                     popUpTo(Routes.home) { inclusive = false }
                 }
             },
-            colors = colors
+            colors = colors,
+            modifier = Modifier.size(width = 20.dp, height = 20.dp)
         )
     }
 }
