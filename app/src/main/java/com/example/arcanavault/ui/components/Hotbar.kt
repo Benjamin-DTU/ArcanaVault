@@ -3,6 +3,7 @@ package com.example.arcanavault.ui.components
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
@@ -47,8 +48,8 @@ fun Hotbar(
         )
 
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-            label = { Text("Home") },
+            icon = { Icon(Icons.Filled.Book, contentDescription = "Home") },
+            label = { Text("Spells") },
             selected = currentRoute == Routes.home,
             onClick = {
                 if (currentRoute == Routes.home) {
@@ -60,7 +61,7 @@ fun Hotbar(
                 }
             },
             colors = colors,
-            modifier = Modifier.size(width = 30.dp, height = 30.dp)
+            modifier = Modifier.size(width = 20.dp, height = 20.dp)
         )
 
         NavigationBarItem(
