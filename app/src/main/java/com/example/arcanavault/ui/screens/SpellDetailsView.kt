@@ -93,12 +93,9 @@ fun SpellDetailsView(
                 .padding(14.dp)
         ) {
             item {
-
+                // Back button and favorite button row
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // Back Button
@@ -106,33 +103,35 @@ fun SpellDetailsView(
                         imageVector = Icons.Filled.ArrowBackIosNew,
                         contentDescription = "Back",
                         modifier = Modifier
-                            .size(28.dp)
+                            .padding(start = 4.dp)
                             .clickable(enabled = !isBackProcessing) {
                                 if (!isBackProcessing) {
-                                    isBackProcessing = true
-                                    onBackClick()
+                                    isBackProcessing = true // Disable further clicks
+                                    onBackClick() // Trigger the back navigation
                                 }
                             }
                     )
 
                     // Favorite Button
                     val isFavorite = remember { mutableStateOf(spell.isFavorite) }
-                    IconButton(
-                        onClick = {
-                            val newFavoriteStatus = !isFavorite.value
-                            isFavorite.value = newFavoriteStatus
-                            spell.isFavorite = newFavoriteStatus
+                    IconButton(onClick = {
 
-                            if (newFavoriteStatus) {
-                                functionsDB.addToFavorites(spell)
-                            } else {
-                                functionsDB.removeFromFavorites(spell.index)
-                            }
+                        val newFavoriteStatus = !isFavorite.value
+                        isFavorite.value = newFavoriteStatus
+                        spell.isFavorite = newFavoriteStatus
 
-                            appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
+
+                        if (newFavoriteStatus) {
+                            functionsDB.addToFavorites(spell)
+                        } else {
+                            functionsDB.removeFromFavorites(spell.index)
                         }
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
+
+
+                        appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
+                    }) {
+                        Box (contentAlignment = Alignment.Center){
+
                             if (isFavorite.value) {
                                 Icon(
                                     imageVector = Icons.Default.Star,
@@ -150,6 +149,7 @@ fun SpellDetailsView(
                                 modifier = Modifier
                                     .size(28.dp)
                             )
+
                         }
                     }
                 }

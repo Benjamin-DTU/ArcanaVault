@@ -102,30 +102,7 @@ fun FavouritesView(
                         )
                     }
                 ),
-                scrollBehavior = scrollBehavior,
-                content = {
-                    AnimatedVisibility(
-                        visible = selectedFilters.isNotEmpty(),
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        FilterRow(
-                            selectedFilters = selectedFilters,
-                            onRemoveFilter = { category, option ->
-                                val updatedFilters = selectedFilters.toMutableMap()
-                                updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
-                                if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
-                                selectedFilters = if (updatedFilters.isEmpty()) {
-                                    // Reset filters when no filters are left
-                                    emptyMap()
-                                } else {
-                                    updatedFilters
-                                }
-                            },
-                            scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
-                        )
-                    }
-                }
+                scrollBehavior = scrollBehavior
             )
         }
     ) { paddingValues ->
@@ -148,8 +125,14 @@ fun FavouritesView(
                 )
             }
 
-            // Main content: filter view or favorite spells list
-            if (showFilterScreen) {
+            // Main content: Animated filter screen or favorite spells list
+            AnimatedVisibility(
+                visible = showFilterScreen,
+                enter = fadeIn(animationSpec = tween(durationMillis = 200)) +
+                        expandVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
+                        shrinkVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy))
+            ) {
                 FilterView(
                     filterOptions = filters,
                     selectedFilters = selectedFilters,
@@ -170,7 +153,9 @@ fun FavouritesView(
                     onClearAllFilters = { selectedFilters = emptyMap() },
                     itemCount = favoriteSpells.size
                 )
-            } else {
+            }
+
+            if (!showFilterScreen) {
                 if (favoriteSpells.isEmpty()) {
                     Spacer(modifier = Modifier.height(48.dp))
                     Text(
