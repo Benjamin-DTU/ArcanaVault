@@ -24,6 +24,7 @@ import com.example.arcanavault.Routes
 fun Hotbar(
     navController: NavController,
     modifier: Modifier = Modifier,
+    scrollToTop: () -> Unit
 ) {
     // Observe the current back stack entry as state, so recomposition occurs on route changes
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -49,8 +50,12 @@ fun Hotbar(
             label = { Text("Home") },
             selected = currentRoute == Routes.home,
             onClick = {
-                navController.navigate(Routes.home) {
-                    popUpTo(Routes.home) { inclusive = true }
+                if (currentRoute == Routes.home) {
+                    scrollToTop() // Trigger scroll to top if already on the Home route
+                } else {
+                    navController.navigate(Routes.home) {
+                        popUpTo(Routes.home) { inclusive = true }
+                    }
                 }
             },
             colors = colors,

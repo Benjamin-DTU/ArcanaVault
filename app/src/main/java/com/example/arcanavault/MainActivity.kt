@@ -25,6 +25,8 @@ import com.example.arcanavault.DB.FunctionsDB
 import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
+import androidx.compose.runtime.saveable.rememberSaveable
 
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +42,16 @@ class MainActivity : ComponentActivity() {
                 var isLoading by remember { mutableStateOf(true) }
                 val navController = rememberNavController()
                 val functionsDB = remember { FunctionsDB() }
+                val scrollState = rememberSaveable(saver = ScrollState.Saver) { ScrollState(0) }
+                val coroutineScope = rememberCoroutineScope()
+
+                val scrollToTop: () -> Unit = {
+                    coroutineScope.launch {
+                        if (scrollState.value > 0) {
+                            scrollState.animateScrollTo(0)
+                        }
+                    }
+                }
 
                 LaunchedEffect(Unit) {
                     val cachedSpells = functionsDB.getSpellsFromDB()
@@ -112,7 +124,12 @@ class MainActivity : ComponentActivity() {
 
 
                 Scaffold(
-                    bottomBar = { Hotbar(navController = navController) }
+                    bottomBar = {
+                        Hotbar(
+                            navController = navController,
+                            scrollToTop = scrollToTop,
+                        )
+                    }
                 ) { paddingValues ->
                     Surface(
                         modifier = Modifier.padding(paddingValues),
@@ -156,10 +173,12 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     SpellListView(
                                         appState = appState,
+                                        scrollState = scrollState,
                                         functionsDB = functionsDB,
                                         onSpellSelected = { selectedSpell ->
                                             navController.navigate("details/${selectedSpell}")
-                                        }
+                                        },
+                                        modifier = Modifier
                                     )
                                 }
                                 composable("details/{selectedSpell}",
