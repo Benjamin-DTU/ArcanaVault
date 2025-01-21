@@ -29,6 +29,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -409,47 +410,106 @@ fun SpellDetailsView(
 
             // Spell Description (markdown)
             item {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .height(505.dp)
+                ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .height(515.dp)
                     ) {
 
                         val scrollState = rememberScrollState()
 
 
-                    // Scrollable content
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(state = scrollState)
-                            .fillMaxSize()
-                            .padding(end = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        var isTable = false
-                        val tableLines = mutableListOf<String>()
+                        // Scrollable content
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(state = scrollState)
+                                .fillMaxSize()
+                                .padding(end = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            var isTable = false
+                            val tableLines = mutableListOf<String>()
 
-                        val customTextStyle = TextStyle(
-                            fontSize = 14.sp
-                        )
+                            val customTextStyle = TextStyle(
+                                fontSize = 14.sp
+                            )
 
-                        spell.description.forEach { line ->
-                            if (line.startsWith("|") && line.endsWith("|")) {
-                                isTable = true
-                                tableLines.add(line)
-                            } else if (isTable && line.startsWith("|---")) {
-                                tableLines.add(line)
-                            } else {
-                                if (isTable) {
-                                    Box(
-                                        modifier = Modifier
-                                            .width(400.dp)
-                                            .height(400.dp)
-                                    ) {
+                            spell.description.forEach { line ->
+                                if (line.startsWith("|") && line.endsWith("|")) {
+                                    isTable = true
+                                    tableLines.add(line)
+                                } else if (isTable && line.startsWith("|---")) {
+                                    tableLines.add(line)
+                                } else {
+                                    if (isTable) {
+                                        Box(
+                                            modifier = Modifier
+                                                .width(400.dp)
+                                                .height(400.dp)
+                                        ) {
+                                            ProvideTextStyle(customTextStyle) {
+                                                MarkdownText(
+                                                    markdown = tableLines.joinToString("\n"),
+                                                    onLinkClicked = { url ->
+                                                        when {
+                                                            url.startsWith("navigate://conditions/") -> {
+                                                                val conditionName = url
+                                                                    .substringAfter("navigate://conditions/")
+                                                                    .replace("-", " ")
+                                                                    .trim()
+
+                                                                if (conditionName.isNotBlank()) {
+                                                                    val condition =
+                                                                        appState.getConditionByName(
+                                                                            conditionName
+                                                                        )
+                                                                    if (condition != null) {
+                                                                        selectedCondition =
+                                                                            condition
+                                                                        showConditionDialog = true
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            url.startsWith("navigate://rules/") -> {
+                                                                val ruleName = url
+                                                                    .substringAfter("navigate://rules/")
+                                                                    .replace("-", " ")
+                                                                    .trim()
+
+                                                                if (ruleName.isNotBlank()) {
+                                                                    val rule =
+                                                                        appState.getRuleByName(
+                                                                            ruleName
+                                                                        )
+                                                                    if (rule != null) {
+                                                                        selectedRule = rule
+                                                                        showRuleDialog = true
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    enableUnderlineForLink = false,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(vertical = 4.dp)
+                                                )
+                                            }
+                                        }
+                                        tableLines.clear()
+                                        isTable = false
+                                    }
+
+                                    Box(modifier = Modifier.fillMaxWidth()) {
                                         ProvideTextStyle(customTextStyle) {
                                             MarkdownText(
-                                                markdown = tableLines.joinToString("\n"),
+                                                markdown = line,
                                                 onLinkClicked = { url ->
                                                     when {
                                                         url.startsWith("navigate://conditions/") -> {
@@ -459,13 +519,17 @@ fun SpellDetailsView(
                                                                 .trim()
 
                                                             if (conditionName.isNotBlank()) {
-                                                                val condition = appState.getConditionByName(conditionName)
+                                                                val condition =
+                                                                    appState.getConditionByName(
+                                                                        conditionName
+                                                                    )
                                                                 if (condition != null) {
                                                                     selectedCondition = condition
                                                                     showConditionDialog = true
                                                                 }
                                                             }
                                                         }
+
                                                         url.startsWith("navigate://rules/") -> {
                                                             val ruleName = url
                                                                 .substringAfter("navigate://rules/")
@@ -473,7 +537,8 @@ fun SpellDetailsView(
                                                                 .trim()
 
                                                             if (ruleName.isNotBlank()) {
-                                                                val rule = appState.getRuleByName(ruleName)
+                                                                val rule =
+                                                                    appState.getRuleByName(ruleName)
                                                                 if (rule != null) {
                                                                     selectedRule = rule
                                                                     showRuleDialog = true
@@ -482,21 +547,26 @@ fun SpellDetailsView(
                                                         }
                                                     }
                                                 },
+                                                linkColor = Color(0xFF2196F3),
                                                 enableUnderlineForLink = false,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(vertical = 4.dp)
                                             )
+
                                         }
                                     }
-                                    tableLines.clear()
-                                    isTable = false
                                 }
+                            }
 
-                                Box(modifier = Modifier.fillMaxWidth()) {
+                            if (tableLines.isNotEmpty()) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(800.dp)
+                                ) {
                                     ProvideTextStyle(customTextStyle) {
                                         MarkdownText(
-                                            markdown = line,
+                                            markdown = tableLines.joinToString("\n"),
                                             onLinkClicked = { url ->
                                                 when {
                                                     url.startsWith("navigate://conditions/") -> {
@@ -506,13 +576,17 @@ fun SpellDetailsView(
                                                             .trim()
 
                                                         if (conditionName.isNotBlank()) {
-                                                            val condition = appState.getConditionByName(conditionName)
+                                                            val condition =
+                                                                appState.getConditionByName(
+                                                                    conditionName
+                                                                )
                                                             if (condition != null) {
                                                                 selectedCondition = condition
                                                                 showConditionDialog = true
                                                             }
                                                         }
                                                     }
+
                                                     url.startsWith("navigate://rules/") -> {
                                                         val ruleName = url
                                                             .substringAfter("navigate://rules/")
@@ -520,7 +594,8 @@ fun SpellDetailsView(
                                                             .trim()
 
                                                         if (ruleName.isNotBlank()) {
-                                                            val rule = appState.getRuleByName(ruleName)
+                                                            val rule =
+                                                                appState.getRuleByName(ruleName)
                                                             if (rule != null) {
                                                                 selectedRule = rule
                                                                 showRuleDialog = true
@@ -535,66 +610,14 @@ fun SpellDetailsView(
                                                 .fillMaxWidth()
                                                 .padding(vertical = 4.dp)
                                         )
-
                                     }
                                 }
                             }
                         }
-
-                        if (tableLines.isNotEmpty()) {
-                            Box(
-                                modifier = Modifier
-                                    .width(800.dp)
-                            ) {
-                                ProvideTextStyle(customTextStyle) {
-                                    MarkdownText(
-                                        markdown = tableLines.joinToString("\n"),
-                                        onLinkClicked = { url ->
-                                            when {
-                                                url.startsWith("navigate://conditions/") -> {
-                                                    val conditionName = url
-                                                        .substringAfter("navigate://conditions/")
-                                                        .replace("-", " ")
-                                                        .trim()
-
-                                                    if (conditionName.isNotBlank()) {
-                                                        val condition = appState.getConditionByName(conditionName)
-                                                        if (condition != null) {
-                                                            selectedCondition = condition
-                                                            showConditionDialog = true
-                                                        }
-                                                    }
-                                                }
-                                                url.startsWith("navigate://rules/") -> {
-                                                    val ruleName = url
-                                                        .substringAfter("navigate://rules/")
-                                                        .replace("-", " ")
-                                                        .trim()
-
-                                                    if (ruleName.isNotBlank()) {
-                                                        val rule = appState.getRuleByName(ruleName)
-                                                        if (rule != null) {
-                                                            selectedRule = rule
-                                                            showRuleDialog = true
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        linkColor = Color(0xFF2196F3),
-                                        enableUnderlineForLink = false,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
                         CustomScrollbar(scrollState = scrollState, type = "vertical")
+                    }
                 }
             }
-
 
         }
 

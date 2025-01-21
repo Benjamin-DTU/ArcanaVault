@@ -24,7 +24,7 @@ fun CustomScrollbar(scrollState: ScrollState, type: String, modifier: Modifier =
     val thumbOffset = if (scrollState.maxValue > 0 && type == "horizontal") {
         scrollState.value.toFloat() / scrollState.maxValue * (375.dp.value - thumbSize.value)
     } else if (scrollState.maxValue > 0 && type == "vertical") {
-        scrollState.value.toFloat() / scrollState.maxValue * (520.dp.value - thumbSize.value)
+        scrollState.value.toFloat() / scrollState.maxValue * (495.dp.value - thumbSize.value)
     } else {
         0f
     }
