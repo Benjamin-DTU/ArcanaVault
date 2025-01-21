@@ -3,9 +3,11 @@ package com.example.arcanavault.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.arcanavault.ui.theme.ArcanaVaultTheme
@@ -50,8 +52,16 @@ fun Header(
                 scrollBehavior = scrollBehavior,
                 actions = {
                     it()
-                }
+                },
+                modifier = Modifier
+                    .heightIn(max = 50.dp),
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                )
             )
         }
+
     }
 }

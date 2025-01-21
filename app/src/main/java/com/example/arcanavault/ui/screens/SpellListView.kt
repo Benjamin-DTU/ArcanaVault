@@ -18,6 +18,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import com.example.arcanavault.ui.components.FilterRow
 import com.example.arcanavault.ui.components.SortView
 import com.example.arcanavault.ui.components.getSortComparator
+import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,8 +99,8 @@ fun SpellListView(
                     }
                 ),
                 scrollBehavior = scrollBehavior,
-                content = {
-                    if (selectedFilters.isNotEmpty()) {
+                content = if (selectedFilters.isNotEmpty()) {
+                    {
                         FilterRow(
                             selectedFilters = selectedFilters,
                             onRemoveFilter = { category, option ->
@@ -111,6 +112,8 @@ fun SpellListView(
                             scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f
                         )
                     }
+                } else {
+                    null
                 }
             )
         }
