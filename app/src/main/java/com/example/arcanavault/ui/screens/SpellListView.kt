@@ -1,5 +1,8 @@
 package com.example.arcanavault.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -17,6 +20,12 @@ import com.example.arcanavault.ui.components.ListView
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import com.example.arcanavault.ui.components.FilterRow
 import com.example.arcanavault.ui.components.SortView
 import com.example.arcanavault.ui.components.getSortComparator
@@ -126,7 +135,13 @@ fun SpellListView(
                 .padding(paddingValues)
         ) {
             // Display search bar if toggled on
-            if (showSearchBar) {
+            AnimatedVisibility(
+                visible = showSearchBar,
+                enter = fadeIn(animationSpec = tween(durationMillis = 200)) +
+                        expandVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 200)) +
+                        shrinkVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy))
+            ) {
                 SearchBar(
                     query = searchQuery, // Pass current search query
                     onSearch = { query ->
