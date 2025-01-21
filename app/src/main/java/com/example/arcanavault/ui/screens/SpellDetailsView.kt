@@ -631,7 +631,7 @@ fun EntityDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = MaterialTheme.colorScheme.surface,
+                    color = MaterialTheme.colorScheme.background,
                     shape = MaterialTheme.shapes.medium
                 )
                 .padding(16.dp)
