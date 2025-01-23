@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.arcanavault.model.data.IItem
-import com.example.arcanavault.ui.components.ItemView
 
 @Composable
 fun <T : IItem> ListView(
@@ -37,9 +36,11 @@ fun <T : IItem> ListView(
     ) {
         items(items) { item ->
             ItemView(
-                imageUrl = item.imageUrl,
                 title = titleProvider(item),
                 details = detailsProvider(item),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onItemClick(item.index) },
                 actionsContent = {
                     IconButton(onClick = { onFavoriteClick(item) }) {
                         if (item.isFavorite) {
@@ -56,10 +57,7 @@ fun <T : IItem> ListView(
                             )
                         }
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onItemClick(item.index) }
+                }
             )
         }
     }

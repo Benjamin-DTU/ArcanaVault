@@ -6,13 +6,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -22,16 +22,24 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.arcanavault.R
+private val schoolNameToDrawableMap: Map<String, Int> = mapOf(
+    "abjuration" to R.drawable.abjuration,
+    "conjuration" to R.drawable.conjuration,
+    "divination" to R.drawable.divination,
+    "enchantment" to R.drawable.enchantment,
+    "evocation" to R.drawable.evocation,
+    "illusion" to R.drawable.illusion,
+    "necromancy" to R.drawable.necromancy,
+    "transmutation" to R.drawable.transmutation
+)
 
 @Composable
 fun ItemView(
-    imageUrl: String,
     title: String,
     details: List<String>,
     modifier: Modifier = Modifier,
-    actionsContent: @Composable (() -> Unit)? = null,
+    actionsContent: @Composable() (() -> Unit)? = null,
     surfaceColor: Color = MaterialTheme.colorScheme.surface,
     onSurfaceColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
@@ -46,14 +54,14 @@ fun ItemView(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val schoolName = details.find { it.contains("school", ignoreCase = true) }
-            ?.split(": ")?.lastOrNull()?.lowercase()
+            ?.split(": ")
+            ?.lastOrNull()
+            ?.lowercase()
 
         val context = LocalContext.current
-        val imageId = context.resources.getIdentifier(
-            schoolName,
-            "drawable",
-            context.packageName
-        )
+        val imageId = remember(schoolName) {
+            schoolName?.let { schoolNameToDrawableMap[it] } ?: R.drawable.fallback
+        }
         // Image on the left
         Image(
             painter = painterResource(id = imageId),
