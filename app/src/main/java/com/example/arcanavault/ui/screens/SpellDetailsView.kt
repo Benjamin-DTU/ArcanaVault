@@ -281,12 +281,13 @@ fun SpellDetailsView(
                     item {
                         // Title
                         Text(
-                            text = "Damage by Slot Level",
+                            text = if (spell.damage.damageAtSlotLevel.size == 1) "Damage" else "Damage by Slot Level",
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.fillMaxWidth()
                         )
+
 
                         Box(
                             contentAlignment = Alignment.Center,
