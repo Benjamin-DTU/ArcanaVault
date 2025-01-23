@@ -23,6 +23,7 @@ public class AppState {
     private boolean sortOrderAscending = true;
 
     private int savedScrollPosition = 0;
+    private int savedFavScrollPosition = 0;
 
     public AppState() {
         this.listOfSpells = new ArrayList<>();
@@ -128,8 +129,14 @@ public class AppState {
     public int getSavedScrollPosition() {
         return savedScrollPosition;
     }
+    public int getFavSavedScrollPosition() {
+        return savedFavScrollPosition;
+    }
 
     public void setSavedScrollPosition(int position) {
         this.savedScrollPosition = position;
+    }
+    public void setFavSavedScrollPosition(int position) {
+        this.savedFavScrollPosition = position;
     }
 }

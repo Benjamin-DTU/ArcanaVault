@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
@@ -40,16 +41,32 @@ fun FavouritesView(
     var searchQuery by remember { mutableStateOf(appState.searchQuery) }
     var sortOption by remember { mutableStateOf(appState.sortOption) }
     var sortOrder by remember { mutableStateOf(appState.sortOrderAscending) }
-    var favoriteSpells by remember { mutableStateOf(emptyList<Spell>()) }
+
+    // Derived state for favorite spells
+    val favoriteSpells by remember(searchQuery, selectedFilters, sortOption, sortOrder) {
+        derivedStateOf {
+            fetchSpells(searchQuery, selectedFilters, functionsDB)
+                .filter { it.isFavorite }
+                .sortedWith(getSortComparator(sortOption, sortOrder))
+        }
+    }
 
     // Scroll behavior for the top app bar
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = appState.favSavedScrollPosition
+    )
 
-    // Fetch favorite spells when search, filter, or sort options change
-    LaunchedEffect(searchQuery, selectedFilters, sortOption, sortOrder) {
-        favoriteSpells = fetchSpells(searchQuery, selectedFilters, functionsDB)
-            .filter { it.isFavorite }
-            .sortedWith(getSortComparator(sortOption, sortOrder))
+    // Save scroll position separately
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .collect { index ->
+                appState.favSavedScrollPosition = index
+            }
+    }
+
+    // Save sorting and filtering state to appState when they change
+    LaunchedEffect(selectedFilters, searchQuery, sortOption, sortOrder) {
         appState.selectedFilters = selectedFilters
         appState.searchQuery = searchQuery
         appState.sortOption = sortOption
@@ -165,26 +182,19 @@ fun FavouritesView(
                     )
                 } else {
                     ListView(
+                        listState = listState,
                         items = favoriteSpells,
                         titleProvider = { it.name },
                         detailsProvider = { listOf("Level: ${it.level}", "School: ${it.school.name}") },
                         onItemClick = onSpellSelected,
                         onFavoriteClick = { spell ->
-                            functionsDB.removeFromFavorites(spell.index)
-                            appState.updateSpellFavoriteStatus(spell.index, false)
-
-                            // Refresh favorite spells
-                            favoriteSpells = fetchSpells(searchQuery, selectedFilters, functionsDB)
-                                .filter { it.isFavorite }
-                                .sortedWith(getSortComparator(sortOption, sortOrder))
-
-                            val updatedSpells = appState.listOfSpells.map { s ->
-                                if (s.index == spell.index) {
-                                    s.isFavorite = false
-                                }
-                                s
+                            val newFavoriteStatus = !spell.isFavorite
+                            if (newFavoriteStatus) {
+                                functionsDB.addToFavorites(spell)
+                            } else {
+                                functionsDB.removeFromFavorites(spell.index)
                             }
-                            appState.setListOfSpells(updatedSpells)
+                            appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
                         }
                     )
                 }
