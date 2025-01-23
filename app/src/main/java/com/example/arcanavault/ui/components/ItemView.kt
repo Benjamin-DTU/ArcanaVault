@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -22,6 +23,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.arcanavault.R
 private val schoolNameToDrawableMap: Map<String, Int> = mapOf(
     "abjuration" to R.drawable.abjuration,
@@ -39,57 +43,51 @@ fun ItemView(
     title: String,
     details: List<String>,
     modifier: Modifier = Modifier,
-    actionsContent: @Composable() (() -> Unit)? = null,
+    actionsContent: @Composable (() -> Unit)? = null,
     surfaceColor: Color = MaterialTheme.colorScheme.surface,
-    onSurfaceColor: Color = MaterialTheme.colorScheme.onSurface
+    onSurfaceColor: Color = MaterialTheme.colorScheme.onSurface,
+    imageLoader: ImageLoader // add a param for the image loader
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
-            .shadow(3.dp, RectangleShape, spotColor = Color.Gray)
             .background(surfaceColor)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // Extract the schoolName from details
         val schoolName = details.find { it.contains("school", ignoreCase = true) }
             ?.split(": ")
             ?.lastOrNull()
             ?.lowercase()
 
-        val context = LocalContext.current
+        // Lookup the local resource ID from the map, fallback if not found
         val imageId = remember(schoolName) {
             schoolName?.let { schoolNameToDrawableMap[it] } ?: R.drawable.fallback
         }
-        // Image on the left
-        Image(
-            painter = painterResource(id = imageId),
+
+        // Async image loading with the provided imageLoader
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageId)
+                .build(),
+            imageLoader = imageLoader,
             contentDescription = "$schoolName Image",
             modifier = Modifier
                 .size(62.dp)
                 .clip(MaterialTheme.shapes.extraSmall)
-                .border(1.dp, onSurfaceColor, MaterialTheme.shapes.extraSmall)
+                .border(1.dp, onSurfaceColor, MaterialTheme.shapes.extraSmall),
+            // e.g. contentScale = ContentScale.Crop,
         )
 
-        /*AsyncImage(
-            model = imageUrl,
-            contentDescription = "$title Image",
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.Center,
-            modifier = Modifier
-                .size(62.dp)
-                .clip(MaterialTheme.shapes.extraSmall)
-                .border(1.dp, onSurfaceColor, MaterialTheme.shapes.extraSmall)
-        )*/
-
-        // Title and details
+        // Title & details
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Title
             Text(
                 text = title,
                 fontSize = 18.sp,
@@ -101,10 +99,9 @@ fun ItemView(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Details displayed below the title
-            Row (
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement =  Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 details.forEach { detail ->
                     val parts = detail.split(": ")
@@ -134,7 +131,7 @@ fun ItemView(
             }
         }
 
-        // Actions content on the right
+        // Optional actions on the right
         if (actionsContent != null) {
             IconButton(
                 onClick = {},
