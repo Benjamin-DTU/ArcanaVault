@@ -49,7 +49,7 @@ fun Header(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 50.dp)
-                    .padding(horizontal = 8.dp)
+                    //.padding(horizontal = 8.dp)
             ) {
                 content()
             }

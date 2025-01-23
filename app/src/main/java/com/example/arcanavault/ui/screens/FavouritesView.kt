@@ -29,7 +29,7 @@ fun FavouritesView(
     appState: AppState,
     onSpellSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
-    functionsDB: FunctionsDB
+    functionsDB: FunctionsDB,
 ) {
     // UI state variables
     var showFilterScreen by remember { mutableStateOf(false) }
@@ -119,7 +119,29 @@ fun FavouritesView(
                         )
                     }
                 ),
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                content = {
+                    AnimatedVisibility(
+                        visible = selectedFilters.isNotEmpty(),
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        FilterRow(
+                            selectedFilters = selectedFilters,
+                            onRemoveFilter = { category, option ->
+                                val updatedFilters = selectedFilters.toMutableMap()
+                                updatedFilters[category] = updatedFilters[category]?.filterNot { it == option }.orEmpty()
+                                if (updatedFilters[category].isNullOrEmpty()) updatedFilters.remove(category)
+                                selectedFilters = if (updatedFilters.isEmpty()) {
+                                    emptyMap()
+                                } else {
+                                    updatedFilters
+                                }
+                            },
+                            scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->

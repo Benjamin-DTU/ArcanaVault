@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,6 +39,7 @@ fun FilterView(
     Scaffold(
         topBar = {
             TopAppBar(
+                modifier = Modifier.background(MaterialTheme.colorScheme.surface),
                 navigationIcon = {
                     if (selectedCategory != null) {
                         IconButton(onClick = { selectedCategory = null }) {
@@ -51,7 +53,7 @@ fun FilterView(
                 title = {
                     // Left-anchored title
                     Text(
-                        text = if (selectedCategory != null) "Select $selectedCategory" else "Filters",
+                        text = if (selectedCategory != null) "Select $selectedCategory" else "Select Filters",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -163,6 +165,7 @@ fun FilterView(
                                     onFilterChange(category, updatedList)
                                 }
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
@@ -180,7 +183,9 @@ fun FilterOption(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            //.padding(vertical = 8.dp)
+            .background(MaterialTheme.colorScheme.surface)
+        ,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
@@ -189,7 +194,6 @@ fun FilterOption(
                 onSelect(isChecked)
             }
         )
-        Spacer(modifier = Modifier.width(8.dp))
         Text(label)
     }
 }
