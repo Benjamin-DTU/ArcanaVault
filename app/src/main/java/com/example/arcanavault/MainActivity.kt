@@ -67,8 +67,6 @@ class MainActivity : ComponentActivity() {
                     val cachedRules = functionsDB.getRulesFromDB()
                     val cachedConditions = functionsDB.getConditionsFromDB()
 
-                    //Log.d("SPELLS_FROM_DB", "Cached spells count: ${cachedSpells.size}")
-                    //Log.d("RULES_FROM_DB", "Cached rules count: ${cachedRules.size}")
                     Log.d("CONDITIONS_FROM_DB", "Cached conditions count: ${cachedConditions.size}")
 
                     try {

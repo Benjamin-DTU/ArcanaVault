@@ -53,7 +53,15 @@ fun Hotbar(
             selected = currentRoute == Routes.home,
             onClick = {
                 if (currentRoute == Routes.home) {
-                    scrollToTop() // Trigger scroll to top if already on the Home route
+                    navController.navigate(
+                        Routes.home,
+                        // Pop up to the home route if already on it
+                        builder = {
+                            popUpTo(Routes.home) { inclusive = true }
+                        }
+                    )
+                    //scrollToTop() // Trigger scroll to top if already on the Home route
+                    //TODO this doesn't work. Workaround popUpTo call above is a temporary fix
                 } else {
                     navController.navigate(Routes.home) {
                         popUpTo(Routes.home) { inclusive = true }

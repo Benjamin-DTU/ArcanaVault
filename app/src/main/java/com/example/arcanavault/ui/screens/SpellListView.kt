@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.navigation.NavController
 import com.example.arcanavault.AppState
 import com.example.arcanavault.DB.FunctionsDB
 import com.example.arcanavault.model.data.Spell
