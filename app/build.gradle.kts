@@ -55,7 +55,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
-    implementation ("com.github.jeziellago:compose-markdown:0.5.6")
+    implementation (libs.compose.markdown)
     implementation(libs.coil)
     implementation(libs.coil.compose)
     implementation(libs.coil.httpok)
@@ -63,7 +63,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlin.serialization.converter)
-    implementation("io.realm.kotlin:library-base:3.0.0")
+    implementation(libs.library.base)
+    implementation(libs.androidx.ui.test.junit4.android)
 
 
 
@@ -77,9 +78,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     val nav_version = "2.8.4"
-    implementation("androidx.navigation:navigation-compose:$nav_version")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-    implementation("com.github.jeziellago:compose-markdown:0.5.6")
+    implementation(libs.androidx.navigation.compose.v284)
+    implementation(libs.kotlinx.serialization.json.v151)
+    implementation(libs.compose.markdown)
 
 
 }

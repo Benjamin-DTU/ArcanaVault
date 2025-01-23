@@ -49,15 +49,15 @@ fun ItemView(
     details: List<String>,
     modifier: Modifier = Modifier,
     actionsContent: @Composable (() -> Unit)? = null,
-    surfaceColor: Color = MaterialTheme.colorScheme.surface,
-    onSurfaceColor: Color = MaterialTheme.colorScheme.onSurface,
+//    surfaceColor: Color = MaterialTheme.colorScheme.surface,
+//    onSurfaceColor: Color = MaterialTheme.colorScheme.onSurface,
     imageLoader: ImageLoader // add a param for the image loader
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
-            .background(surfaceColor)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -83,7 +83,7 @@ fun ItemView(
             modifier = Modifier
                 .size(62.dp)
                 .clip(MaterialTheme.shapes.extraSmall)
-                .border(1.dp, onSurfaceColor, MaterialTheme.shapes.extraSmall),
+                .border(1.dp, MaterialTheme.colorScheme.onSurface, MaterialTheme.shapes.extraSmall),
             // e.g. contentScale = ContentScale.Crop,
         )
 
@@ -97,7 +97,7 @@ fun ItemView(
                 text = title,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = onSurfaceColor,
+                //color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -119,7 +119,7 @@ fun ItemView(
                                 append(parts[1])
                             },
                             fontSize = 13.sp,
-                            color = onSurfaceColor,
+                            //color = onSurfaceColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -127,7 +127,7 @@ fun ItemView(
                         Text(
                             text = detail,
                             fontSize = 13.sp,
-                            color = onSurfaceColor,
+                            //color = onSurfaceColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
