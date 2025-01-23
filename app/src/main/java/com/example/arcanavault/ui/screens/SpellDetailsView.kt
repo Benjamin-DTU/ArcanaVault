@@ -112,26 +112,23 @@ fun SpellDetailsView(
                     )
 
                     // Favorite Button
-                    val isFavorite = remember { mutableStateOf(spell.isFavorite) }
                     IconButton(onClick = {
 
-                        val newFavoriteStatus = !isFavorite.value
-                        isFavorite.value = newFavoriteStatus
-                        spell.isFavorite = newFavoriteStatus
+                        spell.isFavorite = !spell.isFavorite
 
 
-                        if (newFavoriteStatus) {
+                        if (spell.isFavorite) {
                             functionsDB.addToFavorites(spell)
                         } else {
                             functionsDB.removeFromFavorites(spell.index)
                         }
 
 
-                        appState.updateSpellFavoriteStatus(spell.index, newFavoriteStatus)
+                        appState.updateSpellFavoriteStatus(spell.index, spell.isFavorite)
                     }) {
                         Box(contentAlignment = Alignment.Center) {
 
-                            if (isFavorite.value) {
+                            if (spell.isFavorite) {
                                 Icon(
                                     imageVector = Icons.Default.Star,
                                     contentDescription = "Remove from Favorites",
@@ -139,16 +136,15 @@ fun SpellDetailsView(
                                     modifier = Modifier
                                         .size(24.dp)
                                 )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.StarOutline,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                )
                             }
-
-                            Icon(
-                                imageVector = Icons.Default.StarOutline,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier
-                                    .size(28.dp)
-                            )
-
                         }
                     }
                 }

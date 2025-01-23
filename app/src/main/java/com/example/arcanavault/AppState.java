@@ -56,12 +56,7 @@ public class AppState {
     }
 
     public Spell getSpellByIndex(String index) {
-        for (Spell spell : listOfSpells) {
-            if (spell.getIndex().equals(index)) {
-                return spell;
-            }
-        }
-        return null; // Return null if not found
+        return listOfSpells.stream().filter(spell -> spell.getIndex().equals(index)).findFirst().orElse(null);
     }
 
     public Condition getConditionByName(String name) {

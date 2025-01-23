@@ -83,8 +83,17 @@ class MainActivity : ComponentActivity() {
 
                         // Sync Spells
                         Log.d("SPELL_SYNC", "Updating spells in DB. Replacing with spells from API.")
-                        functionsDB.saveAllSpells(apiSpells)
-                        appState.setListOfSpells(apiSpells)
+                        val cachedSpells = functionsDB.getSpellsFromDB()
+                        val mergedSpells = apiSpells.map { apiSpell ->
+                            val cachedSpell = cachedSpells.find { it.index == apiSpell.index }
+                            if (cachedSpell != null) {
+                                // Preserve the favorite status
+                                apiSpell.isFavorite = cachedSpell.isFavorite
+                            }
+                            apiSpell
+                        }
+                        functionsDB.saveAllSpells(mergedSpells)
+                        appState.setListOfSpells(mergedSpells)
                             //Log.d("SPELL_SYNC", "Spell count matches. Using cached spells from DB.")
                             //appState.setListOfSpells(cachedSpells)
 
