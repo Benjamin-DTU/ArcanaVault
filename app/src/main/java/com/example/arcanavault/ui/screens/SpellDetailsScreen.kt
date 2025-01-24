@@ -89,6 +89,7 @@ fun SpellDetailsView(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(14.dp)
+            ,userScrollEnabled = false
         ) {
             item {
                 // Back button and favorite button row
