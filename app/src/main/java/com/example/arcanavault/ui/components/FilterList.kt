@@ -1,11 +1,9 @@
-package com.example.arcanavault.ui.screens
+package com.example.arcanavault.ui.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,7 +27,6 @@ fun FilterView(
     filterOptions: Map<String, List<String>>,
     selectedFilters: Map<String, List<String>>,
     onFilterChange: (String, List<String>) -> Unit,
-    onClearAllFilters: () -> Unit,
     itemCount: Int?
 ) {
     var selectedCategory by remember { mutableStateOf<String?>(null) }
@@ -51,14 +47,13 @@ fun FilterView(
                     }
                 },
                 title = {
-                    // Left-anchored title
                     Text(
                         text = if (selectedCategory != null) "Select $selectedCategory" else "Select Filters",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                actions = { //use actions here so item count doesn't move
+                actions = {
                     itemCount?.let {
                         Text(
                             text = "Count: $it",
@@ -71,14 +66,14 @@ fun FilterView(
                 }
             )
         }
-    )
- { innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
+            // AnimatedContent for filter categories or options
             AnimatedContent(
                 targetState = selectedCategory,
                 transitionSpec = {
@@ -106,7 +101,6 @@ fun FilterView(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f)
-                            //.verticalScroll(scrollState)
                     ) {
                         filterOptions.keys.forEach { category ->
                             OutlinedButton(
@@ -122,24 +116,6 @@ fun FilterView(
                                 shape = RectangleShape
                             ) {
                                 Text(category)
-                            }
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            TextButton(
-                                onClick = onClearAllFilters,
-                                colors = ButtonDefaults.textButtonColors(
-                                    contentColor = Color(0xFF8B0000)
-                                )
-                            ) {
-                                Text(
-                                    text = "Clear All",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-                                )
                             }
                         }
                     }
@@ -173,6 +149,9 @@ fun FilterView(
         }
     }
 }
+
+
+
 
 @Composable
 fun FilterOption(

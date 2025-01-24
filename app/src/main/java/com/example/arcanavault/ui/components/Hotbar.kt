@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
@@ -25,8 +23,7 @@ import com.example.arcanavault.Routes
 @Composable
 fun Hotbar(
     navController: NavController,
-    modifier: Modifier = Modifier,
-    scrollToTop: () -> Unit
+    modifier: Modifier = Modifier
 ) {
     // Observe the current back stack entry as state, so recomposition occurs on route changes
     val navBackStackEntry by navController.currentBackStackEntryAsState()

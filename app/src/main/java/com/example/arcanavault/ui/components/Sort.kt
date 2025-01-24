@@ -8,13 +8,11 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.arcanavault.model.data.Spell
 
 @Composable
@@ -77,6 +75,7 @@ fun SortView(
 }
 
 // Helper function to get a comparator based on selected sorting option and direction
+// This function was written with the assistance of ChatGPT
 fun getSortComparator(sortOption: String, isAscending: Boolean): Comparator<Spell> {
     return when (sortOption) {
         "Name" -> if (isAscending) compareBy { it.name } else compareByDescending { it.name }

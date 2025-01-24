@@ -138,7 +138,8 @@ fun FavouritesView(
                                     updatedFilters
                                 }
                             },
-                            scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f,
+                            onClearAll = { selectedFilters = emptyMap() },
+                            scrollFraction = scrollBehavior.state.collapsedFraction ?: 0f
                         )
                     }
                 }
@@ -189,7 +190,6 @@ fun FavouritesView(
                             updatedFilters
                         }
                     },
-                    onClearAllFilters = { selectedFilters = emptyMap() },
                     itemCount = favoriteSpells.size
                 )
             }

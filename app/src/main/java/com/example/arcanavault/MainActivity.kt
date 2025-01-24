@@ -43,16 +43,6 @@ class MainActivity : ComponentActivity() {
                 var isLoading by remember { mutableStateOf(true) }
                 val navController = rememberNavController()
                 val functionsDB = remember { FunctionsDB() }
-                val scrollState = rememberSaveable(saver = ScrollState.Saver) { ScrollState(0) }
-                val coroutineScope = rememberCoroutineScope()
-
-                val scrollToTop: () -> Unit = {
-                    coroutineScope.launch {
-                        if (scrollState.value > 0) {
-                            scrollState.animateScrollTo(0)
-                        }
-                    }
-                }
 
                 BackHandler(enabled = true) {
                     if (navController.currentBackStackEntry?.destination?.route != Routes.home) {
@@ -136,7 +126,6 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         Hotbar(
                             navController = navController,
-                            scrollToTop = scrollToTop,
                         )
                     }
                 ) { paddingValues ->
