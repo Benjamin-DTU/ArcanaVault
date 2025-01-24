@@ -1,8 +1,11 @@
 package com.example.arcanavault.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.AlertDialogDefaults.containerColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,19 +32,25 @@ fun FilterRow(
                 .fillMaxWidth()
                 .height(currentHeight)
                 .alpha(fraction)
-        ) {
+                .background(MaterialTheme.colorScheme.surface)
+        ){
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
+
+                    .fillMaxWidth()
+                    //.padding(horizontal = 8.dp, vertical = 4.dp)
+                ,verticalAlignment = Alignment.CenterVertically,
+
             ) {
                 // Scrollable Row for filters
                 Row(
                     modifier = Modifier
                         .weight(1f) // Limit width of the scrollable area
                         .horizontalScroll(rememberScrollState()),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+
+
                 ) {
                     selectedFilters.forEach { (category, options) ->
                         options.forEach { option ->

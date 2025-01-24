@@ -12,6 +12,7 @@ class AppDB_Config : Application() {
             private set
     }
 
+    //chatgbt help make clear how to set up migration in case of model changes
     override fun onCreate() {
         super.onCreate()
         Log.d("AppDB_Config", "Realm has been initialized")

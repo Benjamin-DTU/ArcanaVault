@@ -37,7 +37,7 @@ class FunctionsDB {
             damageType =
                 this@toRealmModel.damage?.damageType?.name ?: "Unknown"
             damageAtSlotLevel.addAll(
-                this@toRealmModel.damage?.damageAtSlotLevel
+                this@toRealmModel.damage?.damageAtSlotLevel //(Chatgbt assisted in how to handel the "damage" itemreference when saving and fetching from the db)
                     ?.map { (level, value) -> "$level: $value" }
                     ?: emptyList()
             )

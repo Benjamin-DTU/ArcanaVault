@@ -5,7 +5,6 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-//TODO reconsider typography and shapes. These are just placeholders
 val Typography = androidx.compose.material3.Typography()
 val Shapes = androidx.compose.material3.Shapes()
 

@@ -1,5 +1,6 @@
 package com.example.arcanavault.ui.screens
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -14,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.navigation.NavController
 import com.example.arcanavault.AppState
 import com.example.arcanavault.DB.FunctionsDB
 import com.example.arcanavault.model.data.Spell
@@ -43,24 +45,34 @@ fun SpellListView(
     var sortOption by remember { mutableStateOf(appState.sortOption) }
     var sortOrder by remember { mutableStateOf(appState.sortOrderAscending) }
 
-    var spells by remember { mutableStateOf(emptyList<Spell>()) }
+    // List of spells, recomputed only when needed
+    val spells by remember(searchQuery, selectedFilters, sortOption, sortOrder) {
+        derivedStateOf {
+            fetchSpells(searchQuery, selectedFilters, functionsDB)
+                .sortedWith(getSortComparator(sortOption, sortOrder))
+        }
+    }
 
+    // Scroll behavior and state
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = appState.savedScrollPosition
     )
 
-    // Recomputes the spells list whenever searchQuery, selectedFilters, or sortOption changes
-    LaunchedEffect(searchQuery, selectedFilters, sortOption, sortOrder, listState.firstVisibleItemIndex) {
-        spells = fetchSpells(searchQuery, selectedFilters, functionsDB).sortedWith(getSortComparator(sortOption, sortOrder))
+    // Save scroll position separately
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .collect { index ->
+                appState.savedScrollPosition = index
+            }
+    }
+
+    // Save UI state only when needed
+    LaunchedEffect(selectedFilters, searchQuery, sortOption, sortOrder) {
         appState.selectedFilters = selectedFilters
         appState.searchQuery = searchQuery
         appState.sortOption = sortOption
         appState.sortOrderAscending = sortOrder
-
-        snapshotFlow { listState.firstVisibleItemIndex }.collect { index ->
-            appState.savedScrollPosition = index
-        }
     }
 
     Scaffold(
@@ -131,8 +143,8 @@ fun SpellListView(
                 }
             )
         }
-    ) { paddingValues ->
-        Column(
+    ) { paddingValues -> // This line and the parameters of the following column
+        Column(          // were assisted by ChatGPT
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)

@@ -47,7 +47,7 @@ class Rule : RealmObject {
     var name: String = ""
     var url: String = ""
     var description: String = ""
-    var ruleSections: RealmList<RuleSection> = realmListOf() // List of RuleSection objects
+    var ruleSections: RealmList<RuleSection> = realmListOf()
 }
 
 class RuleSection : RealmObject {

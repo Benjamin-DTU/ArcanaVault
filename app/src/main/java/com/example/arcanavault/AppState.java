@@ -23,6 +23,7 @@ public class AppState {
     private boolean sortOrderAscending = true;
 
     private int savedScrollPosition = 0;
+    private int savedFavScrollPosition = 0;
 
     public AppState() {
         this.listOfSpells = new ArrayList<>();
@@ -55,12 +56,7 @@ public class AppState {
     }
 
     public Spell getSpellByIndex(String index) {
-        for (Spell spell : listOfSpells) {
-            if (spell.getIndex().equals(index)) {
-                return spell;
-            }
-        }
-        return null; // Return null if not found
+        return listOfSpells.stream().filter(spell -> spell.getIndex().equals(index)).findFirst().orElse(null);
     }
 
     public Condition getConditionByName(String name) {
@@ -128,8 +124,14 @@ public class AppState {
     public int getSavedScrollPosition() {
         return savedScrollPosition;
     }
+    public int getFavSavedScrollPosition() {
+        return savedFavScrollPosition;
+    }
 
     public void setSavedScrollPosition(int position) {
         this.savedScrollPosition = position;
+    }
+    public void setFavSavedScrollPosition(int position) {
+        this.savedFavScrollPosition = position;
     }
 }
