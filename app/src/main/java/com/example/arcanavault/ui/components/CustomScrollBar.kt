@@ -26,10 +26,6 @@ fun CustomScrollbar(descHeight: Dp, scrollState: ScrollState, type: String, modi
         scrollState.value.toFloat() / scrollState.maxValue * (375.dp.value - thumbSize.value)
     } else if (scrollState.maxValue > 0 && type == "vertical") {
         scrollState.value.toFloat() / scrollState.maxValue * (descHeight.value - thumbSize.value)
-    }
-        else if (scrollState.maxValue > 0 && type == "filter") {
-            scrollState.value.toFloat() / scrollState.maxValue * (descHeight.value - thumbSize.value)
-
     } else {
 
         0f
@@ -75,25 +71,6 @@ fun CustomScrollbar(descHeight: Dp, scrollState: ScrollState, type: String, modi
                         )
                     }
                 }
-
-                "filter" -> {
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                            .height(4.dp)
-                            .background(Color.Transparent)
-                            .align(Alignment.BottomCenter)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .width(thumbSize)
-                                .height(4.dp)
-                                .offset(x = thumbOffset.dp)
-                                .background(Color.Black)
-                                .clip(MaterialTheme.shapes.extraSmall)
-                        )
-                    }
-                }
-
                 else -> throw IllegalArgumentException("Invalid type!")
             }
         }

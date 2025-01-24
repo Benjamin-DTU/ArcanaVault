@@ -76,7 +76,7 @@ fun FilterRow(
                         CustomScrollbar(
                             descHeight = 282.dp,
                             scrollState = scrollState,
-                            type = "filter"
+                            type = "horizontal"
                         )
                     }
                 }
