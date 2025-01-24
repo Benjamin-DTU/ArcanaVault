@@ -12,7 +12,7 @@ fun Header(
     title: String,
     buttons: List<@Composable () -> Unit>,
     scrollBehavior: TopAppBarScrollBehavior,
-    content: (@Composable () -> Unit)? = null, // Optional content below the header
+    content: (@Composable () -> Unit)? = null,
 ) {
     Column {
         TopAppBar(
@@ -43,7 +43,6 @@ fun Header(
             )
         )
 
-        // Add optional content below the header if provided
         if (content != null) {
             Box(
                 modifier = Modifier

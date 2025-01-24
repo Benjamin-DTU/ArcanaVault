@@ -143,8 +143,8 @@ fun SpellListView(
                 }
             )
         }
-    ) { paddingValues ->
-        Column(
+    ) { paddingValues -> // This line and the parameters of the following column
+        Column(          // were assisted by ChatGPT
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
