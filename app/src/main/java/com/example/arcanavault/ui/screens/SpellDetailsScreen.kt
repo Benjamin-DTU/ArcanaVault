@@ -59,8 +59,6 @@ import com.example.arcanavault.ui.components.CustomScrollbar
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import com.example.arcanavault.DB.FunctionsDB
 
-
-
 @Composable
 fun SpellDetailsView(
     appState: AppState,
@@ -85,477 +83,341 @@ fun SpellDetailsView(
     }
 
     if (spell != null) {
-        LazyColumn(
+        Column(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(14.dp)
-            ,userScrollEnabled = false
         ) {
-            item {
-                // Back button and favorite button row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    // Back Button
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBackIosNew,
-                        contentDescription = "Back",
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .clickable(enabled = !isBackProcessing) {
-                                if (!isBackProcessing) {
-                                    isBackProcessing = true // Disable further clicks
-                                    onBackClick() // Trigger the back navigation
-                                }
+            // Back button and favorite button row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                // Back Button
+                Icon(
+                    imageVector = Icons.Filled.ArrowBackIosNew,
+                    contentDescription = "Back",
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .clickable(enabled = !isBackProcessing) {
+                            if (!isBackProcessing) {
+                                isBackProcessing = true // Disable further clicks
+                                onBackClick() // Trigger the back navigation
                             }
-                    )
+                        }
+                )
 
-                    // Favorite Button
-                    IconButton(onClick = {
+                // Favorite Button
+                IconButton(onClick = {
 
-                        spell.isFavorite = !spell.isFavorite
+                    spell.isFavorite = !spell.isFavorite
 
+
+                    if (spell.isFavorite) {
+                        functionsDB.addToFavorites(spell)
+                    } else {
+                        functionsDB.removeFromFavorites(spell.index)
+                    }
+
+
+                    appState.updateSpellFavoriteStatus(spell.index, spell.isFavorite)
+                }) {
+                    Box(contentAlignment = Alignment.Center) {
 
                         if (spell.isFavorite) {
-                            functionsDB.addToFavorites(spell)
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Remove from Favorites",
+                                tint = Color.Yellow,
+                                modifier = Modifier
+                                    .size(24.dp)
+                            )
                         } else {
-                            functionsDB.removeFromFavorites(spell.index)
-                        }
-
-
-                        appState.updateSpellFavoriteStatus(spell.index, spell.isFavorite)
-                    }) {
-                        Box(contentAlignment = Alignment.Center) {
-
-                            if (spell.isFavorite) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = "Remove from Favorites",
-                                    tint = Color.Yellow,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.StarOutline,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier
-                                        .size(28.dp)
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.StarOutline,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .size(28.dp)
+                            )
                         }
                     }
                 }
             }
 
             // Spell name
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Text(
-                        text = spell.name,
-                        style = MaterialTheme.typography.titleLarge
-                    )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = spell.name,
+                    style = MaterialTheme.typography.titleLarge
+                )
 
-                }
             }
 
             // Spell level
-            item {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                            append("Level: ")
-                        }
-                        append(spell.level.toString())
-                    },
-                    fontSize = 14.sp,
-                )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append("Level: ")
+                    }
+                    append(spell.level.toString())
+                },
+                fontSize = 14.sp,
+            )
 
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Spell school
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                append("School: ")
-                            }
-                            append(spell.school?.name)
-                        },
-                        fontSize = 14.sp,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append("School: ")
+                        }
+                        append(spell.school?.name)
+                    },
+                    fontSize = 14.sp,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
 
-                    val context = LocalContext.current
-                    val imageId = context.resources.getIdentifier(
-                        spell.school.name.lowercase(),
-                        "drawable",
-                        context.packageName
-                    )
+                val context = LocalContext.current
+                val imageId = context.resources.getIdentifier(
+                    spell.school.name.lowercase(),
+                    "drawable",
+                    context.packageName
+                )
 
-                    Image(
-                        painter = painterResource(id = imageId),
-                        contentDescription = "School name Image",
-                        contentScale = ContentScale.Fit,
-                        alignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(MaterialTheme.shapes.extraSmall)
-                    )
-                }
-
-
-                Spacer(modifier = Modifier.height(12.dp))
+                Image(
+                    painter = painterResource(id = imageId),
+                    contentDescription = "School name Image",
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(MaterialTheme.shapes.extraSmall)
+                )
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Casting time
-            item {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                            append("Casting Time: ")
-                        }
-                        append(spell.castingTime)
-                    },
-                    fontSize = 14.sp,
-                )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append("Casting Time: ")
+                    }
+                    append(spell.castingTime)
+                },
+                fontSize = 14.sp,
+            )
 
-
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Range
-            item {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                            append("Range: ")
-                        }
-                        append(spell.range)
-                    },
-                    fontSize = 14.sp,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append("Range: ")
+                    }
+                    append(spell.range)
+                },
+                fontSize = 14.sp,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Damage information
             if (spell.damage != null) {
-                item {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                append("Damage Type: ")
-                            }
-                            append(spell.damage.damageType?.name ?: "Unknown")
-                        },
-                        fontSize = 14.sp,
-                    )
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                            append("Damage Type: ")
+                        }
+                        append(spell.damage.damageType?.name ?: "Unknown")
+                    },
+                    fontSize = 14.sp,
+                )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+                Spacer(modifier = Modifier.height(8.dp))
 
                 if (spell.damage.damageAtSlotLevel.isNotEmpty()) {
-                    item {
-                        // Title
-                        Text(
-                            text = if (spell.damage.damageAtSlotLevel.size == 1) "Damage" else "Damage by Slot Level",
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                    // Title
+                    Text(
+                        text = if (spell.damage.damageAtSlotLevel.size == 1) "Damage" else "Damage by Slot Level",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
 
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxWidth()
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val scrollState = rememberScrollState()
+
+                        Row(
+                            modifier = Modifier
+                                .horizontalScroll(scrollState)
+                                .wrapContentWidth()
+                                .padding(6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val scrollState = rememberScrollState()
-
-                            Row(
-                                modifier = Modifier
-                                    .horizontalScroll(scrollState)
-                                    .wrapContentWidth()
-                                    .padding(6.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                spell.damage.damageAtSlotLevel.forEach { (lvl, damage) ->
-                                    Column(
-                                        modifier = Modifier.padding(horizontal = 4.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "Level $lvl",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = damage,
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        if (scrollState.maxValue > 0) {
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                        }
+                            spell.damage.damageAtSlotLevel.forEach { (lvl, damage) ->
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 4.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Level $lvl",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = damage,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    if (scrollState.maxValue > 0) {
+                                        Spacer(modifier = Modifier.height(8.dp))
                                     }
                                 }
-
                             }
 
-                            if (scrollState.maxValue > 0) {
-                                CustomScrollbar(375.dp,
-                                    scrollState = scrollState,
-                                    type = "horizontal",
-                                    modifier = Modifier
-                                        .align(Alignment.BottomCenter)
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
+                        }
+
+                        if (scrollState.maxValue > 0) {
+                            CustomScrollbar(375.dp,
+                                scrollState = scrollState,
+                                type = "horizontal",
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
 
                 if (spell.damage.damageAtCharLevel.isNotEmpty()) {
-                    item {
-                        // Title
-                        Text(
-                            text = "Damage by Character Level",
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                    // Title
+                    Text(
+                        text = "Damage by Character Level",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxWidth()
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val scrollState = rememberScrollState()
+
+                        Row(
+                            modifier = Modifier
+                                .horizontalScroll(scrollState)
+                                .fillMaxWidth()
+                                .padding(6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val scrollState = rememberScrollState()
-
-                            Row(
-                                modifier = Modifier
-                                    .horizontalScroll(scrollState)
-                                    .fillMaxWidth()
-                                    .padding(6.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                spell.damage.damageAtCharLevel.forEach { (lvl, damage) ->
-                                    Column(
-                                        modifier = Modifier.padding(horizontal = 4.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "Level $lvl",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = damage,
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        if (scrollState.maxValue > 0) {
-                                            Spacer(modifier = Modifier.height(12.dp))
-                                        }
+                            spell.damage.damageAtCharLevel.forEach { (lvl, damage) ->
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 4.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Level $lvl",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = damage,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    if (scrollState.maxValue > 0) {
+                                        Spacer(modifier = Modifier.height(12.dp))
                                     }
                                 }
-
                             }
+
                         }
                     }
                 }
             }
 
             // Description header
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = "Description",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "Description",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
 
-                    HorizontalDivider(
-                        thickness = 1.5.dp,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, top = 8.dp)
-                    )
-                }
+                HorizontalDivider(
+                    thickness = 1.5.dp,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp, top = 8.dp)
+                )
             }
 
             // Spell Description (markdown)
-            item {
-                var descHeight = 500.dp
-                if (spell.damage != null) {
-                    if (spell.damage.damageAtCharLevel.isNotEmpty()) {
-                        descHeight = 390.dp
-                    }
-                    if (spell.damage.damageAtSlotLevel.isNotEmpty()) {
-                        descHeight = 390.dp
-                    }
+            var descHeight = 500.dp
+            if (spell.damage != null) {
+                if (spell.damage.damageAtCharLevel.isNotEmpty()) {
+                    descHeight = 390.dp
                 }
-                    Box(
-                        modifier = Modifier
-                            .height(descHeight)
-                            .padding(start = 8.dp, end = 8.dp)
-                    ) {
+                if (spell.damage.damageAtSlotLevel.isNotEmpty()) {
+                    descHeight = 390.dp
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .height(descHeight)
+                    .padding(start = 8.dp, end = 8.dp)
+            ) {
 
-                        val scrollState = rememberScrollState()
+                val scrollState = rememberScrollState()
 
 
-                        // Scrollable content
-                        Column(
-                            modifier = Modifier
-                                .verticalScroll(state = scrollState)
-                                .fillMaxSize()
-                                .padding(end = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            // AI-assistance to solve the table indentations in the description to display the tables correctly
-                            var isTable = false
-                            val tableLines = mutableListOf<String>()
+                // Scrollable content
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(state = scrollState)
+                        .fillMaxSize()
+                        .padding(end = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    // AI-assistance to solve the table indentations in the description to display the tables correctly
+                    var isTable = false
+                    val tableLines = mutableListOf<String>()
 
-                            val customTextStyle = TextStyle(
-                                fontSize = 14.sp
-                            )
+                    val customTextStyle = TextStyle(
+                        fontSize = 14.sp
+                    )
 
-                            spell.description.forEach { line ->
-                                if (line.startsWith("|") && line.endsWith("|")) {
-                                    isTable = true
-                                    tableLines.add(line)
-                                } else if (isTable && line.startsWith("|---")) {
-                                    tableLines.add(line)
-                                } else {
-                                    if (isTable) {
-                                        Box(
-                                            modifier = Modifier
-                                                .width(400.dp)
-                                                .height(400.dp)
-                                        ) {
-                                            ProvideTextStyle(customTextStyle) {
-                                                MarkdownText(
-                                                    markdown = tableLines.joinToString("\n"),
-                                                    onLinkClicked = { url ->
-                                                        when {
-                                                            url.startsWith("navigate://conditions/") -> {
-                                                                val conditionName = url
-                                                                    .substringAfter("navigate://conditions/")
-                                                                    .replace("-", " ")
-                                                                    .trim()
-
-                                                                if (conditionName.isNotBlank()) {
-                                                                    val condition =
-                                                                        appState.getConditionByName(
-                                                                            conditionName
-                                                                        )
-                                                                    if (condition != null) {
-                                                                        selectedCondition =
-                                                                            condition
-                                                                        showConditionDialog = true
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            url.startsWith("navigate://rules/") -> {
-                                                                val ruleName = url
-                                                                    .substringAfter("navigate://rules/")
-                                                                    .replace("-", " ")
-                                                                    .trim()
-
-                                                                if (ruleName.isNotBlank()) {
-                                                                    val rule =
-                                                                        appState.getRuleByName(
-                                                                            ruleName
-                                                                        )
-                                                                    if (rule != null) {
-                                                                        selectedRule = rule
-                                                                        showRuleDialog = true
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    },
-                                                    enableUnderlineForLink = false,
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(vertical = 4.dp)
-                                                )
-                                            }
-                                        }
-                                        tableLines.clear()
-                                        isTable = false
-                                    }
-
-                                    Box(modifier = Modifier.fillMaxWidth()) {
-                                        ProvideTextStyle(customTextStyle) {
-                                            MarkdownText(
-                                                markdown = line,
-                                                onLinkClicked = { url ->
-                                                    when {
-                                                        url.startsWith("navigate://conditions/") -> {
-                                                            val conditionName = url
-                                                                .substringAfter("navigate://conditions/")
-                                                                .replace("-", " ")
-                                                                .trim()
-
-                                                            if (conditionName.isNotBlank()) {
-                                                                val condition =
-                                                                    appState.getConditionByName(
-                                                                        conditionName
-                                                                    )
-                                                                if (condition != null) {
-                                                                    selectedCondition = condition
-                                                                    showConditionDialog = true
-                                                                }
-                                                            }
-                                                        }
-
-                                                        url.startsWith("navigate://rules/") -> {
-                                                            val ruleName = url
-                                                                .substringAfter("navigate://rules/")
-                                                                .replace("-", " ")
-                                                                .trim()
-
-                                                            if (ruleName.isNotBlank()) {
-                                                                val rule =
-                                                                    appState.getRuleByName(ruleName)
-                                                                if (rule != null) {
-                                                                    selectedRule = rule
-                                                                    showRuleDialog = true
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                linkColor = Color(0xFF2196F3),
-                                                enableUnderlineForLink = false,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(vertical = 4.dp)
-                                            )
-
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (tableLines.isNotEmpty()) {
+                    spell.description.forEach { line ->
+                        if (line.startsWith("|") && line.endsWith("|")) {
+                            isTable = true
+                            tableLines.add(line)
+                        } else if (isTable && line.startsWith("|---")) {
+                            tableLines.add(line)
+                        } else {
+                            if (isTable) {
                                 Box(
                                     modifier = Modifier
-                                        .width(800.dp)
+                                        .width(400.dp)
+                                        .height(400.dp)
                                 ) {
                                     ProvideTextStyle(customTextStyle) {
                                         MarkdownText(
@@ -574,7 +436,8 @@ fun SpellDetailsView(
                                                                     conditionName
                                                                 )
                                                             if (condition != null) {
-                                                                selectedCondition = condition
+                                                                selectedCondition =
+                                                                    condition
                                                                 showConditionDialog = true
                                                             }
                                                         }
@@ -588,7 +451,9 @@ fun SpellDetailsView(
 
                                                         if (ruleName.isNotBlank()) {
                                                             val rule =
-                                                                appState.getRuleByName(ruleName)
+                                                                appState.getRuleByName(
+                                                                    ruleName
+                                                                )
                                                             if (rule != null) {
                                                                 selectedRule = rule
                                                                 showRuleDialog = true
@@ -597,7 +462,6 @@ fun SpellDetailsView(
                                                     }
                                                 }
                                             },
-                                            linkColor = Color(0xFF2196F3),
                                             enableUnderlineForLink = false,
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -605,15 +469,120 @@ fun SpellDetailsView(
                                         )
                                     }
                                 }
+                                tableLines.clear()
+                                isTable = false
+                            }
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                ProvideTextStyle(customTextStyle) {
+                                    MarkdownText(
+                                        markdown = line,
+                                        onLinkClicked = { url ->
+                                            when {
+                                                url.startsWith("navigate://conditions/") -> {
+                                                    val conditionName = url
+                                                        .substringAfter("navigate://conditions/")
+                                                        .replace("-", " ")
+                                                        .trim()
+
+                                                    if (conditionName.isNotBlank()) {
+                                                        val condition =
+                                                            appState.getConditionByName(
+                                                                conditionName
+                                                            )
+                                                        if (condition != null) {
+                                                            selectedCondition = condition
+                                                            showConditionDialog = true
+                                                        }
+                                                    }
+                                                }
+
+                                                url.startsWith("navigate://rules/") -> {
+                                                    val ruleName = url
+                                                        .substringAfter("navigate://rules/")
+                                                        .replace("-", " ")
+                                                        .trim()
+
+                                                    if (ruleName.isNotBlank()) {
+                                                        val rule =
+                                                            appState.getRuleByName(ruleName)
+                                                        if (rule != null) {
+                                                            selectedRule = rule
+                                                            showRuleDialog = true
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        linkColor = Color(0xFF2196F3),
+                                        enableUnderlineForLink = false,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp)
+                                    )
+
+                                }
                             }
                         }
-                        CustomScrollbar(descHeight,scrollState = scrollState, type = "vertical")
+                    }
+
+                    if (tableLines.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .width(800.dp)
+                        ) {
+                            ProvideTextStyle(customTextStyle) {
+                                MarkdownText(
+                                    markdown = tableLines.joinToString("\n"),
+                                    onLinkClicked = { url ->
+                                        when {
+                                            url.startsWith("navigate://conditions/") -> {
+                                                val conditionName = url
+                                                    .substringAfter("navigate://conditions/")
+                                                    .replace("-", " ")
+                                                    .trim()
+
+                                                if (conditionName.isNotBlank()) {
+                                                    val condition =
+                                                        appState.getConditionByName(
+                                                            conditionName
+                                                        )
+                                                    if (condition != null) {
+                                                        selectedCondition = condition
+                                                        showConditionDialog = true
+                                                    }
+                                                }
+                                            }
+
+                                            url.startsWith("navigate://rules/") -> {
+                                                val ruleName = url
+                                                    .substringAfter("navigate://rules/")
+                                                    .replace("-", " ")
+                                                    .trim()
+
+                                                if (ruleName.isNotBlank()) {
+                                                    val rule =
+                                                        appState.getRuleByName(ruleName)
+                                                    if (rule != null) {
+                                                        selectedRule = rule
+                                                        showRuleDialog = true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    linkColor = Color(0xFF2196F3),
+                                    enableUnderlineForLink = false,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                )
+                            }
+                        }
                     }
                 }
-            }
-
-
-
+                CustomScrollbar(descHeight,scrollState = scrollState, type = "vertical")
+            }}
 
         // Render condition dialog
         if (showConditionDialog && selectedCondition != null) {
