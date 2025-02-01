@@ -15,6 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -72,7 +76,7 @@ fun <T : IItem> ListView(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(2.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         state = listState
     ) {
         items(items) { item ->
@@ -81,6 +85,23 @@ fun <T : IItem> ListView(
                 details = detailsProvider(item),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .drawBehind {
+                        val shadowColor = Color.Gray
+                        val shadowBlurRadius = 1.3.dp.toPx()
+                        val offsetY = shadowBlurRadius / 2
+
+                        drawRect(
+                            color = shadowColor.copy(alpha = 0.2f),
+                            topLeft = Offset(0f, -offsetY),
+                            size = Size(size.width, shadowBlurRadius)
+                        )
+
+                        drawRect(
+                            color = shadowColor.copy(alpha = 0.2f),
+                            topLeft = Offset(0f, size.height - offsetY),
+                            size = Size(size.width, shadowBlurRadius)
+                        )
+                    }
                     .clickable { onItemClick(item.index) },
                 actionsContent = {
                     IconButton(onClick = { onFavoriteClick(item) }) {
